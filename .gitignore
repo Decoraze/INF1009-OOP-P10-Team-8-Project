@@ -1,0 +1,68 @@
+# Compiled output
+*.class
+/out/
+/bin/
+/build/
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# ===== ECLIPSE =====
+.project
+.classpath
+.settings/
+.metadata/
+.recommenders/
+*.launch
+
+# ===== INTELLIJ IDEA =====
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ===== VSCODE =====
+.vscode/
+*.code-workspace
+
+# ===== GRADLE (everyone) =====
+.gradle/
+/build/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# ===== LIBGDX =====
+/android/libs/armeabi/
+/android/libs/armeabi-v7a/
+/android/libs/arm64-v8a/
+/android/libs/x86/
+/android/libs/x86_64/
+/android/gen/
+
+# ===== OS SPECIFIC =====
+# macOS
+.DS_Store
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+# Linux
+*~
+
+# ===== LOGS =====
+*.log
+
+# ===== Do not Touch =====
+!gradle/
+!gradlew
+!gradlew.bat
+!build.gradle
+!settings.gradle
+!/src/

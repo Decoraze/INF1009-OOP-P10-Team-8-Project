@@ -1,0 +1,101 @@
+﻿buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+}
+
+plugins {
+    id 'eclipse'
+    id 'idea'
+}
+
+allprojects {
+    apply plugin: "eclipse"
+    apply plugin: "idea"
+    
+    version = '1.0'
+    ext {
+        appName = "INF1009-OOP-Project"
+        gdxVersion = '1.12.1'
+        javaVersion = JavaVersion.VERSION_11
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    }
+}
+
+configure(subprojects) {
+    apply plugin: 'java-library'
+    
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(11)
+        }
+    }
+    
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+    }
+    
+    test {
+        useJUnitPlatform()
+    }
+}
+
+project(":core") {
+    dependencies {
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+    }
+    
+    sourceSets.main.java.srcDirs = ["src/"]
+    sourceSets.main.resources.srcDirs = ["assets/"]
+}
+
+project(":desktop") {
+    apply plugin: 'application'
+    
+    dependencies {
+        implementation project(':core')
+        implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    }
+    
+    // TODO: Set your main class here when you create it
+    // Example: mainClass = 'com.yourpackage.desktop.DesktopLauncher'
+    application {
+        // Update this when you create your main class
+        mainClass = project.findProperty('mainClass') ?: 'Main'
+    }
+    
+    task run(dependsOn: classes, type: JavaExec) {
+        mainClass = application.mainClass
+        classpath = sourceSets.main.runtimeClasspath
+        standardInput = System.in
+        workingDir = project.file('../core/assets')
+        ignoreExitValue = true
+    }
+    
+    task dist(type: Jar) {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        manifest {
+            attributes 'Main-Class': application.mainClass
+        }
+        from {
+            configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        }
+        with jar
+    }
+}
+
+// IDE tasks for team collaboration
+task cleanEclipse(dependsOn: [':core:cleanEclipse', ':desktop:cleanEclipse'])
+task eclipse(dependsOn: [':core:eclipse', ':desktop:eclipse'])
+task cleanIdea(dependsOn: [':core:cleanIdea', ':desktop:cleanIdea'])
+task idea(dependsOn: [':core:idea', ':desktop:idea'])
