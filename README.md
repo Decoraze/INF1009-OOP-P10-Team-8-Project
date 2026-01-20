@@ -3,9 +3,6 @@
 Multi-module libGDX game project configured for Eclipse, IntelliJ IDEA, and VSCode.
 
 ---
-
-## 📋 Prerequisites
-
 ### Required Software
 
 1. **Java 17 or Java 21** (NOT Java 8 or Java 25!)
@@ -21,8 +18,6 @@ Multi-module libGDX game project configured for Eclipse, IntelliJ IDEA, and VSCo
    - Visual Studio Code with Java extensions
 
 ---
-
-## 🚀 Quick Start
 
 ### 1️⃣ Clone the Repository
 
@@ -179,7 +174,7 @@ If VSCode uses wrong Java version:
 
 ---
 
-## 📂 Project Structure
+## Check Project Struct
 
 ```
 INF1009-OOP-P10-Team-8-Project/
@@ -198,7 +193,7 @@ INF1009-OOP-P10-Team-8-Project/
 
 ---
 
-## 🛠️ Gradle Commands
+## Gradle Commands
 
 ### Build Project
 ```bash
@@ -233,7 +228,7 @@ INF1009-OOP-P10-Team-8-Project/
 
 ---
 
-## 📝 Development Workflow
+## Development Workflow (during your coding) 
 
 ### 1. Create Your Main Class
 
@@ -256,7 +251,7 @@ mainClass = 'com.yourpackage.desktop.DesktopLauncher'
 
 ---
 
-## 🔒 Git Commit Guidelines
+## Git Commit Guidelines
 
 ### Before Committing
 
@@ -390,7 +385,7 @@ gradle wrapper --gradle-version 8.11.1
 
 ---
 
-## 📦 Dependencies
+## Dependencies
 
 This project uses the following libraries (automatically downloaded by Gradle):
 
@@ -419,53 +414,6 @@ Then refresh Gradle:
 - **VSCode:** Reload window (Ctrl+Shift+P → Reload Window)
 
 ---
-
-## 🤝 Team Collaboration Tips
-
-1. **Pull before you code:**
-   ```bash
-   git pull origin main
-   ```
-
-2. **Use different packages** to avoid conflicts:
-   ```
-   core/src/com/yourteam/
-   ├── player/    # Team member 1
-   ├── enemy/     # Team member 2
-   └── ui/        # Team member 3
-   ```
-
-3. **Communicate about `build.gradle` changes**
-   - Coordinate before adding dependencies
-   - Test build after pulling changes
-
-4. **Use branches for features:**
-   ```bash
-   git checkout -b feature/player-movement
-   # Make changes
-   git commit -m "feat: Add player movement"
-   git push origin feature/player-movement
-   # Create pull request
-   ```
-
----
-
-## 📞 Getting Help
-
-1. **Build fails?** Check Troubleshooting section above
-2. **IDE issues?** Verify Java version and refresh Gradle
-3. **Git conflicts?** Ask teammate before force-pushing
-
----
-
-## ✅ Quick Checklist
-
-- [ ] Java 17 or 21 installed (`java -version`)
-- [ ] Project imported into IDE
-- [ ] Build succeeds (`.\gradlew.bat build`)
-- [ ] Can see `core` and `desktop` modules
-- [ ] `.gitignore` working (no IDE files in `git status`)
-- [ ] Can commit and push changes
 
 ---
 
