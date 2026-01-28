@@ -2,7 +2,7 @@ package com.p10.core.managers;
 
 /*
  * InputOutputManager - Handles input and audio
- * STUB VERSION - Will be replaced by Person 5
+
  */
 public class InputOutputManager {
 
@@ -11,7 +11,7 @@ public class InputOutputManager {
     }
 
     public void handleInput() {
-        // Empty - Person 5 implements
+        // Empty - implements
     }
 
     public void dispose() {

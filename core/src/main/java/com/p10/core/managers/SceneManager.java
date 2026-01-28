@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /**
  * SceneManager - Manages game scenes (menu, game, etc.)
- * STUB VERSION - Will be replaced by Person 4
+ * 
  */
 public class SceneManager {
 
@@ -16,15 +16,15 @@ public class SceneManager {
     }
 
     public void update(float deltaTime) {
-        // Empty - Person 4 implements
+        // Empty - implements ----
     }
 
     public void renderShapes(ShapeRenderer renderer) {
-        // Empty - Person 4 implements
+        // Empty - implements -----
     }
 
     public void renderTextures(SpriteBatch batch) {
-        // Empty - Person 4 implements
+        // Empty - implements -0----
     }
 
     public String getCurrentSceneName() {
@@ -33,5 +33,10 @@ public class SceneManager {
 
     public void dispose() {
         System.out.println("[SceneManager] Stub disposed");
+    }
+
+    public void onResize(int width, int height) {
+        System.out.println("[SceneManager] Handling resize: " + width + "x" + height);
+        // update scene of new dimensions if user scales up or down
     }
 }

@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * MovementManager - Updates entity positions
- * STUB VERSION - Will be replaced by Person 2
+ * 
  */
 public class MovementManager {
 
@@ -13,7 +13,7 @@ public class MovementManager {
     }
 
     public void updateMovement(List<Object> entities, float deltaTime) {
-        // Empty - Person 2 implements
+        // Empty - implements ---
     }
 
     public void dispose() {

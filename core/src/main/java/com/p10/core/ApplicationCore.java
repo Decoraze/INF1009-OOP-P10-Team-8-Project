@@ -13,11 +13,6 @@ import com.p10.core.managers.InputOutputManager;
 import com.p10.core.managers.MovementManager;
 import com.p10.core.managers.SceneManager;
 
-/**
- * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all
- * platforms.
- */
-
 /*
  * ApplicationCore - Main Function ish
  * 1) Initialise 5 Managers
@@ -73,7 +68,7 @@ public class ApplicationCore extends ApplicationAdapter {
         fps = Gdx.graphics.getFramesPerSecond();
 
         // Clear screen (dark blue background)
-        ScreenUtils.clear(0.1f, 0.1f, 0.2f, 1.0f);
+        ScreenUtils.clear(0.1f, 0.1f, 0.2f, 1.0f);// use this to change the background
 
         // Update camera
         camera.update();
@@ -102,6 +97,14 @@ public class ApplicationCore extends ApplicationAdapter {
         camera.viewportWidth = width;
         camera.viewportHeight = height;
         camera.update();
+        // Notify managers of resize (so they can update their entities/scenes)
+        if (sceneManager != null) {
+            sceneManager.onResize(width, height);
+        }
+
+        if (entityManager != null) {
+            entityManager.onResize(width, height);
+        }
     }
 
     // teh graceful closer

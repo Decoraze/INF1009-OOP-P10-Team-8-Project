@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /**
  * EntityManager - Manages all entities in the game
- * STUB VERSION - Will be replaced by Person 2
+ * 
  */
 public class EntityManager {
 
@@ -36,15 +36,15 @@ public class EntityManager {
     }
 
     public void updateAll(float deltaTime) {
-        // Empty - Person 2 implements
+        // Empty - Implement -----
     }
 
     public void renderShapes(ShapeRenderer renderer) {
-        // Empty - Person 2 implements
+        // Empty - Implement -----
     }
 
     public void renderTextures(SpriteBatch batch) {
-        // Empty - Person 2 implements
+        // Empty - Implement---
     }
 
     public int getEntityCount() {
@@ -54,5 +54,10 @@ public class EntityManager {
     public void dispose() {
         entities.clear();
         System.out.println("[EntityManager] Stub disposed");
+    }
+
+    public void onResize(int width, int height) {
+        System.out.println("[EntityManager] Handling resize: " + width + "x" + height);
+        // add entity border update if needed...
     }
 }

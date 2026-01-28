@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * CollisionManager - Handles collision detection
- * STUB VERSION - Will be replaced by Person 3
+ * 
  */
 public class CollisionManager {
 
@@ -13,7 +13,7 @@ public class CollisionManager {
     }
 
     public void checkCollisions(List<Object> collidableEntities) {
-        // Empty - Person 3 implements
+        // Empty - implements ---
     }
 
     public void dispose() {
