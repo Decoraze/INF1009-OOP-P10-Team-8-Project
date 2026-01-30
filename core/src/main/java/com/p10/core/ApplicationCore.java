@@ -7,6 +7,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.p10.core.interfaces.iCollision;
+import com.p10.core.interfaces.iEntityOps;
+import com.p10.core.interfaces.iInput;
+import com.p10.core.interfaces.iMovement;
+import com.p10.core.interfaces.iSceneControl;
 import com.p10.core.managers.CollisionManager;
 import com.p10.core.managers.EntityManager;
 import com.p10.core.managers.InputOutputManager;
@@ -243,5 +248,45 @@ public class ApplicationCore extends ApplicationAdapter {
         debugFont.draw(batch, "Scene: " + sceneManager.getCurrentSceneName(), 10, WINDOW_HEIGHT - 60);
 
         batch.end();
+    }
+
+    /**
+     * Get the entity operations interface
+     * Used by Scene to spawn/remove entities
+     */
+    public iEntityOps getEntityOps() {
+        return (iEntityOps) entityManager;
+    }
+
+    /**
+     * Get the collision interface
+     * Used by Scene to check collisions
+     */
+    public iCollision getCollision() {
+        return (iCollision) collisionManager;
+    }
+
+    /**
+     * Get the movement interface
+     * Used by Scene to apply movement/physics
+     */
+    public iMovement getMovement() {
+        return (iMovement) movementManager;
+    }
+
+    /**
+     * Get the scene control interface
+     * Used by Scene to switch scenes
+     */
+    public iSceneControl getSceneControl() {
+        return (iSceneControl) sceneManager;
+    }
+
+    /**
+     * Get the input interface
+     * Used by Scene to check input and play sounds
+     */
+    public iInput getInput() {
+        return (iInput) inputOutputManager;
     }
 }
