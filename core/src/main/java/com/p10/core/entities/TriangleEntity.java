@@ -15,13 +15,15 @@ public class TriangleEntity extends Shape {
         this.vertices = vertices;
     }
 
-    @Override public Rectangle getHitbox() { return hitbox; }
-    @Override public boolean checkCollision(CollidableEntity other) { return hitbox.overlaps(other.getHitbox()); }
+    @Override public boolean checkCollision(CollidableEntity other) { // Use getHitbox() because hitbox is private in parent
+        return getHitbox().overlaps(other.getHitbox()); }
     @Override public void onCollisionEnter(CollidableEntity other) {}
-    
+
     // Required by Entity abstract methods
-    @Override public void update(float dt) {}
-    
+    @Override public void update(float dt) {
+        getHitbox().setCenter(position.x, position.y);
+    }
+
     @Override
     public void renderShapes(ShapeRenderer renderer) {
     	renderer.setColor(color);
@@ -31,7 +33,7 @@ public class TriangleEntity extends Shape {
             vertices[2].x, vertices[2].y
         );
     }
-    
+
     @Override
     public void renderTextures(SpriteBatch batch) {
     }

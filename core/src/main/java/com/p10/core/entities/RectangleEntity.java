@@ -19,16 +19,17 @@ public class RectangleEntity extends Shape { //i have to name the file as rectan
 
     @Override
     public void update(float dt) {
-        // Keeps the hitbox (the imported Rectangle) synced with the entity position
-        hitbox.setPosition(position.x, position.y);
+        // Use getHitbox() because 'hitbox' is private in the parent class
+        getHitbox().setPosition(position.x, position.y);
     }
 
     // Required by CollidableEntity abstract methods
-    @Override public Rectangle getHitbox() { return hitbox; }
-    @Override public boolean checkCollision(CollidableEntity other) { return hitbox.overlaps(other.getHitbox()); }
+
+    @Override public boolean checkCollision(CollidableEntity other) { return getHitbox().overlaps(other.getHitbox());
+    }
     @Override public void onCollisionEnter(CollidableEntity other) {}
-    
-    
+
+
     // Required by Entity abstract methods
     @Override
     public void renderShapes(ShapeRenderer renderer) {
@@ -36,10 +37,10 @@ public class RectangleEntity extends Shape { //i have to name the file as rectan
         // Uses the unique width and height fields from UML
         renderer.rect(position.x, position.y, width, height);
     }
-    
+
     @Override
     public void renderTextures(SpriteBatch batch) {
     }
-    
-    
+
+
 }

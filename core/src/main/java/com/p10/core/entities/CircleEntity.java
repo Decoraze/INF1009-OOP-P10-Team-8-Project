@@ -15,17 +15,18 @@ public class CircleEntity extends Shape {
     }
 
 
-    @Override public Rectangle getHitbox() { return hitbox; }
-    @Override public boolean checkCollision(CollidableEntity other) { return hitbox.overlaps(other.getHitbox()); }
+    @Override public boolean checkCollision(CollidableEntity other) {
+        return getHitbox().overlaps(other.getHitbox()); }
     @Override public void onCollisionEnter(CollidableEntity other) { /* Logic for hitting things */ }
-    
+
     // Required by Entity abstract methods
     @Override
     public void update(float dt) {
         // Keep hitbox centered on the circle
-        hitbox.setCenter(position.x, position.y);
+
+        getHitbox().setCenter(position.x, position.y);
     }
-    
+
     @Override
     public void renderShapes(ShapeRenderer renderer) {
         // implementation will call SpriteBatch in the Manager
@@ -33,8 +34,8 @@ public class CircleEntity extends Shape {
         if (filled) renderer.set(ShapeRenderer.ShapeType.Filled);
         renderer.circle(position.x, position.y, radius);
     }
-    
     @Override
     public void renderTextures(SpriteBatch batch) {
     }
+
 }

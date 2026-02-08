@@ -4,15 +4,18 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 public abstract class CollidableEntity extends Entity {
-    protected Rectangle hitbox; //
-    protected int collisionLayer; //
+    private Rectangle hitbox; //
+    private int collisionLayer; //
 
     public CollidableEntity(String id, float x, float y, float w, float h) {
         super(id, x, y);
         this.hitbox = new Rectangle(x, y, w, h);
     }
 
-    public abstract Rectangle getHitbox(); //
+    // Give this method a BODY { } so children don't have to implement it
+    public Rectangle getHitbox() {
+        return hitbox;
+    }
     public abstract boolean checkCollision(CollidableEntity other); //
     public abstract void onCollisionEnter(CollidableEntity other); //
 }
