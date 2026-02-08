@@ -7,8 +7,8 @@ public abstract class Entity {
     protected Vector2 position;
     protected float rotation;
     protected Vector2 scale;
-    protected boolean active;
-    protected boolean visible;
+    private boolean active;
+    private boolean visible;
 
     public Entity(String id, float x, float y) {
         this.id = id;
