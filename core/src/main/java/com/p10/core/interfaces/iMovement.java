@@ -2,6 +2,7 @@ package com.p10.core.interfaces;
 
 import com.badlogic.gdx.math.Vector2;
 
+import com.p10.core.entities.*;
 /**
  * iMovement Interface
  * 
@@ -19,7 +20,7 @@ public interface iMovement {
      * @param entity    The entity to move
      * @param deltaTime Time since last frame
      */
-    void applyMovement(Object entity, float deltaTime); // TODO: Replace Object with Entity when rumaana creates it
+    void applyMovement(Entity entity, float deltaTime); // TODO: Replace Object with Entity when rumaana creates it
 
     /**
      * Apply physics calculations (gravity, acceleration, etc.)
@@ -27,7 +28,7 @@ public interface iMovement {
      * @param entity    The entity to apply physics to
      * @param deltaTime Time since last frame
      */
-    void applyPhysics(Object entity, float deltaTime); // TODO: Replace Object with Entity when rumaana creates it
+    void applyPhysics(Entity entity, float deltaTime); // TODO: Replace Object with Entity when rumaana creates it
 
     /**
      * Apply a force to an entity
@@ -35,5 +36,5 @@ public interface iMovement {
      * @param entity The entity to apply force to
      * @param force  The force vector to apply
      */
-    void applyForce(Object entity, Vector2 force); // TODO: Replace Object with Entity when rumaana creates it
+    void applyForce(Entity entity, Vector2 force); // TODO: Replace Object with Entity when rumaana creates it
 }

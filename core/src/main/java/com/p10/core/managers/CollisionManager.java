@@ -2,6 +2,7 @@ package com.p10.core.managers;
 
 import java.util.List;
 
+import com.p10.core.entities.*;
 /**
  * CollisionManager - Handles collision detection
  * 
@@ -12,7 +13,7 @@ public class CollisionManager {
         System.out.println("[CollisionManager] Stub initialized");
     }
 
-    public void checkCollisions(List<Object> collidableEntities) {
+    public void checkCollisions(List<Entity> collidableEntities) {
         // Empty - implements ---
     }
 

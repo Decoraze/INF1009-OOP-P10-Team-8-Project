@@ -6,45 +6,74 @@ import java.util.List;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import com.p10.core.entities.*;
+
 /**
  * EntityManager - Manages all entities in the game
  * 
  */
 public class EntityManager {
 
-    private List<Object> entities;
+    private List<Entity> entities;				// List to hold entities
 
+    
+    // Constructor
     public EntityManager() {
-        this.entities = new ArrayList<>();
+        this.entities = new ArrayList<>();			// Create entities list
         System.out.println("[EntityManager] Stub initialized");
     }
 
-    public void addEntity(Object entity) {
-        entities.add(entity);
+    public void addEntity(Entity entity) {
+        entities.add(entity);					// Add entities to the list
     }
 
-    public void removeEntity(Object entity) {
-        entities.remove(entity);
+    public void removeEntity(Entity entity) {
+        entities.remove(entity);				// Remove entities on the list
     }
 
-    public List<Object> getAllEntities() {
-        return entities;
+    public List<Entity> getAllEntities() {
+        return entities;						// Return list to hold entities
     }
 
-    public List<Object> getCollidableEntities() {
+    public Entity getEntity(String id) {
+    	// Loop through list to find the ID
+    	for (Entity obj : entities) {
+    		if (obj.getId() == id) {
+    			return obj;
+    		}
+    	}
+    	return null;
+    }
+    
+    
+    public List<Entity> getCollidableEntities() {
         return new ArrayList<>();
     }
 
+    
+    // TBC
     public void updateAll(float deltaTime) {
-        // Empty - Implement -----
+        // Empty - Implement -----;
     }
 
-    public void renderShapes(ShapeRenderer renderer) {
-        // Empty - Implement -----
+    
+    public void renderShapes(ShapeRenderer renderer) {	
+    	// Loop through entity list
+    	for (Entity obj : entities) {
+    		// If it's an object of either circle or triangle then draw
+		    if (obj instanceof CircleEntity || obj instanceof TriangleEntity){
+		    	obj.renderShapes(renderer);	// Call method to render
+		    }
+		}
     }
 
     public void renderTextures(SpriteBatch batch) {
-        // Empty - Implement---
+    	// Loop through entity list
+		for (Entity obj : entities) {
+			if (obj instanceof TextureObject) {
+		       obj.renderTextures(batch);		// Call method to render
+		    } 
+		}
     }
 
     public int getEntityCount() {

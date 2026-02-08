@@ -2,6 +2,8 @@ package com.p10.core.managers;
 
 import java.util.List;
 
+
+import com.p10.core.entities.*;
 /**
  * MovementManager - Updates entity positions
  * 
@@ -12,8 +14,11 @@ public class MovementManager {
         System.out.println("[MovementManager] Stub initialized");
     }
 
-    public void updateMovement(List<Object> entities, float deltaTime) {
+    public void updateMovement(List<Entity> entities, float deltaTime) {
         // Empty - implements ---
+    	for (Entity obj : entities) {
+    		
+    	}
     }
 
     public void dispose() {
