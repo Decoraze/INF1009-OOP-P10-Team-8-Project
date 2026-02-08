@@ -34,8 +34,17 @@ public abstract class Entity {
         return rotation; }
     public void setRotation(float rotation) {
         this.rotation = rotation; }
+    public Vector2 getScale() {
+        return scale; }
+    public void setScale(float x, float y) {
+        this.scale.set(x, y); }
     public boolean isActive() {
         return active; }
     public void setActive(boolean active) {
         this.active = active; }
+    public boolean isVisible() {
+        return visible; }
+    public void setVisible(boolean visible) {
+        this.visible = visible; }
+
 }

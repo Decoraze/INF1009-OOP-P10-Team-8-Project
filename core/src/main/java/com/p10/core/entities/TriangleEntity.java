@@ -5,10 +5,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Triangle extends Shape {
+public class TriangleEntity extends Shape {
     private Vector2[] vertices; //
 
-    public Triangle(String id, float x, float y, Vector2[] vertices, Color color) {
+    public TriangleEntity(String id, float x, float y, Vector2[] vertices, Color color) {
         // Width/Height for hitbox usually calculated from vertex bounds
         super(id, x, y, 50, 50, color);
         this.vertices = vertices;

@@ -4,10 +4,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
-public class Circle extends Shape {
+public class CircleEntity extends Shape {
     private float radius; //
 
-    public Circle(String id, float x, float y, float radius, Color color) {
+    public CircleEntity(String id, float x, float y, float radius, Color color) {
         // Hitbox size is diameter (radius * 2)
         super(id, x, y, radius * 2, radius * 2, color);
         this.radius = radius;
