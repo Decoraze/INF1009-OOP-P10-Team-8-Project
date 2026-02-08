@@ -45,15 +45,24 @@ public class EntityManager {
     	return null;
     }
     
-    
+    // TBC
     public List<Entity> getCollidableEntities() {
-        return new ArrayList<>();
+    	ArrayList<Entity> temp = new ArrayList<>();
+  
+    	for (Entity obj : entities) {
+    		 if (obj instanceof CollidableEntity) {
+    			 temp.add(obj);
+    		 }
+    	}
+        return temp;
     }
 
     
     // TBC
     public void updateAll(float deltaTime) {
-        // Empty - Implement -----;
+    	for (Entity obj : entities) {
+    		obj.update(deltaTime);
+    	}
     }
 
     

@@ -23,7 +23,6 @@ public class CircleEntity extends Shape {
     @Override
     public void update(float dt) {
         // Keep hitbox centered on the circle
-
         getHitbox().setCenter(position.x, position.y);
     }
 
