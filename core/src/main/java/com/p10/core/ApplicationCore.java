@@ -206,6 +206,30 @@ public class ApplicationCore extends ApplicationAdapter {
     private void handleInput() {
         // Input is handled by InputOutputManager
         inputOutputManager.handleInput();
+        // KEYBOARD TEST
+        if (inputOutputManager.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ANY_KEY)) {
+            System.out.println("[TEST] A key was detected!");
+        }
+
+        // Space Bar Jump Sound
+        if (inputOutputManager.isKeyJustPressed(com.badlogic.gdx.Input.Keys.SPACE)) {
+            // This tells the manager to look for "jump" in the soundMap and play it
+            inputOutputManager.playSound("jump");
+        }
+
+        // 3. Add your Mouse test
+        if (inputOutputManager.isMouseButtonPressed(com.badlogic.gdx.Input.Buttons.LEFT)) {
+            System.out.println("[TEST] Mouse Clicked at: " + inputOutputManager.getMousePosition());
+        }
+
+        // Main Game Music
+        if (inputOutputManager.isKeyJustPressed(com.badlogic.gdx.Input.Keys.M)) {
+            inputOutputManager.playMusic("bgm");
+        }
+        if (inputOutputManager.isKeyJustPressed(com.badlogic.gdx.Input.Keys.N)) {
+            inputOutputManager.stopMusic(); //
+            System.out.println("[AUDIO] Music Stopped");
+        }
     }
 
     // update managers. ORDER MATTERS AH DON'T ANYHOW CHANGE PLEASE (if want to
@@ -246,6 +270,14 @@ public class ApplicationCore extends ApplicationAdapter {
         debugFont.draw(batch, "FPS: " + fps, 10, WINDOW_HEIGHT - 10);
         debugFont.draw(batch, "Entities: " + entityManager.getEntityCount(), 10, WINDOW_HEIGHT - 35);
         debugFont.draw(batch, "Scene: " + sceneManager.getCurrentSceneName(), 10, WINDOW_HEIGHT - 60);
+
+        // Mouse Test (Mouse Input) - Chay Han
+        com.badlogic.gdx.math.Vector2 mPos = inputOutputManager.getMousePosition();
+        debugFont.draw(batch, "Mouse: " + mPos.x + ", " + mPos.y, 10, WINDOW_HEIGHT - 60);
+
+        // Keyboard Test (Keyboard Input) - Chay Han
+        String keyStatus = inputOutputManager.isKeyPressed(com.badlogic.gdx.Input.Keys.ANY_KEY) ? "Key Pressed" : "No Key";
+        debugFont.draw(batch, "Keyboard: " + keyStatus, 10, WINDOW_HEIGHT - 85);
 
         batch.end();
     }
