@@ -1,6 +1,7 @@
 package com.p10.core.interfaces;
 
 import java.util.List;
+import com.p10.core.entities.CollidableEntity;
 
 /**
  * iCollision Interface
@@ -19,19 +20,19 @@ public interface iCollision {
      * @param e2 Second entity
      * @return true if colliding, false otherwise
      */
-    boolean checkCollision(Object e1, Object e2); // TODO: Replace Object with CollidableEntity when rumaana creates it
+    boolean checkCollision(CollidableEntity e1, CollidableEntity e2); // TODO: Replace Object with CollidableEntity when rumaana creates it
 
     /**
      * Get all collidable entities
      * 
      * @return List of all collidable entities
      */
-    List<Object> getCollidables(); // TODO: Replace Object with CollidableEntity when rumaana creates it
+    List<CollidableEntity> getCollidables(); // TODO: Replace Object with CollidableEntity when rumaana creates it
 
     /**
      * Add a collidable entity to be tracked
      * 
      * @param entity The collidable entity to add
      */
-    void addCollidable(Object entity); // TODO: Replace Object with CollidableEntity when rumaana creates it
+    void addCollidable(CollidableEntity e); // TODO: Replace Object with CollidableEntity when rumaana creates it
 }
