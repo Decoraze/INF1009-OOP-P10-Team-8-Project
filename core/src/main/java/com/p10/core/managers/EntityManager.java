@@ -27,12 +27,17 @@ public class EntityManager {
         entities.add(entity);					// Add entities to the list
     }
 
-    public void removeEntity(Entity entity) {
-        entities.remove(entity);				// Remove entities on the list
+    public void removeEntity(String id) {
+    	for (Entity obj : entities) {
+    		if (obj.getId() == id) {
+    			entities.remove(obj);				// Remove entities on the list
+    		}
+    	}
     }
 
     public List<Entity> getAllEntities() {
-        return entities;						// Return list to hold entities
+    	return new ArrayList<>(this.entities);			// Return a copy of the list to hold entities
+        // return entities;								// OLD, violates Encapsulation						
     }
 
     public Entity getEntity(String id) {
