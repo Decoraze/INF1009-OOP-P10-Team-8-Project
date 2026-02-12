@@ -18,6 +18,7 @@ import com.p10.core.managers.InputOutputManager;
 import com.p10.core.managers.MovementManager;
 import com.p10.core.managers.SceneManager;
 
+
 /*
  * ApplicationCore - Main Function ish
  * 1) Initialise 5 Managers
@@ -187,22 +188,45 @@ public class ApplicationCore extends ApplicationAdapter {
         System.out.println("[ApplicationCore] ✓ InputOutputManager initialized");
     }
 
-    /*
-     * Set up the initial scene
-     */
+
+     // Set up the initial scene
     private void initializeScene() {
         System.out.println("[ApplicationCore] Setting up initial scene...");
 
-        // TODO: Create and register scenes
-        // sceneManager.registerScene("menu", new MenuScene());
-        // sceneManager.registerScene("game", new GameScene());
-        // sceneManager.switchScene("menu");
-        // might add one mroe here depends if want stop scene or game end scene
+        // Build scenes with ONLY interfaces
+        com.p10.core.scene.Scene first = new com.p10.core.scene.FirstScene(
+                getCollision(),
+                getEntityOps(),
+                getSceneControl(),
+                getInput(),
+                getMovement());
+
+        com.p10.core.scene.Scene second = new com.p10.core.scene.SecondScene(
+                getCollision(),
+                getEntityOps(),
+                getSceneControl(),
+                getInput(),
+                getMovement());
+
+        com.p10.core.scene.Scene third = new com.p10.core.scene.ThirdScene(
+                getCollision(),
+                getEntityOps(),
+                getSceneControl(),
+                getInput(),
+                getMovement());
+
+        // Register scenes
+        sceneManager.registerScene("FirstScene", first);
+        sceneManager.registerScene("SecondScene", second);
+        sceneManager.registerScene("ThirdScene", third);
+
+        // Start at FirstScene
+        sceneManager.switchScene("FirstScene");
 
         System.out.println("[ApplicationCore] Scene setup complete.");
     }
 
-    // input handler and yes that's it...
+    // input handler that's it...
     private void handleInput() {
         // Input is handled by InputOutputManager
         inputOutputManager.handleInput();
@@ -276,7 +300,8 @@ public class ApplicationCore extends ApplicationAdapter {
         debugFont.draw(batch, "Mouse: " + mPos.x + ", " + mPos.y, 10, WINDOW_HEIGHT - 60);
 
         // Keyboard Test (Keyboard Input) - Chay Han
-        String keyStatus = inputOutputManager.isKeyPressed(com.badlogic.gdx.Input.Keys.ANY_KEY) ? "Key Pressed" : "No Key";
+        String keyStatus = inputOutputManager.isKeyPressed(com.badlogic.gdx.Input.Keys.ANY_KEY) ? "Key Pressed"
+                : "No Key";
         debugFont.draw(batch, "Keyboard: " + keyStatus, 10, WINDOW_HEIGHT - 85);
 
         batch.end();
