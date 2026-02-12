@@ -20,7 +20,7 @@ public interface iMovement {
      * @param entity    The entity to move
      * @param deltaTime Time since last frame
      */
-    void applyMovement(Entity entity, float deltaTime); // TODO: Replace Object with Entity when rumaana creates it
+    void applyMovement(Entity entity, float deltaTime);
 
     /**
      * Apply physics calculations (gravity, acceleration, etc.)
@@ -28,13 +28,7 @@ public interface iMovement {
      * @param entity    The entity to apply physics to
      * @param deltaTime Time since last frame
      */
-    void applyPhysics(Entity entity, float deltaTime); // TODO: Replace Object with Entity when rumaana creates it
+    void applyPhysics(Entity entity, float deltaTime); 
 
-    /**
-     * Apply a force to an entity
-     * 
-     * @param entity The entity to apply force to
-     * @param force  The force vector to apply
-     */
-    void applyForce(Entity entity, Vector2 force); // TODO: Replace Object with Entity when rumaana creates it
+
 }
