@@ -9,34 +9,22 @@ import com.p10.core.entities.*;
  * 1
  */
 public class CollisionManager {
-	private List<Entity> collidables;
-	
+	private CollisionDetection detector;
+	private CollisionResponse responder;
     public CollisionManager() {
-    	this.collidables = new ArrayList<>();
         System.out.println("[CollisionManager] Stub initialized");
-    }
-
-    public void addCollidable(CollidableEntity e) {
-    	collidables.add(e);
-    }
-    
-    public void removeCollidable(String id) {
-    	for(Entity e : collidables)
-    	{
-    		if(id == e.getId())
-    		{
-    	    	collidables.remove(e);
-    	    	break;
-    		}
-    	}
     }
     
     public void checkCollisions(List<Entity> collidableEntities) {
         // Empty - implements ---
     }
-
-    public void resolveCollisions(CollidableEntity e1, CollidableEntity e2) {
+    
+    public void checkCollisions(boolean e1, boolean e2) {
     	
+    }
+    
+    public List<CollidableEntity> getCollidables() {
+    	return new ArrayList<CollidableEntity>();		// Get CollidableEntity list from iCollision interface
     }
     
     public void dispose() {
