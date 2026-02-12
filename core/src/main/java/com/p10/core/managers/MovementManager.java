@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.p10.core.entities.*;
 import com.badlogic.gdx.math.Vector2;
-
+import com.p10.core.movement.*;
 
 /**
  * MovementManager - Updates entity positions
@@ -12,33 +12,23 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class MovementManager {
 
+	
+	
     public MovementManager() {
         System.out.println("[MovementManager] Stub initialized");
     }
     
     
-    // For the particular object itself
-    public void updateMovement(List<Entity> entities, float dt) {
-    	for (Entity obj : entities) {
-    		obj.update(dt);				// Velocity TBC
-    	}
+  
+    // TBC (for whole list of entity or ?)
+    public void applyMovement(Entity entity, float dt) {
+    	entity.update(dt);
     }
     
     
-    // For all objects
-    public void applyPhysics(List<Entity> entities, float dt) {
-    	// Empty - implements ---
-    	for (Entity obj : entities) {
-    		obj.getPosition().add(200 * dt, 0);				// Velocity TBC
-    	}
+    public void applyPhysics(Entity entity, float dt) {
+    	entity.update(dt);
     }
-    
-    
-    // When the objects get hit
-    public void applyForce(Entity e, Vector2 force) {
-    	e.getPosition().add(force);
-    }
-    
     
 
     public void dispose() {

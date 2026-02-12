@@ -1,6 +1,7 @@
 package com.p10.core.interfaces;
 
 import java.util.List;
+import com.p10.core.entities.*;
 
 /**
  * iEntityOps Interface
@@ -18,7 +19,7 @@ public interface iEntityOps {
      * 
      * @param entity The entity to add
      */
-    void spawnEntity(Object entity); // TODO: Use Object for now, replace with Entity when rumaana creates it
+    void addEntity(Entity entity);
 
     /**
      * Remove an entity by its ID
@@ -32,5 +33,14 @@ public interface iEntityOps {
      * 
      * @return List of all entities
      */
-    List<Object> getAllEntities(); // TODO: Use Object for now, replace with Entity when rumaana creates it
+    List<Entity> getAllEntities(); 
+    
+    
+    Entity getEntity(String id);
+    /**
+     * get an entity by its ID
+     * 
+     * @param id The unique identifier of the entity to remove
+     */
+    
 }
