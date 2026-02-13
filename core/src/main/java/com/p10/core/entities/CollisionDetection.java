@@ -3,7 +3,7 @@ package com.p10.core.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CollisionDetection {
+public class CollisionDetection {
 	private List<CollidableEntity> collidables = new ArrayList<>();// init list else will be treated as null without
 																	// making new list. first time if this is called,
 																	// (collidables.add(e) it will become a null pointer

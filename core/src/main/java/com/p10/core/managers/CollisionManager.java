@@ -36,9 +36,14 @@ public class CollisionManager implements iCollision {
             collisionCooldowns.remove(key);
 
         for (int i = 0; i < collidableEntities.size(); i++) {
-            for (int j = i + 1; j < collidableEntities.size(); j++) {
+            for (int j = 0; j < collidableEntities.size(); j++) {
+            	if (collidableEntities.get(i).getId() == collidableEntities.get(j).getId())
+            	{
+            		continue;
+            	}
                 CollidableEntity e1 = collidableEntities.get(i);
                 CollidableEntity e2 = collidableEntities.get(j);
+                // When hitbox overlaps
                 if (checkCollision(e1, e2)) {
                     String key = e1.getId() + "<->" + e2.getId();
                     if (!collisionCooldowns.containsKey(key)) {
@@ -48,43 +53,26 @@ public class CollisionManager implements iCollision {
                         e2.onCollisionEnter(e1);
                         collisionCooldowns.put(key, COOLDOWN);
                     }
-
-                    // Push entities apart so they don't overlap
-                    float pushStrength = 3.0f;
-                    float dx = e1.getPosition().x - e2.getPosition().x;
-                    float dy = e1.getPosition().y - e2.getPosition().y;
-                    float dist = (float) Math.sqrt(dx * dx + dy * dy);
-                    if (dist > 0) {
-                        float nx = dx / dist;
-                        float ny = dy / dist;
-                        e1.getPosition().x += nx * pushStrength;
-                        e1.getPosition().y += ny * pushStrength;
-                        e2.getPosition().x -= nx * pushStrength;
-                        e2.getPosition().y -= ny * pushStrength;
-                    }
-                    /*
-                     * float w = com.badlogic.gdx.Gdx.graphics.getWidth();
-                     * float h = com.badlogic.gdx.Gdx.graphics.getHeight();
-                     * e1.getPosition().x = Math.max(0, Math.min(w, e1.getPosition().x));
-                     * e1.getPosition().y = Math.max(0, Math.min(h, e1.getPosition().y));
-                     * e2.getPosition().x = Math.max(0, Math.min(w, e2.getPosition().x));
-                     * e2.getPosition().y = Math.max(0, Math.min(h, e2.getPosition().y));
-                     */
-
-                }
+            	}
+                /*
+                 * float w = com.badlogic.gdx.Gdx.graphics.getWidth();
+                 * float h = com.badlogic.gdx.Gdx.graphics.getHeight();
+                 * e1.getPosition().x = Math.max(0, Math.min(w, e1.getPosition().x));
+                 * e1.getPosition().y = Math.max(0, Math.min(h, e1.getPosition().y));
+                 * e2.getPosition().x = Math.max(0, Math.min(w, e2.getPosition().x));
+                 * e2.getPosition().y = Math.max(0, Math.min(h, e2.getPosition().y));
+                 */
             }
         }
     }
-
+    
     public void addCollidable(CollidableEntity e) {
         // delegates to detector internally
         if (detector != null)
             detector.addCollidable(e);
     }
 
-    public boolean checkCollision(CollidableEntity e1, CollidableEntity e2) { // since we are using a collidable entity
-                                                                              // list we use collidable rather than
-                                                                              // boolean mb on this part
+    public boolean checkCollision(CollidableEntity e1, CollidableEntity e2) {
         return e1.getHitbox().overlaps(e2.getHitbox());
     }
 
