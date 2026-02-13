@@ -3,7 +3,6 @@ package com.p10.core.entities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class TriangleEntity extends Shape {
@@ -15,22 +14,30 @@ public class TriangleEntity extends Shape {
         this.vertices = vertices;
     }
 
-    @Override public boolean checkCollision(CollidableEntity other) { // Use getHitbox() because hitbox is private in parent
-        return getHitbox().overlaps(other.getHitbox()); }
-    @Override public void onCollisionEnter(CollidableEntity other) {}
+    @Override
+    public boolean checkCollision(CollidableEntity other) { // Use getHitbox() because hitbox is private in parent
+        return getHitbox().overlaps(other.getHitbox());
+    }
+
+    @Override
+    public void onCollisionEnter(CollidableEntity other) {
+    }
 
     // Required by Entity abstract methods
-    @Override public void update(float dt) {
+    @Override
+    public void update(float dt) {
         getHitbox().setCenter(position.x, position.y);
     }
 
     @Override
     public void renderShapes(ShapeRenderer renderer) {
-    	renderer.setColor(color);
+        renderer.setColor(color);
+        // Draw relative to position
+        float size = 25;
         renderer.triangle(
-            vertices[0].x, vertices[0].y,
-            vertices[1].x, vertices[1].y,
-            vertices[2].x, vertices[2].y
+                position.x, position.y + size, // top
+                position.x - size, position.y - size, // bottom-left
+                position.x + size, position.y - size // bottom-right
         );
     }
 

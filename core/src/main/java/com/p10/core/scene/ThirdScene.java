@@ -1,6 +1,7 @@
 package com.p10.core.scene;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.interfaces.iCollision;
 import com.p10.core.interfaces.iEntityOps;
@@ -15,8 +16,7 @@ public class ThirdScene extends Scene {
             iEntityOps entityOps,
             iSceneControl sceneCtrl,
             iInput input,
-            iMovement movement
-    ) {
+            iMovement movement) {
         super("ThirdScene", collision, entityOps, sceneCtrl, input, movement);
     }
 
@@ -46,6 +46,11 @@ public class ThirdScene extends Scene {
     @Override
     public void renderShapes(ShapeRenderer renderer) {
         // End panel
-        renderer.rect(120, 120, 560, 240);
+        // renderer.rect(120, 120, 560, 240);
+    }
+
+    @Override
+    public void renderTextures(SpriteBatch batch) { // render the extures these will be used for later
+        // no textures for this scene
     }
 }

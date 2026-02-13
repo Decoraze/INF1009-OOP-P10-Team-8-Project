@@ -1,8 +1,7 @@
 package com.p10.core.interfaces;
 
-import com.badlogic.gdx.math.Vector2;
+import com.p10.core.entities.Entity;
 
-import com.p10.core.entities.*;
 /**
  * iMovement Interface
  * 
@@ -28,7 +27,8 @@ public interface iMovement {
      * @param entity    The entity to apply physics to
      * @param deltaTime Time since last frame
      */
-    void applyPhysics(Entity entity, float deltaTime); 
+    void applyPhysics(Entity entity, float deltaTime);
 
+    void applyPlayerMovement(Entity entity, float dt, iInput input);
 
 }

@@ -3,10 +3,10 @@ package com.p10.core.entities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle; // The LibGDX math tool
 
-public class RectangleEntity extends Shape { //i have to name the file as rectangleEntity because of having to use the li[gdx Rectangle math tool
-    private float width;  //
+public class RectangleEntity extends Shape { // i have to name the file as rectangleEntity because of having to use the
+                                             // li[gdx Rectangle math tool
+    private float width; //
     private float height; //
 
     public RectangleEntity(String id, float x, float y, float width, float height, Color color) {
@@ -16,7 +16,6 @@ public class RectangleEntity extends Shape { //i have to name the file as rectan
         this.height = height;
     }
 
-
     @Override
     public void update(float dt) {
         // Use getHitbox() because 'hitbox' is private in the parent class
@@ -25,15 +24,19 @@ public class RectangleEntity extends Shape { //i have to name the file as rectan
 
     // Required by CollidableEntity abstract methods
 
-    @Override public boolean checkCollision(CollidableEntity other) { return getHitbox().overlaps(other.getHitbox());
+    @Override
+    public boolean checkCollision(CollidableEntity other) {
+        return getHitbox().overlaps(other.getHitbox());
     }
-    @Override public void onCollisionEnter(CollidableEntity other) {}
 
+    @Override
+    public void onCollisionEnter(CollidableEntity other) {
+    }
 
     // Required by Entity abstract methods
     @Override
     public void renderShapes(ShapeRenderer renderer) {
-    	renderer.setColor(color);
+        renderer.setColor(color);
         // Uses the unique width and height fields from UML
         renderer.rect(position.x, position.y, width, height);
     }
@@ -41,6 +44,5 @@ public class RectangleEntity extends Shape { //i have to name the file as rectan
     @Override
     public void renderTextures(SpriteBatch batch) {
     }
-
 
 }

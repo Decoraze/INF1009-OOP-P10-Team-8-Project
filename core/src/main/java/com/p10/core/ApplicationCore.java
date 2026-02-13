@@ -18,7 +18,6 @@ import com.p10.core.managers.InputOutputManager;
 import com.p10.core.managers.MovementManager;
 import com.p10.core.managers.SceneManager;
 
-
 /*
  * ApplicationCore - Main Function ish
  * 1) Initialise 5 Managers
@@ -111,6 +110,9 @@ public class ApplicationCore extends ApplicationAdapter {
         if (entityManager != null) {
             entityManager.onResize(width, height);
         }
+        if (movementManager != null) {
+            movementManager.onResize(width, height);
+        }
     }
 
     // teh graceful closer
@@ -188,8 +190,7 @@ public class ApplicationCore extends ApplicationAdapter {
         System.out.println("[ApplicationCore] ✓ InputOutputManager initialized");
     }
 
-
-     // Set up the initial scene
+    // Set up the initial scene
     private void initializeScene() {
         System.out.println("[ApplicationCore] Setting up initial scene...");
 
@@ -259,17 +260,21 @@ public class ApplicationCore extends ApplicationAdapter {
     // update managers. ORDER MATTERS AH DON'T ANYHOW CHANGE PLEASE (if want to
     // change call/text 98554963 Aurelius)
     private void updateManagers(float deltaTime) {
-        // 1. Update current scene (may add/remove entities)
+        // 1. Scene update (handles movement via interfaces)
         sceneManager.update(deltaTime);
 
-        // 2. Update entity positions (movement)
-        movementManager.updateMovement(entityManager.getAllEntities(), deltaTime);
-
-        // 3. Check for collisions (after movement)
-        collisionManager.checkCollisions(entityManager.getCollidableEntities());
-
-        // 4. Update all entities (custom logic like animations and sounds)
+        // 2. Update all entity hitboxes
         entityManager.updateAll(deltaTime);
+
+        // 3. Check collisions (after hitboxes are updated)
+        collisionManager.checkCollisions(entityManager.getCollidableEntities());
+        // Final clamp — nothing escapes screen
+        float w = camera.viewportWidth;
+        float h = camera.viewportHeight;
+        for (com.p10.core.entities.Entity e : entityManager.getAllEntities()) {
+            e.getPosition().x = Math.max(0, Math.min(w, e.getPosition().x));
+            e.getPosition().y = Math.max(0, Math.min(h, e.getPosition().y));
+        }
     }
 
     // game rendering
@@ -297,12 +302,12 @@ public class ApplicationCore extends ApplicationAdapter {
 
         // Mouse Test (Mouse Input) - Chay Han
         com.badlogic.gdx.math.Vector2 mPos = inputOutputManager.getMousePosition();
-        debugFont.draw(batch, "Mouse: " + mPos.x + ", " + mPos.y, 10, WINDOW_HEIGHT - 60);
+        debugFont.draw(batch, "Mouse: " + mPos.x + ", " + mPos.y, 10, WINDOW_HEIGHT - 85);
 
         // Keyboard Test (Keyboard Input) - Chay Han
         String keyStatus = inputOutputManager.isKeyPressed(com.badlogic.gdx.Input.Keys.ANY_KEY) ? "Key Pressed"
                 : "No Key";
-        debugFont.draw(batch, "Keyboard: " + keyStatus, 10, WINDOW_HEIGHT - 85);
+        debugFont.draw(batch, "Keyboard: " + keyStatus, 10, WINDOW_HEIGHT - 110);
 
         batch.end();
     }
