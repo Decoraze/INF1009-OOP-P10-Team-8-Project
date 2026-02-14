@@ -23,20 +23,21 @@ public class CollisionDetection {
 			}
 		}
 	}
-
+	
+	// should be here instead of manager (?)
+    public boolean checkCollision(CollidableEntity e1, CollidableEntity e2) {
+        return e1.getHitbox().overlaps(e2.getHitbox());
+    }
+    
 	public List<CollidableEntity> detectCollisions() {
 		List<CollidableEntity> collided = new ArrayList<>();
 		for (int i = 0; i < collidables.size(); i++) {
-			for (int j = 0; j < collidables.size(); j++) {// should start from j = i + 1 to avoid checking the same pair
+			for (int j = i + 1; j < collidables.size(); j++) {// should start from j = i + 1 to avoid checking the same pair
 															// in index 0. but works
-				// if same entity just skip
-				if (collidables.get(j).getId().equals(collidables.get(i).getId())) {
-					continue;
-				}
-				// if collided send pair to collision response (?)
-				if (collidables.get(i).getHitbox().overlaps(collidables.get(j).getHitbox())) {
+				if (checkCollision(collidables.get(i), collidables.get(j))) {
 					collided.add(collidables.get(i));
 					collided.add(collidables.get(j));
+					break;
 				}
 			}
 		}
