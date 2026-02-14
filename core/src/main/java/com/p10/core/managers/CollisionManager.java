@@ -93,17 +93,8 @@ public class CollisionManager implements iCollision {
         }
     }
 
-    public void addCollidable(CollidableEntity e) {
-        // delegates to detector internally
-
-    }
-
     public boolean checkCollision(CollidableEntity e1, CollidableEntity e2) {
         return e1.getHitbox().overlaps(e2.getHitbox());
-    }
-
-    public List<CollidableEntity> getCollidables() {
-        return new ArrayList<CollidableEntity>(); // Get CollidableEntity list from iCollision interface
     }
 
     public void dispose() {

@@ -1,6 +1,5 @@
 package com.p10.core.interfaces;
 
-import java.util.List;
 import com.p10.core.entities.CollidableEntity;
 
 /**
@@ -20,19 +19,6 @@ public interface iCollision {
      * @param e2 Second entity
      * @return true if colliding, false otherwise
      */
-    boolean checkCollision(CollidableEntity e1, CollidableEntity e2); 
-    
-    /**
-     * Get all collidable entities
-     * 
-     * @return List of all collidable entities
-     */
-    List<CollidableEntity> getCollidables();
+    boolean checkCollision(CollidableEntity e1, CollidableEntity e2);
 
-    /**
-     * Add a collidable entity to be tracked
-     * 
-     * @param entity The collidable entity to add
-     */
-    void addCollidable(CollidableEntity e);
 }

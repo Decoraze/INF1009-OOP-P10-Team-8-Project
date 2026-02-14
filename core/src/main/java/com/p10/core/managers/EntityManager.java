@@ -7,8 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.entities.CollidableEntity;
 import com.p10.core.entities.Entity;
-import com.p10.core.entities.Shape;
-import com.p10.core.entities.TextureObject;
 import com.p10.core.interfaces.iEntityOps;
 
 /**
@@ -79,19 +77,14 @@ public class EntityManager implements iEntityOps { // implements entityInterface
         // Loop through entity list
         for (Entity obj : entities) {
             // If it's an object of either circle or triangle then draw
-            if (obj instanceof Shape) {
-
-                obj.renderShapes(renderer); // Call method to render
-            }
+            obj.renderShapes(renderer);
         }
     }
 
     public void renderTextures(SpriteBatch batch) {
         // Loop through entity list
         for (Entity obj : entities) {
-            if (obj instanceof TextureObject) {
-                obj.renderTextures(batch); // Call method to render
-            }
+            obj.renderTextures(batch);
         }
     }
 

@@ -34,11 +34,9 @@ public class AIMovement {
 	 * the same direction as the collision normal which is always away
 	 */
 	public void reflect(float nx, float ny) {
-		if (Math.abs(nx) > Math.abs(ny)) {
-			dirX = (nx > 0) ? Math.abs(dirX) : -Math.abs(dirX);
-		} else {
-			dirY = (ny > 0) ? Math.abs(dirY) : -Math.abs(dirY);
-		}
+		// Reflect both axes based on the collision normal
+		dirX = (nx > 0) ? Math.abs(dirX) : (nx < 0) ? -Math.abs(dirX) : dirX;
+		dirY = (ny > 0) ? Math.abs(dirY) : (ny < 0) ? -Math.abs(dirY) : dirY;
 		speed = baseSpeed * 3;
 		boostTimer = 0.3f;
 	}

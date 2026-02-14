@@ -1,7 +1,6 @@
 package com.p10.core.managers;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.p10.core.entities.Entity;
@@ -52,12 +51,6 @@ public class MovementManager implements iMovement {// added iMovement implementa
     public void dispose() {
         aiMovements.clear();
         System.out.println("[MovementManager] Disposed");
-    }
-
-    public void updateMovement(List<Entity> entities, float dt) {
-        for (Entity e : entities) {
-            applyMovement(e, dt);
-        }
     }
 
     // looks up the AIMovement by entity ID in the HashMap, calls reflect. If entity
