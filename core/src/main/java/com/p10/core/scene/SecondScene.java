@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.entities.CircleEntity;
 import com.p10.core.entities.Entity;
 import com.p10.core.entities.RectangleEntity;
+import com.p10.core.interfaces.iAudio;
 import com.p10.core.interfaces.iCollision;
 import com.p10.core.interfaces.iEntityOps;
 import com.p10.core.interfaces.iInput;
@@ -20,16 +21,20 @@ public class SecondScene extends Scene {
             iEntityOps entityOps,
             iSceneControl sceneCtrl,
             iInput input,
+            iAudio audio,
             iMovement movement) {
-        super("SecondScene", collision, entityOps, sceneCtrl, input, movement);
+        super("SecondScene", collision, entityOps, sceneCtrl, input, movement, audio);
     }
 
     @Override
     protected void onLoad() {
         System.out.println("[SecondScene] Loading entities...");
         // Player
-        entityOps.addEntity(new CircleEntity("player2", 400, 240, 30, Color.YELLOW));
-        System.out.println("[SecondScene] Spawned player2 (CircleEntity)");
+        CircleEntity player = new CircleEntity("player2", 200, 240, 25, Color.YELLOW);
+        player.setKinematic(true);// playuer is set to kinematic here (check entity and collision for usage) so
+                                  // thatr the collision push-apart doesn't affect the player movement.
+        entityOps.addEntity(player);
+        System.out.println("[SecondScene] Spawned player (CircleEntity)");
         // AI entities
         entityOps.addEntity(new RectangleEntity("ai-box1", 150, 300, 40, 40, Color.CYAN));
         System.out.println("[SecondScene] Spawned ai-box1 (RectangleEntity)");

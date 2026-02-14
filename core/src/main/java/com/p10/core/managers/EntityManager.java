@@ -108,4 +108,20 @@ public class EntityManager implements iEntityOps { // implements entityInterface
         System.out.println("[EntityManager] Handling resize: " + width + "x" + height);
         // add entity border update if needed...
     }
+
+    // debugging purposes for hitboxes.
+    public void renderHitboxes(ShapeRenderer renderer) {
+        for (Entity obj : entities) {
+            if (obj instanceof CollidableEntity) {
+                CollidableEntity ce = (CollidableEntity) obj;
+                com.badlogic.gdx.math.Rectangle hb = ce.getHitbox();
+                renderer.setColor(com.badlogic.gdx.graphics.Color.YELLOW);
+                renderer.rect(hb.x, hb.y, hb.width, hb.height);
+                // System.out.println(
+                // "[HITBOX] " + ce.getId() + " at " + hb.x + "," + hb.y + " size " + hb.width +
+                // "x" + hb.height);
+
+            }
+        }
+    }
 }

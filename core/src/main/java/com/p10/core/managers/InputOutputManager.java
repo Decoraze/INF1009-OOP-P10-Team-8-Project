@@ -1,12 +1,13 @@
 package com.p10.core.managers;
 
 import com.badlogic.gdx.math.Vector2;
+import com.p10.core.interfaces.iAudio;
 import com.p10.core.interfaces.iInput;
 import com.p10.core.managers.IO.AudioOutput;
 import com.p10.core.managers.IO.KeyboardInput;
 import com.p10.core.managers.IO.MouseInput;
 
-public class InputOutputManager implements iInput {
+public class InputOutputManager implements iInput, iAudio {// now got iAudio so just needed to change this to implement
 
     private final KeyboardInput keyboardInput;
     private final MouseInput mouseInput;

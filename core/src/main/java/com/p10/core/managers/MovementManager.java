@@ -59,4 +59,13 @@ public class MovementManager implements iMovement {// added iMovement implementa
             applyMovement(e, dt);
         }
     }
+
+    // looks up the AIMovement by entity ID in the HashMap, calls reflect. If entity
+    // isn't AI (like player), ai is null and nothing happens.
+    public void reverseDirection(String entityId, float nx, float ny) {
+        AIMovement ai = aiMovements.get(entityId);
+        if (ai != null) {
+            ai.reflect(nx, ny);
+        }
+    }
 }

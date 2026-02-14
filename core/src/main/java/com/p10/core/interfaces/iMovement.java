@@ -31,4 +31,8 @@ public interface iMovement {
 
     void applyPlayerMovement(Entity entity, float dt, iInput input);
 
+    // allows CollisionManager to tell MovementManager to bounce an entity's
+    // direction on collision.
+    void reverseDirection(String entityId, float nx, float ny);// billard balls lookign interaction when colliding.
+
 }

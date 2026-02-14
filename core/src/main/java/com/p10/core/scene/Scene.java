@@ -6,6 +6,7 @@ import java.util.List;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.entities.Entity;
+import com.p10.core.interfaces.iAudio;
 import com.p10.core.interfaces.iCollision;
 import com.p10.core.interfaces.iEntityOps;
 import com.p10.core.interfaces.iInput;
@@ -22,6 +23,7 @@ public abstract class Scene {
     protected final iSceneControl sceneCtrl;
     protected final iInput input;
     protected final iMovement movement;
+    protected final iAudio audio;
 
     private boolean loaded = false;
 
@@ -31,12 +33,14 @@ public abstract class Scene {
             iEntityOps entityOps,
             iSceneControl sceneCtrl,
             iInput input,
-            iMovement movement) {
+            iMovement movement,
+            iAudio audio) {
         this.name = name;
         this.collision = collision;
         this.entityOps = entityOps;
         this.sceneCtrl = sceneCtrl;
         this.input = input;
+        this.audio = audio;
         this.movement = movement;
     }
 
