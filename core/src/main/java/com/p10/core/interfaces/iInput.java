@@ -48,17 +48,18 @@ public interface iInput {
      * 
      * @param soundName The name/identifier of the sound to play
      */
-    void playSound(String soundName);
+
+    // void playSound(String soundName);
 
     /**
      * Play background music
      * 
      * @param musicName The name/identifier of the music to play
      */
-    void playMusic(String musicName);
+    // void playMusic(String musicName);
 
     /**
      * Stop all currently playing music
      */
-    void stopMusic();
+    // void stopMusic();
 }

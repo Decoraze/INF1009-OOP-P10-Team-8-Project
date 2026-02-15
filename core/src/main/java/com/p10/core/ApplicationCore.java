@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.p10.core.interfaces.iAudio;
 import com.p10.core.interfaces.iCollision;
 import com.p10.core.interfaces.iEntityOps;
 import com.p10.core.interfaces.iInput;
@@ -101,6 +102,7 @@ public class ApplicationCore extends ApplicationAdapter {
         System.out.println("[ApplicationCore] Window resized: " + width + "x" + height);
         camera.viewportWidth = width;
         camera.viewportHeight = height;
+        camera.position.set(width / 2f, height / 2f, 0);
         camera.update();
         // Notify managers of resize (so they can update their entities/scenes)
         if (sceneManager != null) {
@@ -178,8 +180,8 @@ public class ApplicationCore extends ApplicationAdapter {
 
         // Create all managers
         entityManager = new EntityManager();
-        collisionManager = new CollisionManager();
         movementManager = new MovementManager();
+        collisionManager = new CollisionManager(getMovement());
         sceneManager = new SceneManager();
         inputOutputManager = new InputOutputManager();
 
@@ -200,6 +202,7 @@ public class ApplicationCore extends ApplicationAdapter {
                 getEntityOps(),
                 getSceneControl(),
                 getInput(),
+                getAudio(),
                 getMovement());
 
         com.p10.core.scene.Scene second = new com.p10.core.scene.SecondScene(
@@ -207,6 +210,7 @@ public class ApplicationCore extends ApplicationAdapter {
                 getEntityOps(),
                 getSceneControl(),
                 getInput(),
+                getAudio(),
                 getMovement());
 
         com.p10.core.scene.Scene third = new com.p10.core.scene.ThirdScene(
@@ -214,47 +218,28 @@ public class ApplicationCore extends ApplicationAdapter {
                 getEntityOps(),
                 getSceneControl(),
                 getInput(),
+                getAudio(),
                 getMovement());
+        com.p10.core.scene.Scene help = new com.p10.core.scene.HelpScene(
+                getCollision(), getEntityOps(), getSceneControl(),
+                getInput(), getAudio(), getMovement());
 
         // Register scenes
         sceneManager.registerScene("FirstScene", first);
         sceneManager.registerScene("SecondScene", second);
         sceneManager.registerScene("ThirdScene", third);
+        sceneManager.registerScene("HelpScene", help);
 
-        // Start at FirstScene
-        sceneManager.switchScene("FirstScene");
+        // Start at HelpScene
+        sceneManager.switchScene("HelpScene");
 
         System.out.println("[ApplicationCore] Scene setup complete.");
     }
 
-    // input handler that's it...
+    // calls inputoutput manager to handle the inputs/outputs....idk what else to
+    // say here lol
     private void handleInput() {
-        // Input is handled by InputOutputManager
         inputOutputManager.handleInput();
-        // KEYBOARD TEST
-        if (inputOutputManager.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ANY_KEY)) {
-            System.out.println("[TEST] A key was detected!");
-        }
-
-        // Space Bar Jump Sound
-        if (inputOutputManager.isKeyJustPressed(com.badlogic.gdx.Input.Keys.SPACE)) {
-            // This tells the manager to look for "jump" in the soundMap and play it
-            inputOutputManager.playSound("jump");
-        }
-
-        // 3. Add your Mouse test
-        if (inputOutputManager.isMouseButtonPressed(com.badlogic.gdx.Input.Buttons.LEFT)) {
-            System.out.println("[TEST] Mouse Clicked at: " + inputOutputManager.getMousePosition());
-        }
-
-        // Main Game Music
-        if (inputOutputManager.isKeyJustPressed(com.badlogic.gdx.Input.Keys.M)) {
-            inputOutputManager.playMusic("bgm");
-        }
-        if (inputOutputManager.isKeyJustPressed(com.badlogic.gdx.Input.Keys.N)) {
-            inputOutputManager.stopMusic(); //
-            System.out.println("[AUDIO] Music Stopped");
-        }
     }
 
     // update managers. ORDER MATTERS AH DON'T ANYHOW CHANGE PLEASE (if want to
@@ -283,6 +268,12 @@ public class ApplicationCore extends ApplicationAdapter {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         sceneManager.renderShapes(shapeRenderer);
         entityManager.renderShapes(shapeRenderer);
+        shapeRenderer.end();
+
+        // hitboxes (comment out when not needed)
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        entityManager.renderHitboxes(shapeRenderer);
         shapeRenderer.end();
 
         // Render textures
@@ -350,5 +341,9 @@ public class ApplicationCore extends ApplicationAdapter {
      */
     public iInput getInput() {
         return (iInput) inputOutputManager;
+    }
+
+    public iAudio getAudio() {
+        return (iAudio) inputOutputManager;
     }
 }

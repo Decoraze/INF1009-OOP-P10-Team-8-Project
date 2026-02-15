@@ -1,7 +1,6 @@
 package com.p10.core.managers;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.p10.core.entities.Entity;
@@ -54,9 +53,12 @@ public class MovementManager implements iMovement {// added iMovement implementa
         System.out.println("[MovementManager] Disposed");
     }
 
-    public void updateMovement(List<Entity> entities, float dt) {
-        for (Entity e : entities) {
-            applyMovement(e, dt);
+    // looks up the AIMovement by entity ID in the HashMap, calls reflect. If entity
+    // isn't AI (like player), ai is null and nothing happens.
+    public void reverseDirection(String entityId, float nx, float ny) {
+        AIMovement ai = aiMovements.get(entityId);
+        if (ai != null) {
+            ai.reflect(nx, ny);
         }
     }
 }

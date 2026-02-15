@@ -1,11 +1,8 @@
 package com.p10.core.scene;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.p10.core.entities.Entity;
+import com.p10.core.interfaces.iAudio;
 import com.p10.core.interfaces.iCollision;
 import com.p10.core.interfaces.iEntityOps;
 import com.p10.core.interfaces.iInput;
@@ -13,7 +10,7 @@ import com.p10.core.interfaces.iMovement;
 import com.p10.core.interfaces.iSceneControl;
 
 public abstract class Scene {
-    protected List<Entity> entities = new ArrayList<>();
+    // protected List<Entity> entities = new ArrayList<>();
     protected final String name;
 
     // Interfaces
@@ -22,6 +19,7 @@ public abstract class Scene {
     protected final iSceneControl sceneCtrl;
     protected final iInput input;
     protected final iMovement movement;
+    protected final iAudio audio;
 
     private boolean loaded = false;
 
@@ -31,12 +29,14 @@ public abstract class Scene {
             iEntityOps entityOps,
             iSceneControl sceneCtrl,
             iInput input,
-            iMovement movement) {
+            iMovement movement,
+            iAudio audio) {
         this.name = name;
         this.collision = collision;
         this.entityOps = entityOps;
         this.sceneCtrl = sceneCtrl;
         this.input = input;
+        this.audio = audio;
         this.movement = movement;
     }
 
@@ -83,23 +83,24 @@ public abstract class Scene {
     public void dispose() {
         // default no-op
     }
-
-    // methods for UML compliance
-    public void addEntity(Entity e) {// add entity to the scene
-        entities.add(e);
-    }
-
-    public void removeEntity(String id) { // remove any entities (same logic as entitymanage)
-        for (Entity obj : entities) {
-            if (obj.getId().equals(id)) {
-                entities.remove(obj);
-                break;
-            }
-        }
-    }
-
-    public List<Entity> getEntities() { // getting entity list that needs
-        return new ArrayList<>(entities);
-    }
-
+    /*
+     * // methods for UML compliance
+     * public void addEntity(Entity e) {// add entity to the scene
+     * entities.add(e);
+     * }
+     * 
+     * public void removeEntity(String id) { // remove any entities (same logic as
+     * entitymanage)
+     * for (Entity obj : entities) {
+     * if (obj.getId().equals(id)) {
+     * entities.remove(obj);
+     * break;
+     * }
+     * }
+     * }
+     * 
+     * public List<Entity> getEntities() { // getting entity list that needs
+     * return new ArrayList<>(entities);
+     * }
+     */
 }

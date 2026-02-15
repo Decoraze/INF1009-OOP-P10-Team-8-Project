@@ -11,6 +11,21 @@ public abstract class Entity {
     protected Vector2 scale;
     private boolean active;
     private boolean visible;
+    private boolean kinematic = false;
+
+    // kinematics were added here to tell collision system which entity should and
+    // should not be physically pushed
+
+    public boolean isKinematic() {
+        return kinematic;
+        // if true here, collisions are detected but entity doesn't get moved. (this is
+        // useful in certain games like pong etc and is general/abnstract enough where
+        // alot of games can utilise it and can be left alone if not used)
+    }
+
+    public void setKinematic(boolean k) {
+        this.kinematic = k;
+    }
 
     public Entity(String id, float x, float y) {
         this.id = id;
@@ -23,33 +38,55 @@ public abstract class Entity {
 
     // Abstract methods: Children MUST implement these
     public abstract void update(float deltaTime);
-    
+
     // Generic render, specific renderers used in subclasses
-    public abstract void renderShapes(ShapeRenderer renderer); 
-    public abstract void renderTextures(SpriteBatch batch); 
+    public abstract void renderShapes(ShapeRenderer renderer);
+
+    public abstract void renderTextures(SpriteBatch batch);
 
     // Getters and Setters
     public String getId() {
-        return id; }
+        return id;
+    }
+
     public Vector2 getPosition() {
-        return position; }
+        return position;
+    }
+
     public void setPosition(Vector2 pos) {
-        this.position.set(pos); }
+        this.position.set(pos);
+    }
+
     public float getRotation() {
-        return rotation; }
+        return rotation;
+    }
+
     public void setRotation(float rotation) {
-        this.rotation = rotation; }
+        this.rotation = rotation;
+    }
+
     public Vector2 getScale() {
-        return scale; }
+        return scale;
+    }
+
     public void setScale(float x, float y) {
-        this.scale.set(x, y); }
+        this.scale.set(x, y);
+    }
+
     public boolean isActive() {
-        return active; }
+        return active;
+    }
+
     public void setActive(boolean active) {
-        this.active = active; }
+        this.active = active;
+    }
+
     public boolean isVisible() {
-        return visible; }
+        return visible;
+    }
+
     public void setVisible(boolean visible) {
-        this.visible = visible; }
+        this.visible = visible;
+    }
 
 }

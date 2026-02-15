@@ -1,6 +1,5 @@
 package com.p10.core.scene;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -9,6 +8,7 @@ import com.p10.core.entities.CircleEntity;
 import com.p10.core.entities.Entity;
 import com.p10.core.entities.RectangleEntity;
 import com.p10.core.entities.TriangleEntity;
+import com.p10.core.interfaces.iAudio;
 import com.p10.core.interfaces.iCollision;
 import com.p10.core.interfaces.iEntityOps;
 import com.p10.core.interfaces.iInput;
@@ -22,15 +22,19 @@ public class FirstScene extends Scene {
             iEntityOps entityOps,
             iSceneControl sceneCtrl,
             iInput input,
+            iAudio audio,
             iMovement movement) {
-        super("FirstScene", collision, entityOps, sceneCtrl, input, movement);
+        super("FirstScene", collision, entityOps, sceneCtrl, input, movement, audio);
     }
 
     @Override
     protected void onLoad() {
         System.out.println("[FirstScene] Loading entities...");
         // Player
-        entityOps.addEntity(new CircleEntity("player", 200, 240, 25, Color.RED));
+        CircleEntity player = new CircleEntity("player", 200, 240, 25, Color.RED);
+        player.setKinematic(true);// playuer is set to kinematic here (check entity and collision for usage) so
+                                  // thatr the collision push-apart doesn't affect the player movement.
+        entityOps.addEntity(player);
         System.out.println("[FirstScene] Spawned player (CircleEntity)");
         // AI entities
         entityOps.addEntity(new RectangleEntity("ai-rect", 500, 180, 50, 50, Color.GREEN));
@@ -70,14 +74,23 @@ public class FirstScene extends Scene {
         if (aiCircle != null)
             movement.applyMovement(aiCircle, dt);
 
+        // Audio controls (scene-specific) are moved here because its...scene specific
+        // not supposed to be engine core ...probs.
+        if (input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.SPACE))
+            audio.playSound("jump");
+        if (input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.M))
+            audio.playMusic("bgm");
+        if (input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.N))
+            audio.stopMusic();
+
         // Scene switching
-        if (input.isKeyJustPressed(Input.Keys.ENTER)) {
-            input.playSound("jump");
+        if (input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) {
+            audio.playSound("jump");
             sceneCtrl.switchScene("SecondScene");
         }
-        if (input.isKeyJustPressed(Input.Keys.NUM_3)) {
+        if (input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.NUM_3))
             sceneCtrl.switchScene("ThirdScene");
-        }
+
     }
 
     @Override
