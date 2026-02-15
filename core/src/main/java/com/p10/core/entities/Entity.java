@@ -12,7 +12,12 @@ public abstract class Entity {
     private boolean active;
     private boolean visible;
     private boolean kinematic = false;
-
+    // mass — determines how much an entity gets pushed in collisions
+    // default 1.0f so existing behaviour is preserved if not set
+    protected float mass = 1.0f;
+    // velocity — the entity's current speed and direction
+    // movement systems SET velocity, collision system READS it
+    protected Vector2 velocity;
     // kinematics were added here to tell collision system which entity should and
     // should not be physically pushed
 
@@ -27,6 +32,23 @@ public abstract class Entity {
         this.kinematic = k;
     }
 
+    // velocity getters and setters
+    public float getMass() {
+        return mass;
+    }
+
+    public void setMass(float mass) {
+        this.mass = mass;
+    }
+
+    public Vector2 getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(float vx, float vy) {
+        this.velocity.set(vx, vy);
+    }
+
     public Entity(String id, float x, float y) {
         this.id = id;
         this.position = new Vector2(x, y);
@@ -34,6 +56,7 @@ public abstract class Entity {
         this.rotation = 0f;
         this.active = true;
         this.visible = true;
+        this.velocity = new Vector2(0, 0);
     }
 
     // Abstract methods: Children MUST implement these
