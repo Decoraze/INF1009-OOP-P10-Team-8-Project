@@ -15,7 +15,7 @@ public class CollisionDetection {
 																							// math SRP
 		List<CollidableEntity[]> pairs = new ArrayList<>();
 		for (int i = 0; i < collidables.size(); i++) {
-			for (int j = i; j < collidables.size(); j++) {
+			for (int j = i + 1; j < collidables.size(); j++) {
 				if (collidables.get(i).getHitbox().overlaps(collidables.get(j).getHitbox())) {
 					pairs.add(new CollidableEntity[] { collidables.get(i), collidables.get(j) });
 				}
