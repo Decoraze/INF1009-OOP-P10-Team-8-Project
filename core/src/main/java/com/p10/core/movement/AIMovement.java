@@ -59,7 +59,8 @@ public class AIMovement {
 		 * System.out.println("[AIMovement] " + entity.getId() + " changed direction");
 		 * }
 		 */
-
+		// Set velocity for collision system
+		entity.setVelocity(dirX * speed, dirY * speed);
 		// Bounce off screen edges
 		entity.getPosition().x += dirX * speed * dt;
 		entity.getPosition().y += dirY * speed * dt;
