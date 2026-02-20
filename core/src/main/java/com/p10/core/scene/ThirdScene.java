@@ -55,7 +55,7 @@ public class ThirdScene extends Scene {
     }
 
     @Override
-    public void renderTextures(SpriteBatch batch) { // render the extures these will be used for later
+    public void renderTextures(SpriteBatch batch) { // render the textures these will be used for later
         if (font == null)
             return;
         float x = 150;

@@ -31,8 +31,8 @@ public class SecondScene extends Scene {
         System.out.println("[SecondScene] Loading entities...");
         // Player
         CircleEntity player = new CircleEntity("player2", 200, 240, 25, Color.YELLOW);
-        player.setKinematic(true);// playuer is set to kinematic here (check entity and collision for usage) so
-                                  // thatr the collision push-apart doesn't affect the player movement.
+        player.setKinematic(true); // player set to kinematic here (check entity and collision for usage) so
+                                     // that the collision push-apart doesn't affect the player movement.
         entityOps.addEntity(player);
         System.out.println("[SecondScene] Spawned player (CircleEntity)");
         // AI entities
