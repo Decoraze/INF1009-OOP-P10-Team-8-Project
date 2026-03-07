@@ -19,6 +19,10 @@ public class InputOutputManager implements iInput, iAudio {// now got iAudio so 
         this.audioOutput = new AudioOutput();
         System.out.println("[InputOutputManager] Initialized");
     }
+    
+    public void loadAudio() {
+    	audioOutput.audioFiles();
+    }
 
     public void handleInput() {
 

@@ -15,7 +15,12 @@ public class AudioOutput {
     public AudioOutput() {
         soundMap = new HashMap<>();
         musicMap = new HashMap<>();
-        musicMap.put("bgm", Gdx.audio.newMusic(Gdx.files.internal("bgm.ogg")));
+    }
+    
+    // Moved these 2 lines of codes down from constructor to avoid Gdx.files.internal to point to null
+    // with all managers initialized in the ApplicationCore constructor now
+    public void audioFiles() {
+    	musicMap.put("bgm", Gdx.audio.newMusic(Gdx.files.internal("bgm.ogg")));
         // credits http://opengameart.org
         soundMap.put("jump", Gdx.audio.newSound(Gdx.files.internal("jump.wav")));
         // sound for jumping

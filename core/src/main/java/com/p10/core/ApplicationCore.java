@@ -49,18 +49,34 @@ public class ApplicationCore extends ApplicationAdapter {
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 480;
     private static final boolean DEBUG_MODE = true; // Show FPS and debug info
+    
+    public ApplicationCore() { // initialize managers scene and components
+        System.out.println("[ApplicationCore] Initializing managers...");
 
+        // Create and initialize all managers
+        entityManager = new EntityManager();
+        movementManager = new MovementManager();
+        collisionManager = new CollisionManager(getMovement());
+        sceneManager = new SceneManager();
+        inputOutputManager = new InputOutputManager();
+
+        System.out.println("[ApplicationCore] ✓ EntityManager initialized");
+        System.out.println("[ApplicationCore] ✓ CollisionManager initialized");
+        System.out.println("[ApplicationCore] ✓ MovementManager initialized");
+        System.out.println("[ApplicationCore] ✓ SceneManager initialized");
+        System.out.println("[ApplicationCore] ✓ InputOutputManager initialized");
+    }
+    
     @Override
-    public void create() { // initialise managers scene and components
+    public void create() {
         System.out.println("[ApplicationCore] Initializing A-Engine");
-        // Initialize rendering components
+        // Initialize rendering components 
         initializeRendering();
-
-        // Initialize all 5 managers
-        initializeManagers();
 
         // Set up initial scene
         initializeScene();
+        
+        inputOutputManager.loadAudio();
 
         System.out.println("[ApplicationCore] Complete Initial");
         System.out.println("[ApplicationCore] Window: " + WINDOW_WIDTH + "x" + WINDOW_HEIGHT);
@@ -68,7 +84,7 @@ public class ApplicationCore extends ApplicationAdapter {
 
     // Render Game every 60 times / s or 60FPS maybe can do 120...
     @Override
-    public void render() {
+    public void render() { // initialize managers scene and components
         // Get time since last frame
         deltaTime = Gdx.graphics.getDeltaTime();
         fps = Gdx.graphics.getFramesPerSecond();
@@ -175,22 +191,22 @@ public class ApplicationCore extends ApplicationAdapter {
     /*
      * Initialize all 5 required managers
      */
-    private void initializeManagers() {
-        System.out.println("[ApplicationCore] Initializing managers...");
-
-        // Create all managers
-        entityManager = new EntityManager();
-        movementManager = new MovementManager();
-        collisionManager = new CollisionManager(getMovement());
-        sceneManager = new SceneManager();
-        inputOutputManager = new InputOutputManager();
-
-        System.out.println("[ApplicationCore] ✓ EntityManager initialized");
-        System.out.println("[ApplicationCore] ✓ CollisionManager initialized");
-        System.out.println("[ApplicationCore] ✓ MovementManager initialized");
-        System.out.println("[ApplicationCore] ✓ SceneManager initialized");
-        System.out.println("[ApplicationCore] ✓ InputOutputManager initialized");
-    }
+//    private void initializeManagers() {
+//        System.out.println("[ApplicationCore] Initializing managers...");
+//
+//        // Create all managers
+//        entityManager = new EntityManager();
+//        movementManager = new MovementManager();
+//        collisionManager = new CollisionManager(getMovement());
+//        sceneManager = new SceneManager();
+//        inputOutputManager = new InputOutputManager();
+//
+//        System.out.println("[ApplicationCore] ✓ EntityManager initialized");
+//        System.out.println("[ApplicationCore] ✓ CollisionManager initialized");
+//        System.out.println("[ApplicationCore] ✓ MovementManager initialized");
+//        System.out.println("[ApplicationCore] ✓ SceneManager initialized");
+//        System.out.println("[ApplicationCore] ✓ InputOutputManager initialized");
+//    }
 
     // Set up the initial scene
     private void initializeScene() {

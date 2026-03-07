@@ -100,7 +100,6 @@ public class CollisionManager implements iCollision {
         }
     }
 
-    // this should be removed (?) should exist in detection instead (?)
     public boolean checkCollision(CollidableEntity e1, CollidableEntity e2) {
         return e1.getHitbox().overlaps(e2.getHitbox());
     }
