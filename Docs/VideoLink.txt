@@ -1,0 +1,5 @@
+https://youtu.be/iZppYGN_QEo
+
+Do note the parts at 2:41,  8:02 & 9:23 This UML has a slight error due to the recorded version being a slightly outdated UML. Minor Changes where Movement Manager has 2 AIMovement. the one on the left should be PlayerMovement. This has been rectified in the document and the draw.io link. 
+
+draw.io: https://drive.google.com/file/d/1ECkIbVAkv6FniaWen2YgxqTcicc2g7LK/view?usp=sharing

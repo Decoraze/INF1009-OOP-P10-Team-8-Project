@@ -18,6 +18,7 @@ import com.p10.core.managers.EntityManager;
 import com.p10.core.managers.InputOutputManager;
 import com.p10.core.managers.MovementManager;
 import com.p10.core.managers.SceneManager;
+import com.p10.core.scene.Scene;
 
 /*
  * ApplicationCore - Main Function ish
@@ -213,42 +214,57 @@ public class ApplicationCore extends ApplicationAdapter {
         System.out.println("[ApplicationCore] Setting up initial scene...");
 
         // Build scenes with ONLY interfaces
-        com.p10.core.scene.Scene first = new com.p10.core.scene.FirstScene(
-                getCollision(),
-                getEntityOps(),
-                getSceneControl(),
-                getInput(),
-                getAudio(),
-                getMovement());
-
-        com.p10.core.scene.Scene second = new com.p10.core.scene.SecondScene(
-                getCollision(),
-                getEntityOps(),
-                getSceneControl(),
-                getInput(),
-                getAudio(),
-                getMovement());
-
-        com.p10.core.scene.Scene third = new com.p10.core.scene.ThirdScene(
-                getCollision(),
-                getEntityOps(),
-                getSceneControl(),
-                getInput(),
-                getAudio(),
-                getMovement());
-        com.p10.core.scene.Scene help = new com.p10.core.scene.HelpScene(
+        /*
+         * com.p10.core.scene.Scene first = new com.p10.core.scene.FirstScene(
+         * getCollision(),
+         * getEntityOps(),
+         * getSceneControl(),
+         * getInput(),
+         * getAudio(),
+         * getMovement());
+         * 
+         * com.p10.core.scene.Scene second = new com.p10.core.scene.SecondScene(
+         * getCollision(),
+         * getEntityOps(),
+         * getSceneControl(),
+         * getInput(),
+         * getAudio(),
+         * getMovement());
+         * 
+         * com.p10.core.scene.Scene third = new com.p10.core.scene.ThirdScene(
+         * getCollision(),
+         * getEntityOps(),
+         * getSceneControl(),
+         * getInput(),
+         * getAudio(),
+         * getMovement());
+         * com.p10.core.scene.Scene help = new com.p10.core.scene.HelpScene(
+         * getCollision(), getEntityOps(), getSceneControl(),
+         * getInput(), getAudio(), getMovement());
+         * 
+         * // Register scenes
+         * sceneManager.registerScene("FirstScene", first);
+         * sceneManager.registerScene("SecondScene", second);
+         * sceneManager.registerScene("ThirdScene", third);
+         * sceneManager.registerScene("HelpScene", help);
+         * 
+         * // Start at HelpScene
+         * sceneManager.switchScene("HelpScene");
+         */
+        Scene menu = new com.p10.game.scenes.MainMenuScene(
                 getCollision(), getEntityOps(), getSceneControl(),
-                getInput(), getAudio(), getMovement());
+                getInput(), getAudio(), getMovement(), WINDOW_WIDTH, WINDOW_HEIGHT);
+        Scene levelSelect = new com.p10.game.scenes.LevelSelectScene(
+                getCollision(), getEntityOps(), getSceneControl(),
+                getInput(), getAudio(), getMovement(), WINDOW_WIDTH, WINDOW_HEIGHT);
+        Scene gameplay = new com.p10.game.scenes.GameplayScene(
+                getCollision(), getEntityOps(), getSceneControl(),
+                getInput(), getAudio(), getMovement(), WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        // Register scenes
-        sceneManager.registerScene("FirstScene", first);
-        sceneManager.registerScene("SecondScene", second);
-        sceneManager.registerScene("ThirdScene", third);
-        sceneManager.registerScene("HelpScene", help);
-
-        // Start at HelpScene
-        sceneManager.switchScene("HelpScene");
-
+        sceneManager.registerScene("MainMenu", menu);
+        sceneManager.registerScene("LevelSelect", levelSelect);
+        sceneManager.registerScene("GameplayScene", gameplay);
+        sceneManager.switchScene("MainMenu");
         System.out.println("[ApplicationCore] Scene setup complete.");
     }
 
