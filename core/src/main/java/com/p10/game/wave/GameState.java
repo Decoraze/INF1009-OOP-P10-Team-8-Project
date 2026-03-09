@@ -147,4 +147,8 @@ public class GameState {
     public void setSelectedTowerType(String t) {
         this.selectedTowerType = t;
     }
+
+    public int getWave() {
+        return currentWave;
+    }
 }
