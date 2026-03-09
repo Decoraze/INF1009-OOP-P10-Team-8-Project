@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.entities.CollidableEntity;
-
 /**
  * Tower represents a network defense tool (FIREWALL, ANTIVIRUS, ENCRYPTION,
  * IDS)
@@ -45,33 +44,80 @@ public class Tower extends CollidableEntity {
         // ENCRYPTION: range=130, fireRate=0.8, damage=6
         // IDS: range=160, fireRate=0.5, damage=4
         // : Load the correct texture from sprites/ folder
+
+        // Assign tower stats
+        switch (towerType) {
+            case "FIREWALL":
+                range = 140f;
+                fireRate = 0.7f;
+                damage = 5f;
+                texture = loadTex("sprites/firewall.png");
+                break;
+
+            case "ANTIVIRUS":
+                range = 120f;
+                fireRate = 0.9f;
+                damage = 8f;
+                texture = loadTex("sprites/antivirus.png");
+                break;
+
+            case "ENCRYPTION":
+                range = 130f;
+                fireRate = 0.8f;
+                damage = 6f;
+                texture = loadTex("sprites/encryption.png");
+                break;
+
+            case "IDS":
+                range = 160f;
+                fireRate = 0.5f;
+                damage = 4f;
+                texture = loadTex("sprites/ids.png");
+                break;
+
+            default:
+                range = 120f;
+                fireRate = 0.8f;
+                damage = 5f;
+        }
+
     }
 
     private Texture loadTex(String path) {
         // : Load texture safely with try-catch, return null if not found
-        return null;
+        try {
+            return new Texture(path);
+        } catch (Exception e) {
+            System.out.println("Texture not found: " + path);
+            return null;
+        }
     }
 
     @Override
     public void update(float dt) {
         // : Sync hitbox position with entity position
+        hitbox.setPosition(position.x, position.y);
         // : Tick down cooldownTimer by dt
+        if (cooldownTimer > 0) {
+            cooldownTimer -= dt;
+        }
     }
 
     public boolean canFire() {
         // : Return true if cooldownTimer <= 0
-        return false;
+        return cooldownTimer <= 0;
     }
 
     public void resetCooldown() {
         // : Set cooldownTimer = 1/fireRate
+        cooldownTimer = 1f / fireRate;
     }
 
     /**
      * Returns the damage multiplier when this tower attacks a specific enemy.
      * Correct tower vs threat = 1.5x, partially effective = 0.2x, wrong tower =
      * 0.05x
-     *
+     * <p>
      * Matchups:
      * FIREWALL → strong vs DDOS, WORM | weak vs VIRUS
      * ANTIVIRUS → strong vs VIRUS, TROJAN | weak vs WORM
@@ -80,13 +126,57 @@ public class Tower extends CollidableEntity {
      */
     public float getDamageMultiplier(Enemy enemy) {
         // : Implement the damage multiplier matrix above
+
+        String attack = enemy.getAttackType();
+
+        switch (towerType) {
+
+            case "FIREWALL":
+                if (attack.equals("DDOS") || attack.equals("WORM"))
+                    return 1.5f;
+                if (attack.equals("VIRUS"))
+                    return 0.2f;
+                break;
+
+            case "ANTIVIRUS":
+                if (attack.equals("VIRUS") || attack.equals("TROJAN"))
+                    return 1.5f;
+                if (attack.equals("WORM"))
+                    return 0.2f;
+                break;
+
+            case "ENCRYPTION":
+                if (attack.equals("PHISHING") || attack.equals("MITM"))
+                    return 1.5f;
+                if (attack.equals("TROJAN"))
+                    return 0.2f;
+                break;
+
+            case "IDS":
+                if (attack.equals("WORM") || attack.equals("TROJAN"))
+                    return 1.5f;
+                if (attack.equals("DDOS"))
+                    return 0.2f;
+                break;
+        }
         return 0.05f;
     }
 
     public Color getTowerColor() {
         // : Return unique color per towerType
         // FIREWALL=ORANGE, ANTIVIRUS=GREEN, ENCRYPTION=CYAN, IDS=PURPLE
-        return Color.WHITE;
+        switch (towerType) {
+            case "FIREWALL":
+                return Color.ORANGE;
+            case "ANTIVIRUS":
+                return Color.GREEN;
+            case "ENCRYPTION":
+                return Color.CYAN;
+            case "IDS":
+                return Color.PURPLE;
+            default:
+                return Color.WHITE;
+        }
     }
 
     // --- Getters/Setters ---
@@ -117,21 +207,43 @@ public class Tower extends CollidableEntity {
     @Override
     public boolean checkCollision(CollidableEntity other) {
         // : Return true if hitboxes overlap
-        return false;
+        if (other == null || other.getHitbox() == null)
+            return false;
+
+        return this.hitbox.overlaps(other.getHitbox());
     }
 
     @Override
     public void onCollisionEnter(CollidableEntity other) {
         // : Handle collision response (if any needed for towers)
+
     }
 
     @Override
     public void renderShapes(ShapeRenderer renderer) {
         // : If no texture, draw a colored rectangle as fallback
+        if (texture == null) {
+
+            renderer.setColor(getTowerColor());
+            renderer.rect(position.x, position.y,
+                getHitbox().getWidth(),
+                getHitbox().getHeight());
+        }
     }
 
     @Override
     public void renderTextures(SpriteBatch batch) {
         // : If texture exists, draw it centered on position
+        if (texture != null) {
+
+            batch.draw(texture,
+                position.x,
+                position.y,
+                getHitbox().getWidth(),
+                getHitbox().getHeight());
+        }
     }
+
 }
+
+

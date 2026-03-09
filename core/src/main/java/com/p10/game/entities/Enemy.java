@@ -30,6 +30,33 @@ public class Enemy extends CollidableEntity {
         // : Load textures from sprites/ folder for each enemy type
         // Use try-catch in case textures are missing
         // Set texturesLoaded = true after loading
+        if (texturesLoaded) return;
+
+        try {
+            texVirus = new Texture("sprites/virus.png");
+        } catch (Exception e) {
+            System.out.println("Virus texture missing");
+        }
+
+        try {
+            texWorm = new Texture("sprites/worm.png");
+        } catch (Exception e) {
+            System.out.println("Worm texture missing");
+        }
+
+        try {
+            texTrojan = new Texture("sprites/trojan.png");
+        } catch (Exception e) {
+            System.out.println("Trojan texture missing");
+        }
+
+        try {
+            texPhishing = new Texture("sprites/phishing.png");
+        } catch (Exception e) {
+            System.out.println("Phishing texture missing");
+        }
+
+        texturesLoaded = true;
     }
 
     /**
@@ -53,24 +80,53 @@ public class Enemy extends CollidableEntity {
         this.pathIndex = 0;
 
         // : Call loadTextures() and assign the correct texture based on attackType
+        loadTextures();
+
+        switch (attackType) {
+            case "VIRUS":
+                texture = texVirus;
+                break;
+
+            case "WORM":
+                texture = texWorm;
+                break;
+
+            case "TROJAN":
+                texture = texTrojan;
+                break;
+
+            case "PHISHING":
+                texture = texPhishing;
+                break;
+
+            default:
+                texture = null;
+        }
     }
 
     @Override
     public void update(float dt) {
         // : Sync hitbox center with current position
+        hitbox.setPosition(position.x, position.y);
     }
 
     public void takeDamage(float amount) {
         // : Reduce health by amount, clamp to 0
+        health -= amount;
+
+        if (health < 0) {
+            health = 0;
+        }
     }
 
     public boolean isDead() {
         // : Return true if health <= 0
-        return false;
+        return health <= 0;
     }
 
     public void nextWaypoint() {
         // : Increment pathIndex
+        pathIndex++;
     }
 
     // --- Getters ---
@@ -105,7 +161,10 @@ public class Enemy extends CollidableEntity {
     @Override
     public boolean checkCollision(CollidableEntity other) {
         // : Return true if this entity's hitbox overlaps with other's hitbox
-        return false;
+        if (other == null || other.getHitbox() == null)
+            return false;
+
+        return hitbox.overlaps(other.getHitbox());
     }
 
     @Override
@@ -118,16 +177,72 @@ public class Enemy extends CollidableEntity {
         // : Draw health bar above enemy (background bar + colored fill based on HP
         // ratio)
         // : If no texture, draw a colored circle as fallback (use getEnemyColor())
+        float barWidth = hitbox.getWidth();
+        float barHeight = 4f;
+
+        float healthRatio = maxHealth == 0 ? 0 : health / maxHealth;
+
+        float barX = position.x;
+        float barY = position.y + hitbox.getHeight() + 4;
+
+        // health bar background
+        renderer.setColor(Color.DARK_GRAY);
+        renderer.rect(barX, barY, barWidth, barHeight);
+
+        // health bar fill
+        renderer.setColor(Color.GREEN);
+        renderer.rect(barX, barY, barWidth * healthRatio, barHeight);
+
+        // fallback if texture missing
+        if (texture == null) {
+
+            renderer.setColor(getEnemyColor());
+
+            renderer.circle(
+                position.x + hitbox.getWidth() / 2,
+                position.y + hitbox.getHeight() / 2,
+                hitbox.getWidth() / 2
+            );
+        }
     }
 
     private Color getEnemyColor() {
         // : Return a unique color per attackType
         // VIRUS=RED, WORM=LIME, TROJAN=MAROON, DDOS=YELLOW, PHISHING=MAGENTA
-        return Color.WHITE;
+        switch (attackType) {
+
+            case "VIRUS":
+                return Color.RED;
+
+            case "WORM":
+                return Color.LIME;
+
+            case "TROJAN":
+                return Color.MAROON;
+
+            case "DDOS":
+                return Color.YELLOW;
+
+            case "PHISHING":
+                return Color.MAGENTA;
+
+            default:
+                return Color.WHITE;
+        }
     }
 
     @Override
     public void renderTextures(SpriteBatch batch) {
         // : If texture exists, draw it centered on position
+        if (texture != null) {
+
+            batch.draw(
+                texture,
+                position.x,
+                position.y,
+                hitbox.getWidth(),
+                hitbox.getHeight()
+            );
+        }
     }
 }

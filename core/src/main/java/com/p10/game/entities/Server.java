@@ -1,6 +1,7 @@
 package com.p10.game.entities;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.entities.CollidableEntity;
@@ -21,20 +22,32 @@ public class Server extends CollidableEntity {
         this.maxHealth = health;
         setKinematic(true);
         // : Load server texture from sprites/server.png
+        try {
+            texture = new Texture("sprites/server.png");
+        } catch (Exception e) {
+            System.out.println("Server texture not found");
+            texture = null;
+        }
     }
 
     @Override
     public void update(float dt) {
         // : Sync hitbox position with entity position
+        hitbox.setPosition(position.x, position.y);
     }
 
     public void takeDamage(float amount) {
         // : Reduce health by amount, clamp to 0
+        health -= amount;
+
+        if (health < 0) {
+            health = 0;
+        }
     }
 
     public boolean isDestroyed() {
         // : Return true if health <= 0
-        return false;
+        return health <= 0;
     }
 
     public float getHealth() {
@@ -48,7 +61,10 @@ public class Server extends CollidableEntity {
     @Override
     public boolean checkCollision(CollidableEntity other) {
         // : Return true if hitboxes overlap
-        return false;
+        if (other == null || other.getHitbox() == null)
+            return false;
+
+        return hitbox.overlaps(other.getHitbox());
     }
 
     @Override
@@ -61,10 +77,47 @@ public class Server extends CollidableEntity {
         // : If no texture, draw a blue rectangle as fallback
         // : Always draw health bar above server (background + colored fill based on
         // HP ratio)
+
+        if (texture == null) {
+
+            renderer.setColor(Color.BLUE);
+
+            renderer.rect(
+                position.x,
+                position.y,
+                hitbox.getWidth(),
+                hitbox.getHeight());
+        }
+
+        // Draw health bar above server
+        float barWidth = getHitbox().getWidth();
+        float barHeight = 6f;
+
+        float healthRatio = health / maxHealth;
+
+        float barX = position.x;
+        float barY = position.y + getHitbox().getHeight() + 8;
+
+        // Background bar
+        renderer.setColor(Color.DARK_GRAY);
+        renderer.rect(barX, barY, barWidth, barHeight);
+
+        // Health fill
+        renderer.setColor(Color.RED);
+        renderer.rect(barX, barY, barWidth * healthRatio, barHeight);
     }
 
     @Override
     public void renderTextures(SpriteBatch batch) {
         // : If texture exists, draw it centered on position
+        if (texture != null) {
+
+            batch.draw(
+                texture,
+                position.x,
+                position.y,
+                getHitbox().getWidth(),
+                getHitbox().getHeight());
+        }
     }
 }
