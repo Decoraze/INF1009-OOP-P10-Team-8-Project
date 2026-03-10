@@ -23,14 +23,15 @@ public class Enemy extends CollidableEntity {
     private Texture texture;
 
     // Static texture cache — load once, reuse for all enemies
-    private static Texture texVirus, texWorm, texTrojan, texPhishing;
+    private static Texture texVirus, texWorm, texTrojan, texDdos, texPhishing; // added texDdos for completeness
     private static boolean texturesLoaded = false;
 
     private static void loadTextures() {
         // : Load textures from sprites/ folder for each enemy type
         // Use try-catch in case textures are missing
         // Set texturesLoaded = true after loading
-        if (texturesLoaded) return;
+        if (texturesLoaded)
+            return;
 
         try {
             texVirus = new Texture("sprites/virus.png");
@@ -54,6 +55,11 @@ public class Enemy extends CollidableEntity {
             texPhishing = new Texture("sprites/phishing.png");
         } catch (Exception e) {
             System.out.println("Phishing texture missing");
+        }
+        try {// added texDdos for completeness
+            texDdos = new Texture("sprites/ddos.png");
+        } catch (Exception e) {
+            System.out.println("DDOS texture missing");
         }
 
         texturesLoaded = true;
@@ -98,7 +104,10 @@ public class Enemy extends CollidableEntity {
             case "PHISHING":
                 texture = texPhishing;
                 break;
-
+            case "DDOS":// added case for DDOS
+                texture = texVirus;// reuse texture for now since we don't have a specific one, but ideally should
+                                   // have its own texture
+                break;
             default:
                 texture = null;
         }
@@ -199,10 +208,9 @@ public class Enemy extends CollidableEntity {
             renderer.setColor(getEnemyColor());
 
             renderer.circle(
-                position.x + hitbox.getWidth() / 2,
-                position.y + hitbox.getHeight() / 2,
-                hitbox.getWidth() / 2
-            );
+                    position.x + hitbox.getWidth() / 2,
+                    position.y + hitbox.getHeight() / 2,
+                    hitbox.getWidth() / 2);
         }
     }
 
@@ -237,12 +245,11 @@ public class Enemy extends CollidableEntity {
         if (texture != null) {
 
             batch.draw(
-                texture,
-                position.x,
-                position.y,
-                hitbox.getWidth(),
-                hitbox.getHeight()
-            );
+                    texture,
+                    position.x,
+                    position.y,
+                    hitbox.getWidth(),
+                    hitbox.getHeight());
         }
     }
 }

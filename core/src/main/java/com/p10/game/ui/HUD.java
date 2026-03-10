@@ -27,11 +27,14 @@ public class HUD {
     private static final float CARD_H = 65f;
     private static final float CARD_GAP = 8f;
 
-    private final int COST_FIREWALL = 100;
-    private final int COST_ANTIVIRUS = 150;
-    private final int COST_ENCRYPTION = 200;
-    private final int COST_IDS = 250;
-
+    /*
+     * deleted necaise we moved tower costs to GameState for better centralization
+     * and easier access from both HUD and TowerPlacer
+     * private final int COST_FIREWALL = 100;
+     * private final int COST_ANTIVIRUS = 150;
+     * private final int COST_ENCRYPTION = 200;
+     * private final int COST_IDS = 250;
+     */
     public HUD(float screenW, float screenH) {
         this.screenW = screenW;
         this.screenH = screenH;
@@ -42,7 +45,7 @@ public class HUD {
         this.smallFont.getData().setScale(0.8f);
     }
 
-    public void renderShapes(ShapeRenderer renderer, GameState state, TowerPlacer placer) {
+    public void renderShapes(ShapeRenderer renderer, GameState state) {
         // : Draw top info bar (dark background)
         renderer.setColor(0.1f, 0.1f, 0.1f, 0.9f);
         renderer.rect(0, screenH - BAR_HEIGHT, screenW, BAR_HEIGHT);
@@ -56,8 +59,11 @@ public class HUD {
         // - Can't afford: dimmed with faded color
         // - Selected: bright border + full color
         // - Available: normal colored card
-        String[] towers = {"FIREWALL", "ANTIVIRUS", "ENCRYPTION", "IDS"};
-        int[] prices = {COST_FIREWALL, COST_ANTIVIRUS, COST_ENCRYPTION, COST_IDS};
+        String[] towers = { "FIREWALL", "ANTIVIRUS", "ENCRYPTION", "IDS" };
+        int[] prices = { GameState.getPrice("FIREWALL"), GameState.getPrice("ANTIVIRUS"),
+                GameState.getPrice("ENCRYPTION"), GameState.getPrice("IDS") };// changed to get prices from GameState
+                                                                              // instead of hardcoding in HUD for better
+                                                                              // centralization
         float startX = 20f;
         float startY = 10f;
 
@@ -93,8 +99,11 @@ public class HUD {
         font.draw(batch, "Score: " + state.getScore(), 500, screenH - 15);
 
         // : Bottom bar — draw tower names, prices, key hints [1]-[4]
-        String[] towers = {"FIREWALL", "ANTIVIRUS", "ENCRYPTION", "IDS"};
-        int[] prices = {COST_FIREWALL, COST_ANTIVIRUS, COST_ENCRYPTION, COST_IDS};
+        String[] towers = { "FIREWALL", "ANTIVIRUS", "ENCRYPTION", "IDS" };
+        int[] prices = { GameState.getPrice("FIREWALL"), GameState.getPrice("ANTIVIRUS"),
+                GameState.getPrice("ENCRYPTION"), GameState.getPrice("IDS") };// changed to get prices from GameState
+                                                                              // instead of hardcoding in HUD for better
+                                                                              // centralization
         float startX = 20f;
         float startY = 10f;
 
@@ -108,7 +117,8 @@ public class HUD {
 
         // : If prep phase — draw "PREP PHASE", next enemy type, "[SPACE] Start Wave"
         if (state.isPrepPhase()) {
-            font.draw(batch, "PREP PHASE - Next Attack: " + nextEnemyType, screenW / 2 - 180, screenH - BAR_HEIGHT - 12);
+            font.draw(batch, "PREP PHASE - Next Attack: " + nextEnemyType, screenW / 2 - 180,
+                    screenH - BAR_HEIGHT - 12);
             font.draw(batch, "[SPACE] Start Wave", screenW - 220, screenH - BAR_HEIGHT - 12);
         }
     }
@@ -127,18 +137,19 @@ public class HUD {
 
         // : Check keys NUM_1 through NUM_4
         String selectedTower = null;
-        if (input.isKeyJustPressed(Input.Keys.NUM_1)) selectedTower = "FIREWALL";
-        if (input.isKeyJustPressed(Input.Keys.NUM_2)) selectedTower = "ANTIVIRUS";
-        if (input.isKeyJustPressed(Input.Keys.NUM_3)) selectedTower = "ENCRYPTION";
-        if (input.isKeyJustPressed(Input.Keys.NUM_4)) selectedTower = "IDS";
+        if (input.isKeyJustPressed(Input.Keys.NUM_1))
+            selectedTower = "FIREWALL";
+        if (input.isKeyJustPressed(Input.Keys.NUM_2))
+            selectedTower = "ANTIVIRUS";
+        if (input.isKeyJustPressed(Input.Keys.NUM_3))
+            selectedTower = "ENCRYPTION";
+        if (input.isKeyJustPressed(Input.Keys.NUM_4))
+            selectedTower = "IDS";
 
         // : If player can afford the tower, set it as selected in both state and placer
         if (selectedTower != null) {
-            int cost = 0;
-            if (selectedTower.equals("FIREWALL")) cost = COST_FIREWALL;
-            if (selectedTower.equals("ANTIVIRUS")) cost = COST_ANTIVIRUS;
-            if (selectedTower.equals("ENCRYPTION")) cost = COST_ENCRYPTION;
-            if (selectedTower.equals("IDS")) cost = COST_IDS;
+            int cost = GameState.getPrice(selectedTower);// changed to get price from GameState instead of hardcoding in
+                                                         // HUD for better centralization
 
             if (state.getCurrency() >= cost) {
                 placer.setSelectedTowerType(selectedTower);
@@ -148,12 +159,17 @@ public class HUD {
 
     private Color getTowerColor(String type) {
         // : Return color per tower type (same as Tower.getTowerColor())
-        switch(type.toUpperCase()) {
-            case "FIREWALL": return Color.ORANGE;
-            case "ANTIVIRUS": return Color.CYAN;
-            case "ENCRYPTION": return Color.MAGENTA;
-            case "IDS": return Color.YELLOW;
-            default: return Color.WHITE;
+        switch (type.toUpperCase()) {
+            case "FIREWALL":
+                return Color.ORANGE;
+            case "ANTIVIRUS":
+                return Color.GREEN;
+            case "ENCRYPTION":
+                return Color.CYAN;
+            case "IDS":
+                return Color.PURPLE;
+            default:
+                return Color.WHITE;
         }
     }
 

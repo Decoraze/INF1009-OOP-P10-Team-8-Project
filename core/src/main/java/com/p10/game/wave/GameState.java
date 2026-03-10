@@ -25,20 +25,29 @@ public class GameState {
 
     private String selectedTowerType;
 
-    public GameState(int startCurrency, int lives) {
-        // : Initialize all fields
-        // currency, lives from params
-        // currentWave=0, score=0, gameOver=false, gameWon=false
-        // waveInProgress=false, prepPhase=true, selectedTowerType=null
+    public GameState(int startCurrency, int lives) {// init game state with starting cur and lives and default values
+                                                    // for other fields
+        this.currency = startCurrency;
+        this.lives = lives;
+        this.currentWave = 0;
+        this.score = 0;
+        this.gameOver = false;
+        this.gameWon = false;
+        this.waveInProgress = false;
+        this.prepPhase = true;
+        this.selectedTowerType = null;
     }
 
     public boolean canAfford(String towerType) {
-        // : Return true if currency >= price of towerType
-        return false;
+        return currency >= getPrice(towerType);
+
     }
 
     public static int getPrice(String towerType) {
-        // : Look up price from ALL_TOWER_TYPES/TOWER_PRICES arrays
+        for (int i = 0; i < ALL_TOWER_TYPES.length; i++) {
+            if (ALL_TOWER_TYPES[i].equals(towerType))
+                return TOWER_PRICES[i];
+        }
         return 999;
     }
 
@@ -51,12 +60,27 @@ public class GameState {
      * PHISHING → ENCRYPTION ($55)
      */
     public static String getCheapestCounter(String attackType) {
-        // : Implement the mapping above
-        return "FIREWALL";
+        switch (attackType) {
+            case "DDOS":
+                return "FIREWALL";
+            case "WORM":
+                return "FIREWALL";
+            case "VIRUS":
+                return "ANTIVIRUS";
+            case "TROJAN":
+                return "IDS";
+            case "PHISHING":
+                return "ENCRYPTION";
+            default:
+                return "FIREWALL";
+        }
     }
 
     public void purchaseTower(String towerType) {
-        // : Deduct price from currency if affordable
+        int price = getPrice(towerType);
+        if (currency >= price) {
+            currency -= price;
+        }
     }
 
     public void addCurrency(int amount) {
