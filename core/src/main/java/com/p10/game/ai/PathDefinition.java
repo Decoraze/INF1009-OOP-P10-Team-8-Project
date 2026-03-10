@@ -19,33 +19,32 @@ public class PathDefinition {
 
     public void addWaypoint(float x, float y) {
         // : Add a new Vector2 waypoint to the list
-    	Vector2 newWaypoint = new Vector2(x,y);
-    	waypoints.add(newWaypoint);
+        Vector2 newWaypoint = new Vector2(x, y);
+        waypoints.add(newWaypoint);
     }
 
-    
     public Vector2 getWaypoint(int index) {
         // : Return waypoint at index, or null if out of bounds
-    	if (index >= 0 && index < waypoints.size()) {
-    		Vector2 choosenWaypoint = waypoints.get(index);
-    		return choosenWaypoint;
-    	}
-    	else {
-    		return null;
-    	}
-        
+        if (index >= 0 && index < waypoints.size()) {
+            Vector2 choosenWaypoint = waypoints.get(index);
+            return choosenWaypoint;
+        } else {
+            return null;
+        }
+
     }
 
     public boolean isEnd(int index) {
         // : Return true if index >= waypoints size
-    	if (index > waypoints.size()) {
-    		return true;
-    	}
-    	
-    	else {
-    		return false;
-    	}
-        
+        if (index >= waypoints.size()) { // if there are 5 waypoints index 5 should be end but 5 > 5 is false. Thus we
+                                         // uswe >= instead of >
+            return true;
+        }
+
+        else {
+            return false;
+        }
+
     }
 
     public int getWaypointCount() {
@@ -60,14 +59,13 @@ public class PathDefinition {
 
     public Vector2 getLastWaypoint() {
         // : Return the last waypoint, or (0,0) if empty
-    	if (waypoints.size() > 0) {
-    		return waypoints.get(waypoints.size() - 1);	
-    	}
-    	
-    	else {
-    		return new Vector2(0, 0);
-    	}
-    	
-        
+        if (waypoints.size() > 0) {
+            return waypoints.get(waypoints.size() - 1);
+        }
+
+        else {
+            return new Vector2(0, 0);
+        }
+
     }
 }
