@@ -1,7 +1,9 @@
 package com.p10.game.grid;
 
+import com.badlogic.gdx.math.Vector2;
 import com.p10.core.interfaces.iEntityOps;
 import com.p10.core.interfaces.iInput;
+import com.p10.game.entities.Tower;
 import com.p10.game.wave.GameState;
 
 /**
@@ -14,6 +16,7 @@ import com.p10.game.wave.GameState;
 public class TowerPlacer {
     private String selectedTowerType;
     private int towerCount = 0;
+    private boolean mouseActuatedLastFrame = false;		// Check if mouse is being held down
 
     public TowerPlacer() {
         this.selectedTowerType = null;
@@ -40,6 +43,23 @@ public class TowerPlacer {
         // : Create new Tower entity at grid pixel center
         // : Add tower to entityOps and mark tile as occupied in grid
         // : If player can no longer afford this tower type, deselect it
+    	
+    	if (input.isMouseButtonPressed(0) && !mouseActuatedLastFrame)		// On mouse left click
+    	{
+    		Vector2 mousePos = input.getMousePosition();
+        	int[] gridPos = grid.pixelToGrid(mousePos.x, mousePos.y);	// Convert mousePos to selected grid
+        	if (grid.isBuildable(gridPos[0], gridPos[1]) && state.canAfford(selectedTowerType))		// Check if valid build
+        	{
+        		state.purchaseTower(selectedTowerType);
+    			Vector2 towerPos = grid.gridToPixel(gridPos[0], gridPos[1]);	// Get position of middle of selected grid
+    			// @Aurelius idk how the naming is but i just concatenate Tower and count
+        		Tower newTower = new Tower("Tower" + towerCount++, towerPos.x, towerPos.y, 
+        				grid.getGridWidth(), grid.getGridHeight(), selectedTowerType);
+        		entityOps.addEntity(newTower);		// Add newly created entity to entity list
+        		grid.placeTower(gridPos[0], gridPos[1], newTower);		// Place newTower at y and x
+        	}
+        	return true;
+    	}
         return false;
     }
 

@@ -3,11 +3,11 @@ package com.p10.game.grid;
 import com.p10.game.entities.Tower;
 
 /**
- * Tile represents a single cell in the game grid.
- * Tracks its type (PATH, BUILDABLE, BLOCKED, OCCUPIED) and
- * optionally holds a reference to a placed Tower.
- * 
- */
+ 
+Tile represents a single cell in the game grid.
+Tracks its type (PATH, BUILDABLE, BLOCKED, OCCUPIED) and
+optionally holds a reference to a placed Tower.
+*/
 public class Tile {
     public enum TileType {
         PATH, BUILDABLE, BLOCKED, OCCUPIED
@@ -20,6 +20,10 @@ public class Tile {
 
     public Tile(int row, int col, TileType type) {
         // : Initialize fields, towerRef = null
+        this.row = row;
+        this.col = col;
+        this.type = type;
+        this.towerRef = null;
     }
 
     // --- Getters/Setters ---

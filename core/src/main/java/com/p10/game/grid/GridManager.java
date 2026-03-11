@@ -1,9 +1,11 @@
 package com.p10.game.grid;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.p10.game.ai.PathDefinition;
 import com.p10.game.entities.Tower;
+import com.p10.game.grid.Tile.TileType;
 
 /**
  * GridManager handles the tile-based game grid.
@@ -31,25 +33,35 @@ public class GridManager {
         // : Initialize tiles[][] array
         // : For each cell, create a Tile with the correct TileType based on layout
         // value
+    	this.layout = layout;
+    	this.tileSize = tileSize;
+    	this.tiles = new Tile[gridHeight][gridWidth];
     }
 
     public int[] pixelToGrid(float px, float py) {
         // : Convert pixel coordinates to grid [row, col], clamped to bounds
-        return new int[] { 0, 0 };
+    	// pixel / tileSize brings you to which grid the cursor is hovering over
+        return new int[] {(int) (py / tileSize), (int) (px / tileSize)};
     }
 
     public Vector2 gridToPixel(int row, int col) {
         // : Convert grid position to pixel center of that tile
-        return new Vector2(0, 0);
+    	// row * tileSize brings you to the pixel the tile starts on
+    	// tileSize / 2 is the middle of the tile
+        return new Vector2((float) (col * tileSize + (tileSize / 2f)), (float) (row * tileSize+ (tileSize / 2f)));
     }
 
     public boolean isBuildable(int row, int col) {
         // : Return true if tile at [row, col] is BUILDABLE and within bounds
-        return false;
+    	if ((row >= 0 && row <= gridHeight) && (col >= 0 && col <= gridWidth)) // OOB check
+    		return false;
+        return tiles[row][col].getType() == TileType.BUILDABLE; // returns accordingly if BUILDABLE
     }
 
     public void placeTower(int row, int col, Tower tower) {
         // : Set tile type to OCCUPIED, store tower reference
+    	tiles[row][col].setType(TileType.OCCUPIED);
+    	tiles[row][col].setTowerRef(tower);
     }
 
     /**
@@ -59,12 +71,69 @@ public class GridManager {
     public PathDefinition buildPath() {
         // : Find all PATH tiles, sort by column then row
         // : Convert each to pixel center and add as waypoint
-        return new PathDefinition();
+    	PathDefinition path = new PathDefinition();
+    	for (int col = 0; col < tiles.length; col++)
+    	{
+    		for (int row = 0; row < tiles[col].length; row++) 
+    		{
+    			if (tiles[col][row].getType() == TileType.PATH)
+    			{
+	    			Vector2 waypoint = gridToPixel(col, row);
+    				path.addWaypoint(waypoint.x, waypoint.y);	// add to waypoint ArrayList
+    			}
+    		}
+    	}
+        return path;
     }
 
     public void renderGrid(ShapeRenderer renderer) {
         // : Draw each tile as a colored rectangle based on its type
         // PATH=brown, BUILDABLE=green, BLOCKED=dark grey, OCCUPIED=dark blue
+    	
+    	// Draw solid shapes first
+    	renderer.set(ShapeRenderer.ShapeType.Filled);
+    	// Loops through the entire grid
+    	for (int col = 0; col < gridWidth; col ++)
+    	{
+    		for (int row = 0; row < gridHeight; row++) 
+    		{
+    			Tile.TileType type = tiles[row][col].getType();
+    			// Switch case assigns colors according to tile type
+    			switch (type) 
+    			{
+    			case PATH:
+    				renderer.setColor(Color.BROWN);
+    				break;
+    			case BUILDABLE:
+    				renderer.setColor(Color.GREEN);
+    				break;
+    			case BLOCKED:
+    				renderer.setColor(Color.DARK_GRAY);
+    				break;
+    			case OCCUPIED:
+    				renderer.setColor(Color.BLUE);		// No DARK_BLUE so its just BLUE now
+    				break;
+    			}
+    			
+    			renderer.rect(col * tileSize, row * tileSize, tileSize, tileSize);
+    		}
+    	}
+    	
+    	// Change to Line to show outline of each single tile
+    	renderer.set(ShapeRenderer.ShapeType.Line);
+    	renderer.setColor(Color.BLACK);
+    	
+    	// Vertical line for grid
+    	for (int col = 0; col <= gridWidth; col++) 
+    	{
+    		renderer.line(col * tileSize, 0, col * tileSize, gridHeight * tileSize);
+    	}
+    	
+    	// Horizontal line for grid
+    	for (int row = 0; row <= gridHeight; row++)
+    	{
+    		renderer.line(0, row * tileSize, gridWidth * tileSize, row * tileSize);
+    	}
     }
 
     // --- Getters ---
