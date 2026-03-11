@@ -31,5 +31,10 @@ public class GameCollisionHandler {
         // - Break after first hit (projectile only hits one enemy)
         // : For each active enemy, check overlap with server
         // - If overlap: server takes 1 damage, lose 1 life, deactivate enemy
+    	
+//    	for (int i = 0; i < allEntites.length; i++)
+//    	{
+//    		for (int j = 0; )
+//    	}
     }
 }

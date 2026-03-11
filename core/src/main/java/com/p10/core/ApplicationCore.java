@@ -51,7 +51,7 @@ public class ApplicationCore extends ApplicationAdapter {
     private static final int WINDOW_HEIGHT = 480;
     private static final boolean DEBUG_MODE = true; // Show FPS and debug info
     
-    public ApplicationCore() { // initialize managers scene and components
+    public ApplicationCore() { // initialize managers
         System.out.println("[ApplicationCore] Initializing managers...");
 
         // Create and initialize all managers
@@ -85,7 +85,7 @@ public class ApplicationCore extends ApplicationAdapter {
 
     // Render Game every 60 times / s or 60FPS maybe can do 120...
     @Override
-    public void render() { // initialize managers scene and components
+    public void render() { // initialize scene and components
         // Get time since last frame
         deltaTime = Gdx.graphics.getDeltaTime();
         fps = Gdx.graphics.getFramesPerSecond();
