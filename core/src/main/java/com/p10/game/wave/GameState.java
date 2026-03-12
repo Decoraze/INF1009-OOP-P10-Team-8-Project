@@ -175,4 +175,19 @@ public class GameState {
     public int getWave() {
         return currentWave;
     }
+
+    public void loseLife() {
+        lives--;
+        if (lives < 0)
+            lives = 0;
+    }
+
+
+    public boolean isInPrepPhase() { // consolidated — uses same field as isPrepPhase()
+        return prepPhase;
+    }
+
+    public void setInPrepPhase(boolean prep) {
+        this.prepPhase = prep; // synced with isPrepPhase()
+    }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.p10.core.interfaces.iEntityOps;
 import com.p10.game.ai.PathDefinition;
+import com.p10.game.entities.Enemy;
 
 /**
  * WaveManager controls enemy spawning across multiple waves.
@@ -65,13 +66,24 @@ public class WaveManager {
             spawnTimer = 0;
             int baseHealth = (int) (60 * currentWave.getHealthMultiplier());
             float speed = 55 * currentWave.getSpeedMultiplier();
-            Enemy enemy = new Enemy(path.getWaypoints().get(0), baseHealth, speed, enemyCounter++);
+            com.badlogic.gdx.math.Vector2 start = path.getWaypoints().get(0);
+            // Spawn enemy centered on first waypoint
+            Enemy enemy = new Enemy(
+                    "enemy-" + enemyCounter++,
+                    start.x - 16, // center horizontally on waypoint
+                    start.y - 16, // center vertically on waypoint
+                    32, // hitbox size — smaller than tile for visual clarity
+                    currentWave.getEnemyType(), // attackType
+                    baseHealth, // health
+                    speed, // speed
+                    10 // reward
+            );
             entityOps.addEntity(enemy);
             enemiesSpawned++;
         }
         if (enemiesSpawned >= currentWave.getEnemyCount()) {
             // Check if any enemies are still alive
-            boolean anyAlive = entityOps.getEntities().stream().anyMatch(e -> e instanceof Enemy);
+            boolean anyAlive = entityOps.getAllEntities().stream().anyMatch(e -> e instanceof Enemy && e.isActive());
             if (!anyAlive) {
                 // Advance to next wave
                 currentWaveIndex++;

@@ -59,7 +59,7 @@ public class EnemyAI {
 	
     	
         // : If distance to waypoint < 5f, advance to next waypoint
-		if (dist < 5f) {
+		if (dist < 3f) { // tight snap radius for clean corner turns
 			enemy.nextWaypoint();				// Increase path Index
 		}
 		

@@ -20,10 +20,16 @@ public class AudioOutput {
     // Moved these 2 lines of codes down from constructor to avoid Gdx.files.internal to point to null
     // with all managers initialized in the ApplicationCore constructor now
     public void audioFiles() {
-    	musicMap.put("bgm", Gdx.audio.newMusic(Gdx.files.internal("bgm.ogg")));
-        // credits http://opengameart.org
-        soundMap.put("jump", Gdx.audio.newSound(Gdx.files.internal("jump.wav")));
-        // sound for jumping
+        // Load BGM — try-catch so game runs even without audio files
+        try { musicMap.put("bgm", Gdx.audio.newMusic(Gdx.files.internal("bgm.ogg"))); }
+        catch (Exception e) { System.out.println("[Audio] bgm.ogg not found — skipping"); }
+        // Game-specific sounds
+        try { soundMap.put("shoot", Gdx.audio.newSound(Gdx.files.internal("shoot.wav"))); }
+        catch (Exception e) { System.out.println("[Audio] shoot.wav not found — skipping"); }
+        try { soundMap.put("kill", Gdx.audio.newSound(Gdx.files.internal("kill.wav"))); }
+        catch (Exception e) { System.out.println("[Audio] kill.wav not found — skipping"); }
+        try { soundMap.put("wave_start", Gdx.audio.newSound(Gdx.files.internal("wave_start.wav"))); }
+        catch (Exception e) { System.out.println("[Audio] wave_start.wav not found — skipping"); }
     }
 
     public void playSound(String name) {

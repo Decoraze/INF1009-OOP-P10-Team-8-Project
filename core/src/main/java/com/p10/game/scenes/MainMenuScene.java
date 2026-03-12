@@ -1,5 +1,6 @@
 package com.p10.game.scenes;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -48,39 +49,39 @@ public class MainMenuScene extends Scene {
     @Override
     public void update(float dt) {
         // : NUM_1 or ENTER → switch to LevelSelect
-        if (input.isKeyJustPressed(iInput.Keys.NUM_1) || input.isKeyJustPressed(iInput.Keys.ENTER)) {
+        if (input.isKeyJustPressed(Keys.NUM_1) || input.isKeyJustPressed(Keys.ENTER)) {
             sceneCtrl.switchScene("LevelSelect");
         }
-        // : H → switch to HelpScene
-        if (input.isKeyJustPressed(iInput.Keys.H)) {
-            sceneCtrl.switchScene("Help");
+        // H key opens the help/tutorial screen
+        if (input.isKeyJustPressed(Keys.H)) {
+            sceneCtrl.switchScene("GameHelp");
         }
     }
 
     @Override
     public void renderShapes(ShapeRenderer renderer) {
         // : Draw dark background
-        renderer.begin(ShapeRenderer.ShapeType.Filled);
+
         renderer.setColor(0.1f, 0.1f, 0.1f, 1);
         renderer.rect(0, 0, screenW, screenH);
         // : Draw decorative bar under title
         renderer.setColor(0.2f, 0.6f, 1f, 1);
         renderer.rect(screenW / 2 - 150, screenH - 120, 300, 5);
-        renderer.end();
+
     }
 
     @Override
     public void renderTextures(SpriteBatch batch) {
         // : Draw "NETDEFENDER" title in cyan
-        batch.begin();
+
         titleFont.setColor(0.2f, 0.6f, 1f, 1);
         titleFont.draw(batch, "NETDEFENDER", screenW / 2 - 150, screenH - 50);
         // : Draw menu options
         menuFont.setColor(1, 1, 1, 1);
         menuFont.draw(batch, "1: Start Game", screenW / 2 - 100, screenH - 200);
-        menuFont.draw(batch, "H: Help", screenW / 2 - 100, screenH - 250);
+        menuFont.draw(batch, "H: How to Play", screenW / 2 - 100, screenH - 250);
         // : Draw "Team P10" footer
         menuFont.draw(batch, "Team P10", screenW / 2 - 100, 20);
-        batch.end();
+
     }
 }

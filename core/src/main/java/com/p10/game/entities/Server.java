@@ -89,22 +89,23 @@ public class Server extends CollidableEntity {
                 hitbox.getHeight());
         }
 
-        // Draw health bar above server
-        float barWidth = getHitbox().getWidth();
-        float barHeight = 6f;
+        // Draw hearts above server — each heart = 1 HP
+        float heartSize = 10f;
+        float heartGap = 3f;
+        float totalWidth = maxHealth * (heartSize + heartGap) - heartGap;
+        float startX = position.x + (getHitbox().getWidth() - totalWidth) / 2f;
+        float heartY = position.y + getHitbox().getHeight() + 8;
 
-        float healthRatio = health / maxHealth;
-
-        float barX = position.x;
-        float barY = position.y + getHitbox().getHeight() + 8;
-
-        // Background bar
-        renderer.setColor(Color.DARK_GRAY);
-        renderer.rect(barX, barY, barWidth, barHeight);
-
-        // Health fill
-        renderer.setColor(Color.RED);
-        renderer.rect(barX, barY, barWidth * healthRatio, barHeight);
+        for (int i = 0; i < (int) maxHealth; i++) {
+            float hx = startX + i * (heartSize + heartGap);
+            if (i < (int) health) {
+                renderer.setColor(Color.RED); // full heart
+            } else {
+                renderer.setColor(0.3f, 0.1f, 0.1f, 1f); // empty heart (dark red)
+            }
+            // Draw heart as a small filled square (diamond shape would need more vertices)
+            renderer.rect(hx, heartY, heartSize, heartSize);
+        }
     }
 
     @Override

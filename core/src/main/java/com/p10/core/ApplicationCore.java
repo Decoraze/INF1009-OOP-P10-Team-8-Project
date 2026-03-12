@@ -49,7 +49,8 @@ public class ApplicationCore extends ApplicationAdapter {
     // Game Config (adjust here if needed for window size)
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 480;
-    private static final boolean DEBUG_MODE = true; // Show FPS and debug info
+    private boolean showDebugInfo = true;  // F3 toggles FPS/entity/mouse/keyboard overlay
+    private boolean showHitboxes = true;  // F1 toggles hitbox wireframes
     
     public ApplicationCore() { // initialize managers
         System.out.println("[ApplicationCore] Initializing managers...");
@@ -103,12 +104,20 @@ public class ApplicationCore extends ApplicationAdapter {
         // 2. Update managers
         // 3. Render
 
+        // F1 toggles hitboxes, F3 toggles debug overlay
+        if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F1)) {
+            showHitboxes = !showHitboxes;
+        }
+        if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F3)) {
+            showDebugInfo = !showDebugInfo;
+        }
+
         handleInput();
         updateManagers(deltaTime);
         renderGame();
 
         // Debug info "handler"
-        if (DEBUG_MODE) {
+        if (showDebugInfo) {
             renderDebugInfo();
         }
     }
@@ -261,9 +270,14 @@ public class ApplicationCore extends ApplicationAdapter {
                 getCollision(), getEntityOps(), getSceneControl(),
                 getInput(), getAudio(), getMovement(), WINDOW_WIDTH, WINDOW_HEIGHT);
 
+        Scene gameHelp = new com.p10.game.scenes.GameHelpScene(
+                getCollision(), getEntityOps(), getSceneControl(),
+                getInput(), getAudio(), getMovement(), WINDOW_WIDTH, WINDOW_HEIGHT);
+
         sceneManager.registerScene("MainMenu", menu);
         sceneManager.registerScene("LevelSelect", levelSelect);
         sceneManager.registerScene("GameplayScene", gameplay);
+        sceneManager.registerScene("GameHelp", gameHelp);
         sceneManager.switchScene("MainMenu");
         System.out.println("[ApplicationCore] Scene setup complete.");
     }
@@ -285,13 +299,8 @@ public class ApplicationCore extends ApplicationAdapter {
 
         // 3. Check collisions (after hitboxes are updated)
         collisionManager.checkCollisions(entityManager.getCollidableEntities());
-        // Final clamp — nothing escapes screen
-        float w = camera.viewportWidth;
-        float h = camera.viewportHeight;
-        for (com.p10.core.entities.Entity e : entityManager.getAllEntities()) {
-            e.getPosition().x = Math.max(0, Math.min(w, e.getPosition().x));
-            e.getPosition().y = Math.max(0, Math.min(h, e.getPosition().y));
-        }
+        // Position clamping disabled for game — grid offset handles positioning
+        // Towers and enemies need exact grid coordinates, clamping breaks them
     }
 
     // game rendering
@@ -302,11 +311,12 @@ public class ApplicationCore extends ApplicationAdapter {
         entityManager.renderShapes(shapeRenderer);
         shapeRenderer.end();
 
-        // hitboxes (comment out when not needed)
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        entityManager.renderHitboxes(shapeRenderer);
-        shapeRenderer.end();
+        // Hitbox wireframes — toggle with F1
+        if (showHitboxes) {
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            entityManager.renderHitboxes(shapeRenderer);
+            shapeRenderer.end();
+        }
 
         // Render textures
         batch.begin();

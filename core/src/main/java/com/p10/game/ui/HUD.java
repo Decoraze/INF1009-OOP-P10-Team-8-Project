@@ -97,6 +97,9 @@ public class HUD {
         font.draw(batch, "Currency: $" + state.getCurrency(), 150, screenH - 15);
         font.draw(batch, "Wave: " + state.getWave(), 350, screenH - 15);
         font.draw(batch, "Score: " + state.getScore(), 500, screenH - 15);
+        // Controls hint in top right
+        smallFont.setColor(Color.LIGHT_GRAY);
+        smallFont.draw(batch, "[M] Music  [F1] Hitbox  [F3] Debug  [ESC] Menu", screenW - 400, screenH - 40);
 
         // : Bottom bar — draw tower names, prices, key hints [1]-[4]
         String[] towers = { "FIREWALL", "ANTIVIRUS", "ENCRYPTION", "IDS" };

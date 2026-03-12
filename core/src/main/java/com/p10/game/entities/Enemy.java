@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.entities.CollidableEntity;
+import com.p10.game.entities.Tower;
 
 /**
  * Enemy represents a network threat (VIRUS, WORM, TROJAN, DDOS, PHISHING)
@@ -84,6 +85,7 @@ public class Enemy extends CollidableEntity {
         this.speed = speed;
         this.reward = reward;
         this.pathIndex = 0;
+        setKinematic(true); // enemies follow AI path — engine collision bounce must be skipped
 
         // : Call loadTextures() and assign the correct texture based on attackType
         loadTextures();
@@ -170,9 +172,12 @@ public class Enemy extends CollidableEntity {
     @Override
     public boolean checkCollision(CollidableEntity other) {
         // : Return true if this entity's hitbox overlaps with other's hitbox
+        // Enemies only physically collide with Server — towers use range-based targeting
         if (other == null || other.getHitbox() == null)
             return false;
-
+        // Skip collision with towers — enemies walk past them, not into them
+        if (other instanceof Tower)
+            return false;
         return hitbox.overlaps(other.getHitbox());
     }
 

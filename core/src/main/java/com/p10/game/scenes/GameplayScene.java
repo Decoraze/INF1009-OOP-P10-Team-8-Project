@@ -1,7 +1,13 @@
 package com.p10.game.scenes;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.p10.core.entities.Entity;
 import com.p10.core.interfaces.iAudio;
 import com.p10.core.interfaces.iCollision;
 import com.p10.core.interfaces.iEntityOps;
@@ -12,7 +18,9 @@ import com.p10.core.scene.Scene;
 import com.p10.game.ai.EnemyAI;
 import com.p10.game.ai.PathDefinition;
 import com.p10.game.ai.TowerAI;
+import com.p10.game.entities.Enemy;
 import com.p10.game.entities.Server;
+import com.p10.game.entities.Tower;
 import com.p10.game.grid.GameCollisionHandler;
 import com.p10.game.grid.GridManager;
 import com.p10.game.grid.TowerPlacer;
@@ -48,6 +56,7 @@ public class GameplayScene extends Scene {
     private EduPopup eduPopup;
     private Server server;
     private float screenW, screenH;
+    private boolean musicMuted = false; // M key toggles this
 
     // Static field so LevelSelectScene can set which level to play
     private static LevelConfig selectedLevel = null;
@@ -67,54 +76,61 @@ public class GameplayScene extends Scene {
     @Override
     protected void onLoad() {
         // : Get levelConfig from selectedLevel (default to level1_DDoS if null)
-        this.levelConfig = selectedLevel != null ? selectedLevel : LevelConfig.getLevel1DDoS();
+        this.levelConfig = selectedLevel != null ? selectedLevel : LevelConfig.level1_DDoS();
         // : Initialize GridManager with levelConfig's grid layout
-        this.gridManager = new GridManager(levelConfig.getGridLayout());
+        this.gridManager = new GridManager(levelConfig.getGridLayout(), 48); // 48px tiles: 10x48=480w, 8x48=384h — fits 800x480 window
         // : Build path from gridManager
         this.path = gridManager.buildPath();
         // : Initialize EnemyAI, TowerAI, TowerPlacer, GameCollisionHandler
         this.enemyAI = new EnemyAI(path);
         this.towerAI = new TowerAI();
-        this.towerPlacer = new TowerPlacer(gridManager);
+        this.towerPlacer = new TowerPlacer();
         this.collisionHandler = new GameCollisionHandler();
         // : Initialize GameState with starting currency and lives
-        this.gameState = new GameState(levelConfig.getStartingCurrency(), levelConfig.getStartingLives());
+        this.gameState = new GameState(levelConfig.getStartCurrency(), levelConfig.getStartLives());
         // : Initialize WaveManager with levelConfig's waves
         this.waveManager = new WaveManager(levelConfig.getWaves());
         // : Initialize HUD and EduPopup
-        this.hud = new HUD(gameState);
-        this.eduPopup = new EduPopup(levelConfig.getLevelName(), levelConfig.getEducationalText());
+        this.hud = new HUD(screenW, screenH);
+        this.eduPopup = new EduPopup(screenW, screenH);
         // : Show edu popup with level name and educational text
-        this.eduPopup.show();
+        this.eduPopup.show(levelConfig.getLevelName(), levelConfig.getEducationalText());
         // : Place Server entity at end of path
-        this.server = new Server(path.getEndPoint());
+        List<Vector2> waypoints = path.getWaypoints();
+        Vector2 endPt = waypoints.get(waypoints.size() - 1);
+        // Place server centered on last path tile — waypoints are at tile centers
+        int ts = gridManager.getTileSize();
+        this.server = new Server("server-0", endPt.x - ts/2f, endPt.y - ts/2f, ts, ts, 10f);
         entityOps.addEntity(server);
+        // Start background music if available
+        try { audio.playMusic("bgm"); } catch (Exception e) { /* no audio file */ }
     }
 
     @Override
     protected void onUnload() {
         // : Remove all game entities via entityOps
-        entityOps.clearEntities();
+        for (Entity e : new ArrayList<>(entityOps.getAllEntities())) {
+            entityOps.removeEntity(e.getId());
+        }
         // : Dispose HUD and EduPopup
         hud.dispose();
         eduPopup.dispose();
+        try { audio.stopMusic(); } catch (Exception e) { /* ignore */ }
     }
 
     @Override
     public void update(float dt) {
         // : Clean up inactive entities every frame
-            cleanupEntities();
+        cleanupEntities();
         // : If edu popup visible, handle its input and return
         if (eduPopup.isVisible()) {
-            if (input.isKeyJustPressed("ENTER")) {
-                eduPopup.hide();
-            }
+            eduPopup.handleInput(input);
             return;
         }
         // : If game over, wait for ENTER to go back to MainMenu
         if (gameState.isGameOver()) {
-            if (input.isKeyJustPressed("ENTER")) {
-                sceneCtrl.changeScene("MainMenuScene");
+            if (input.isKeyJustPressed(Keys.ENTER)) {
+                sceneCtrl.switchScene("MainMenu");
             }
             return;
         }
@@ -123,54 +139,85 @@ public class GameplayScene extends Scene {
             gameState.setGameWon(true);
         }
         // : Handle HUD input (tower selection)
-         hud.updateInput(input);
+        hud.handleInput(input, gameState, towerPlacer);
         // : Handle tower placement
-        if (hud.isPlacingTower()) {
-            towerPlacer.update(input, hud.getSelectedTowerType(), entityOps);
+        if (gameState.isInPrepPhase()) {
+            towerPlacer.handleInput(input, gridManager, gameState, entityOps, screenH);
         }
         // : PREP PHASE: wait for SPACE to start wave
-        if (!gameState.isInWave() && input.isKeyJustPressed("SPACE")) {
-            gameState.setInWave(true);
+        if (gameState.isInPrepPhase() && input.isKeyJustPressed(Keys.SPACE)) {
+            gameState.setInPrepPhase(false);
+            // Play wave start sound
+            try { audio.playSound("wave_start"); } catch (Exception e) { /* no audio file */ }
         }
         // : WAVE PHASE:
         // - Update WaveManager (spawn enemies)
-            if (gameState.isInWave()) {
-                waveManager.update(dt, entityOps, path, gameState);
-            }
+        if (!gameState.isInPrepPhase()) {
+            waveManager.update(dt, entityOps, path, gameState);
+        }
         // - Gather enemies and towers from entity list
-
+        List<Enemy> enemies = new ArrayList<>();
+        List<Tower> towers = new ArrayList<>();
+        for (Entity e : entityOps.getAllEntities()) {
+            if (e.isActive()) {
+                e.update(dt);
+                if (e instanceof Enemy)
+                    enemies.add((Enemy) e);
+                if (e instanceof Tower)
+                    towers.add((Tower) e);
+            }
+        }
         // - Run EnemyAI movement for each enemy
-            enemyAI.update(entityOps);
+        for (Enemy enemy : enemies) {
+            enemyAI.update(enemy, dt);
+        }
         // - Run TowerAI targeting for each tower
-            towerAI.update(entityOps);
-        // - Update all entities
-            entityOps.updateAll(dt);
+        for (Tower tower : towers) {
+            towerAI.update(tower, enemies, dt, entityOps);
+        }
         // - Run GameCollisionHandler
-            collisionHandler.handleCollisions(entityOps, gameState);
-        // - Mark dead enemies as inactive
-            entityOps.markEnemiesDead(gameState);
+        collisionHandler.processCollisions(entityOps.getAllEntities(), gameState);
+        // Safety net: force-deactivate any enemy at 0 HP that collision missed
+        for (Enemy enemy : enemies) {
+            if (enemy.isDead() && enemy.isActive()) {
+                enemy.setActive(false);
+            }
+        }
+        // M key toggles music mute/unmute
+        if (input.isKeyJustPressed(Keys.M)) {
+            musicMuted = !musicMuted;
+            if (musicMuted) { try { audio.stopMusic(); } catch (Exception e) {} }
+            else { try { audio.playMusic("bgm"); } catch (Exception e) {} }
+        }
         // : ESC to return to MainMenu
-        if (input.isKeyJustPressed("ESCAPE")) {
-            sceneCtrl.changeScene("MainMenuScene");
-        }   
+        if (input.isKeyJustPressed(Keys.ESCAPE)) {
+            sceneCtrl.switchScene("MainMenu");
+        }
     }
 
     private void cleanupEntities() {
         // : Remove all inactive entities from entityOps
-            entityOps.removeInactiveEntities();
+        List<Entity> dead = new ArrayList<>();
+        for (Entity e : entityOps.getAllEntities()) {
+            if (!e.isActive())
+                dead.add(e);
+        }
+        for (Entity e : dead) {
+            entityOps.removeEntity(e.getId());
+        }
     }
 
     @Override
     public void renderShapes(ShapeRenderer renderer) {
-        // : Render grid
-        gridManager.render(renderer);
-        // : Render tower range indicator if placing tower
-        if (hud.isPlacingTower()) {
-            towerPlacer.render(renderer);
-        }
+        // Fill entire screen with dark background first
+        renderer.setColor(0.08f, 0.08f, 0.15f, 1f);
+        renderer.rect(0, 0, screenW, screenH);
+        // : Render grid on top
+        gridManager.renderGrid(renderer);
         // : Render HUD shapes
+        hud.renderShapes(renderer, gameState);
         // : Render game over / win overlay shapes
-         if (gameState.isGameOver() || gameState.isGameWon()) {
+        if (gameState.isGameOver() || gameState.isGameWon()) {
             // Render semi-transparent overlay
             renderer.setColor(0, 0, 0, 0.5f);
             renderer.rect(0, 0, screenW, screenH);
@@ -184,24 +231,27 @@ public class GameplayScene extends Scene {
     @Override
     public void renderTextures(SpriteBatch batch) {
         // : Render HUD text
-        hud.render(batch);
+        hud.renderText(batch, gameState, getNextWaveEnemyType());
         // : Render edu popup text if visible
         if (eduPopup.isVisible()) {
-            eduPopup.render(batch);
+            eduPopup.renderText(batch);
         }
         // : Render game over / win overlay text
         if (gameState.isGameOver()) {
             // Render "Game Over" text
-            hud.renderGameOver(batch);
+            hud.getFont().draw(batch, "GAME OVER - Press ENTER", screenW / 2 - 100, screenH / 2);
         } else if (gameState.isGameWon()) {
             // Render "You Win!" text
-            hud.renderGameWon(batch);
+            hud.getFont().draw(batch, "YOU WIN! - Press ENTER", screenW / 2 - 100, screenH / 2);
         }
     }
 
     private String getNextWaveEnemyType() {
         // : Return the enemy type of the current/next wave for HUD display
-        return null;
+        if (waveManager.getCurrentWaveIndex() < waveManager.getTotalWaves()) {
+            return levelConfig.getWaves().get(waveManager.getCurrentWaveIndex()).getEnemyType();
+        }
+        return "NONE";
     }
 
     @Override

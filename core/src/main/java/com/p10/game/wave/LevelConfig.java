@@ -75,9 +75,9 @@ public class LevelConfig {
         // : Set levelName, attackTheme, educationalText
         cfg.levelName = "DDoS Attack";
         cfg.attackTheme = "DDoS";
-        cfg.educationalText = "DDoS floods servers with traffic, firewalls filter malicious requests.";
+        cfg.educationalText = "LEVEL 1: DDoS ATTACK\n\nDDoS (Distributed Denial of Service) floods servers with massive traffic.\n\nYour defense: FIREWALL towers [1] - $30 each\nPlace towers on GREEN tiles next to the path.\nPress [SPACE] to start each wave.\n\nOnly FIREWALL deals full damage to DDoS attacks!\nWrong tower types deal ZERO damage.";
         // : Set towerPool, handSize, startCurrency=100, startLives=20
-        cfg.towerPool = new String[]{"Firewall"};
+        cfg.towerPool = new String[] { "Firewall" };
         cfg.handSize = 5;
         cfg.startCurrency = 100;
         cfg.startLives = 20;
@@ -86,10 +86,15 @@ public class LevelConfig {
         cfg.waves.add(WaveData.ddosWave(2, 15, 1.2f, 1.2f));
         cfg.waves.add(WaveData.ddosWave(3, 20, 1.4f, 1.4f));
         // : Define gridLayout (0=buildable, 1=path, 2=blocked)
-        cfg.gridLayout = new int[][]{
-            {0, 0, 0, 0, 0},
-            {0, 1, 1, 1, 0},
-            {0, 0, 0, 0, 0}
+        cfg.gridLayout = new int[][] {
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 1, 1, 1, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 1, 1, 1, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
         };
         return cfg;
     }
@@ -103,24 +108,27 @@ public class LevelConfig {
         LevelConfig cfg = new LevelConfig();
         // : Set level config for virus-themed level
         // : Waves of VIRUS enemies with moderate speed, high health
-         cfg.levelName = "Virus Outbreak";
-         cfg.attackTheme = "Virus";
-         cfg.educationalText = "Viruses disguise as legitimate programs, antivirus scans for signatures.";
-         cfg.towerPool = new String[]{"Antivirus"};
-         cfg.handSize = 5;
-         cfg.startCurrency = 120;
-         cfg.startLives = 15;
-         cfg.waves.add(WaveData.virusWave(1, 5, 1.0f, 1.0f));
-         cfg.waves.add(WaveData.virusWave(2, 7, 1.1f, 1.1f));
-         cfg.waves.add(WaveData.virusWave(3, 10, 1.2f, 1.2f));
-         cfg.gridLayout = new int[][]{
-             {0, 0, 0, 0, 0},
-             {0, 1, 1, 1, 0},
-             {0, 0, 0, 0, 0}
-         };
-         return cfg;
-        // : Waves include VIRUS and TROJAN enemies
-        // : startCurrency=120, startLives=15
+        cfg.levelName = "Virus Outbreak";
+        cfg.attackTheme = "Virus";
+        cfg.educationalText = "LEVEL 2: VIRUS OUTBREAK\n\nViruses disguise as legitimate programs to infect your system.\nThey are slow but tough — high HP enemies.\n\nYour defense: ANTIVIRUS towers [2] - $80 each\nMore expensive but deadly against viruses.\n\nFIREWALL will NOT work here — use ANTIVIRUS!";
+        cfg.towerPool = new String[] { "Antivirus" };
+        cfg.handSize = 5;
+        cfg.startCurrency = 120;
+        cfg.startLives = 15;
+        cfg.waves.add(WaveData.virusWave(1, 5, 1.0f, 1.0f));
+        cfg.waves.add(WaveData.virusWave(2, 7, 1.1f, 1.1f));
+        cfg.waves.add(WaveData.virusWave(3, 10, 1.2f, 1.2f));
+        cfg.gridLayout = new int[][] {
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
+                { 0, 0, 1, 1, 1, 1, 1, 1, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 1, 1, 1, 1, 1, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+        };
+        return cfg;
     }
 
     /**
@@ -133,21 +141,26 @@ public class LevelConfig {
         // : Set level config for phishing-themed level
         // : Waves of PHISHING enemies with high speed, low health
         // : startCurrency=100, startLives=12
-            cfg.levelName = "Phishing Campaign";
-            cfg.attackTheme = "Phishing";
-            cfg.educationalText = "Phishing tricks users into revealing credentials, encryption protects data.";
-            cfg.towerPool = new String[]{"Encryption"};
-            cfg.handSize = 5;
-            cfg.startCurrency = 100;
-            cfg.startLives = 12;
-            cfg.waves.add(WaveData.phishingWave(1, 10, 1.5f, 0.8f));
-            cfg.waves.add(WaveData.phishingWave(2, 15, 1.7f, 0.7f));
-            cfg.waves.add(WaveData.phishingWave(3, 20, 2.0f, 0.6f));
-            cfg.gridLayout = new int[][]{
-                {0, 0, 0, 0, 0},
-                {0, 1, 1, 1, 0},
-                {0, 0, 0, 0, 0}
-            };
+        cfg.levelName = "Phishing Campaign";
+        cfg.attackTheme = "Phishing";
+        cfg.educationalText = "LEVEL 3: PHISHING CAMPAIGN\n\nPhishing tricks users into revealing passwords via fake emails.\nFast but fragile — many weak enemies rushing in.\n\nYour defense: ENCRYPTION towers [3] - $55 each\nPlace towers early — phishing attacks are FAST!\n\nOnly ENCRYPTION blocks phishing attempts!";
+        cfg.towerPool = new String[] { "Encryption" };
+        cfg.handSize = 5;
+        cfg.startCurrency = 100;
+        cfg.startLives = 12;
+        cfg.waves.add(WaveData.phishingWave(1, 10, 1.5f, 0.8f));
+        cfg.waves.add(WaveData.phishingWave(2, 15, 1.7f, 0.7f));
+        cfg.waves.add(WaveData.phishingWave(3, 20, 2.0f, 0.6f));
+        cfg.gridLayout = new int[][] {
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 1, 1, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 1, 1, 1, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 },
+        };
         return cfg;
     }
 
@@ -164,8 +177,8 @@ public class LevelConfig {
         // : startCurrency=150, startLives=10
         cfg.levelName = "Mixed Assault";
         cfg.attackTheme = "Mixed Threats";
-        cfg.educationalText = "Real attacks combine multiple vectors, layered security is needed.";
-        cfg.towerPool = new String[]{"Firewall", "Antivirus", "Encryption"};
+        cfg.educationalText = "LEVEL 4: MIXED ASSAULT\n\nReal cyberattacks combine MULTIPLE threat vectors.\nYou will face DDoS, Viruses, Phishing, Trojans and Worms.\n\nYou need LAYERED DEFENSE (Defense in Depth):\n[1] Firewall $30 — blocks DDoS/Worms\n[2] Antivirus $80 — kills Viruses/Trojans\n[3] Encryption $55 — stops Phishing\n[4] IDS $45 — detects Worms/Trojans\n\nMatch the RIGHT tower to each threat!";
+        cfg.towerPool = new String[] { "Firewall", "Antivirus", "Encryption" };
         cfg.handSize = 5;
         cfg.startCurrency = 150;
         cfg.startLives = 10;
@@ -174,10 +187,15 @@ public class LevelConfig {
         cfg.waves.add(WaveData.phishingWave(3, 15, 1.5f, 0.8f));
         cfg.waves.add(WaveData.trojanWave(4, 5, 0.8f, 1.5f));
         cfg.waves.add(WaveData.wormWave(5, 8, 1.2f, 1.0f));
-        cfg.gridLayout = new int[][]{
-            {0, 0, 0, 0, 0},
-            {0, 1, 1, 1, 0},
-            {0, 0, 0, 0, 0}
+        cfg.gridLayout = new int[][] {
+                { 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
+                { 0, 1, 1, 1, 1, 1, 1, 0, 1, 0 },
+                { 0, 1, 0, 0, 0, 0, 1, 0, 1, 0 },
+                { 0, 1, 0, 0, 0, 0, 1, 0, 1, 0 },
+                { 0, 1, 1, 1, 1, 1, 1, 0, 1, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
         };
         return cfg;
     }

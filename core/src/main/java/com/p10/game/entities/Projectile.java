@@ -31,6 +31,7 @@ public class Projectile extends CollidableEntity {
         this.direction = new Vector2(direction).nor();
         this.damage = damage;
         this.speed = 350f;
+        setKinematic(true); // projectiles move on their own — skip engine collision bounce
         // : Load projectile texture once (static), use try-catch
         if (!texLoaded) {
             try {
