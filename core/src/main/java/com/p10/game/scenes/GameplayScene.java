@@ -67,59 +67,136 @@ public class GameplayScene extends Scene {
     @Override
     protected void onLoad() {
         // : Get levelConfig from selectedLevel (default to level1_DDoS if null)
+        this.levelConfig = selectedLevel != null ? selectedLevel : LevelConfig.getLevel1DDoS();
         // : Initialize GridManager with levelConfig's grid layout
+        this.gridManager = new GridManager(levelConfig.getGridLayout());
         // : Build path from gridManager
+        this.path = gridManager.buildPath();
         // : Initialize EnemyAI, TowerAI, TowerPlacer, GameCollisionHandler
+        this.enemyAI = new EnemyAI(path);
+        this.towerAI = new TowerAI();
+        this.towerPlacer = new TowerPlacer(gridManager);
+        this.collisionHandler = new GameCollisionHandler();
         // : Initialize GameState with starting currency and lives
+        this.gameState = new GameState(levelConfig.getStartingCurrency(), levelConfig.getStartingLives());
         // : Initialize WaveManager with levelConfig's waves
+        this.waveManager = new WaveManager(levelConfig.getWaves());
         // : Initialize HUD and EduPopup
+        this.hud = new HUD(gameState);
+        this.eduPopup = new EduPopup(levelConfig.getLevelName(), levelConfig.getEducationalText());
         // : Show edu popup with level name and educational text
+        this.eduPopup.show();
         // : Place Server entity at end of path
+        this.server = new Server(path.getEndPoint());
+        entityOps.addEntity(server);
     }
 
     @Override
     protected void onUnload() {
         // : Remove all game entities via entityOps
+        entityOps.clearEntities();
         // : Dispose HUD and EduPopup
+        hud.dispose();
+        eduPopup.dispose();
     }
 
     @Override
     public void update(float dt) {
         // : Clean up inactive entities every frame
+            cleanupEntities();
         // : If edu popup visible, handle its input and return
+        if (eduPopup.isVisible()) {
+            if (input.isKeyJustPressed("ENTER")) {
+                eduPopup.hide();
+            }
+            return;
+        }
         // : If game over, wait for ENTER to go back to MainMenu
+        if (gameState.isGameOver()) {
+            if (input.isKeyJustPressed("ENTER")) {
+                sceneCtrl.changeScene("MainMenuScene");
+            }
+            return;
+        }
         // : If all waves done, set game won
+        if (waveManager.isAllWavesDone() && !gameState.isGameWon()) {
+            gameState.setGameWon(true);
+        }
         // : Handle HUD input (tower selection)
+         hud.updateInput(input);
         // : Handle tower placement
+        if (hud.isPlacingTower()) {
+            towerPlacer.update(input, hud.getSelectedTowerType(), entityOps);
+        }
         // : PREP PHASE: wait for SPACE to start wave
+        if (!gameState.isInWave() && input.isKeyJustPressed("SPACE")) {
+            gameState.setInWave(true);
+        }
         // : WAVE PHASE:
         // - Update WaveManager (spawn enemies)
+            if (gameState.isInWave()) {
+                waveManager.update(dt, entityOps, path, gameState);
+            }
         // - Gather enemies and towers from entity list
+
         // - Run EnemyAI movement for each enemy
+            enemyAI.update(entityOps);
         // - Run TowerAI targeting for each tower
+            towerAI.update(entityOps);
         // - Update all entities
+            entityOps.updateAll(dt);
         // - Run GameCollisionHandler
+            collisionHandler.handleCollisions(entityOps, gameState);
         // - Mark dead enemies as inactive
+            entityOps.markEnemiesDead(gameState);
         // : ESC to return to MainMenu
+        if (input.isKeyJustPressed("ESCAPE")) {
+            sceneCtrl.changeScene("MainMenuScene");
+        }   
     }
 
     private void cleanupEntities() {
         // : Remove all inactive entities from entityOps
+            entityOps.removeInactiveEntities();
     }
 
     @Override
     public void renderShapes(ShapeRenderer renderer) {
         // : Render grid
+        gridManager.render(renderer);
         // : Render tower range indicator if placing tower
+        if (hud.isPlacingTower()) {
+            towerPlacer.render(renderer);
+        }
         // : Render HUD shapes
+        // : Render game over / win overlay shapes
+         if (gameState.isGameOver() || gameState.isGameWon()) {
+            // Render semi-transparent overlay
+            renderer.setColor(0, 0, 0, 0.5f);
+            renderer.rect(0, 0, screenW, screenH);
+        }
         // : Render edu popup if visible
+        if (eduPopup.isVisible()) {
+            eduPopup.renderShapes(renderer);
+        }
     }
 
     @Override
     public void renderTextures(SpriteBatch batch) {
         // : Render HUD text
+        hud.render(batch);
         // : Render edu popup text if visible
+        if (eduPopup.isVisible()) {
+            eduPopup.render(batch);
+        }
         // : Render game over / win overlay text
+        if (gameState.isGameOver()) {
+            // Render "Game Over" text
+            hud.renderGameOver(batch);
+        } else if (gameState.isGameWon()) {
+            // Render "You Win!" text
+            hud.renderGameWon(batch);
+        }
     }
 
     private String getNextWaveEnemyType() {
@@ -130,5 +207,7 @@ public class GameplayScene extends Scene {
     @Override
     public void dispose() {
         // : Dispose HUD and EduPopup
+        hud.dispose();
+        eduPopup.dispose();
     }
 }

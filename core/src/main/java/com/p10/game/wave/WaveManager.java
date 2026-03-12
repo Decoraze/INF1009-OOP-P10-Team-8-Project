@@ -23,6 +23,12 @@ public class WaveManager {
         // : Initialize fields
         // currentWaveIndex=0, enemiesSpawned=0, spawnTimer=0, enemyCounter=0,
         // allWavesDone=false
+        this.waves = waves;
+        this.currentWaveIndex = 0;
+        this.enemiesSpawned = 0;
+        this.spawnTimer = 0;
+        this.enemyCounter = 0;
+        this.allWavesDone = false;
     }
 
     /**
@@ -35,9 +41,18 @@ public class WaveManager {
      */
     public void update(float dt, iEntityOps entityOps, PathDefinition path, GameState state) {
         // : If allWavesDone, return
+        if (allWavesDone) {
+            return;
+        }
         // : If currentWaveIndex >= waves.size(), mark all done
+        if (currentWaveIndex >= waves.size()) {
+            allWavesDone = true;
+            return;
+        }
         // : Get current WaveData
+        WaveData currentWave = waves.get(currentWaveIndex);
         // : Update state's current wave number
+        state.setCurrentWave(currentWaveIndex + 1);
         // : Tick spawnTimer, if ready and enemies left to spawn:
         // - Calculate base health (60 * healthMultiplier) and speed (55 *
         // speedMultiplier)
@@ -45,6 +60,28 @@ public class WaveManager {
         // - Add to entityOps
         // : If all enemies spawned, check if any are still alive
         // - If none alive: advance to next wave, give currency bonus, set prep phase
+        spawnTimer += dt;
+        if (spawnTimer >= currentWave.getSpawnInterval() && enemiesSpawned < currentWave.getEnemyCount()) {
+            spawnTimer = 0;
+            int baseHealth = (int) (60 * currentWave.getHealthMultiplier());
+            float speed = 55 * currentWave.getSpeedMultiplier();
+            Enemy enemy = new Enemy(path.getWaypoints().get(0), baseHealth, speed, enemyCounter++);
+            entityOps.addEntity(enemy);
+            enemiesSpawned++;
+        }
+        if (enemiesSpawned >= currentWave.getEnemyCount()) {
+            // Check if any enemies are still alive
+            boolean anyAlive = entityOps.getEntities().stream().anyMatch(e -> e instanceof Enemy);
+            if (!anyAlive) {
+                // Advance to next wave
+                currentWaveIndex++;
+                enemiesSpawned = 0;
+                spawnTimer = 0;
+                state.setInPrepPhase(true);
+                // Give currency bonus for completing wave
+                state.addCurrency(50);
+            }
+        }
     }
 
     public boolean isAllWavesDone() {
