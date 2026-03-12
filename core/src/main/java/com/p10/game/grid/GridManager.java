@@ -33,7 +33,7 @@ public class GridManager {
         // : Initialize tiles[][] array
         // : For each cell, create a Tile with the correct TileType based on layout
         // value
-    	this.layout = layout;
+    	this.layout = new int[gridHeight][gridWidth];
     	this.tileSize = tileSize;
     	this.tiles = new Tile[gridHeight][gridWidth];
     }
@@ -48,7 +48,7 @@ public class GridManager {
         // : Convert grid position to pixel center of that tile
     	// row * tileSize brings you to the pixel the tile starts on
     	// tileSize / 2 is the middle of the tile
-        return new Vector2((float) (col * tileSize + (tileSize / 2f)), (float) (row * tileSize+ (tileSize / 2f)));
+        return new Vector2((float) (col * tileSize + (tileSize / 2f)), (float) (row * tileSize + (tileSize / 2f)));
     }
 
     public boolean isBuildable(int row, int col) {
@@ -72,11 +72,11 @@ public class GridManager {
         // : Find all PATH tiles, sort by column then row
         // : Convert each to pixel center and add as waypoint
     	PathDefinition path = new PathDefinition();
-    	for (int col = 0; col < tiles.length; col++)
+    	for (int col = 0; col < layout.length; col++)
     	{
-    		for (int row = 0; row < tiles[col].length; row++) 
+    		for (int row = 0; row < layout[col].length; row++) 
     		{
-    			if (tiles[col][row].getType() == TileType.PATH)
+    			if (layout[col][row] == 1)
     			{
 	    			Vector2 waypoint = gridToPixel(col, row);
     				path.addWaypoint(waypoint.x, waypoint.y);	// add to waypoint ArrayList
@@ -102,7 +102,7 @@ public class GridManager {
     			switch (type) 
     			{
     			case PATH:
-    				renderer.setColor(Color.BROWN);
+    				renderer.setColor(Color.TAN);
     				break;
     			case BUILDABLE:
     				renderer.setColor(Color.GREEN);
@@ -111,10 +111,9 @@ public class GridManager {
     				renderer.setColor(Color.DARK_GRAY);
     				break;
     			case OCCUPIED:
-    				renderer.setColor(Color.BLUE);		// No DARK_BLUE so its just BLUE now
+    				renderer.setColor(Color.ROYAL);
     				break;
     			}
-    			
     			renderer.rect(col * tileSize, row * tileSize, tileSize, tileSize);
     		}
     	}
