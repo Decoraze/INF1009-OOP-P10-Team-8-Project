@@ -40,7 +40,7 @@ public class EntityManager implements iEntityOps { // implements entityInterface
     }
     
     // Remove all Entities from the List
-    public void removeallEntity() {
+    public void removeAllEntities() {
         entities.clear();
     }
     
