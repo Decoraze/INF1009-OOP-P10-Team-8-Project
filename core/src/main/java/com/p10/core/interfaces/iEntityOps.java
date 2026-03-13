@@ -33,8 +33,9 @@ public interface iEntityOps {
      * 
      *
      */
-    void removeAllEntites();
+    void removeAllEntities();
     
+ 
     
     
     /**
