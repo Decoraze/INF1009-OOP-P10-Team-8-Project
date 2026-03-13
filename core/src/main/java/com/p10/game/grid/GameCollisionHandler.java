@@ -2,10 +2,12 @@ package com.p10.game.grid;
 
 import java.util.List;
 
+import com.p10.core.interfaces.iEntityOps;
 import com.p10.core.entities.Entity;
 import com.p10.game.entities.Enemy;
 import com.p10.game.entities.Projectile;
 import com.p10.game.entities.Server;
+import com.p10.game.entities.Tower;
 import com.p10.game.wave.GameState;
 
 /**
@@ -97,7 +99,7 @@ public class GameCollisionHandler {
 
 						if (server.isDestroyed()) // When health <= 0 deactivate server and end game
 						{
-							server.setActive(false);
+							deactivateAllEntities(allEntities);
 							state.setLives(0); // Game over scene
 							break;
 						}
@@ -106,6 +108,13 @@ public class GameCollisionHandler {
 					// anyway and we want to check all pairs of entities
 				}
 			}
+		}
+	}
+	
+	public void deactivateAllEntities(List<Entity> allEntities) {
+		for (int i = 0; i < allEntities.size(); i++)
+		{
+			allEntities.get(i).setActive(false);
 		}
 	}
 }

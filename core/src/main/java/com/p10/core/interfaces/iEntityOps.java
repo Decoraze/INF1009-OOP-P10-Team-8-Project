@@ -28,6 +28,7 @@ public interface iEntityOps {
      */
     void removeEntity(String id);
 
+    void removeAllEntities();
     /**
      * Get all entities currently in the game
      * 
