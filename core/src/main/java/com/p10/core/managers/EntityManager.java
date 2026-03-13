@@ -38,10 +38,14 @@ public class EntityManager implements iEntityOps { // implements entityInterface
             }
         }
     }
-
+    
+    // Remove all Entities from the List
+    public void removeallEntity() {
+        entities.clear();
+    }
+    
     public List<Entity> getAllEntities() {
         return new ArrayList<>(this.entities); // Return a copy of the list to hold entities
-        // return entities; // OLD, violates Encapsulation
     }
 
     public Entity getEntity(String id) {
