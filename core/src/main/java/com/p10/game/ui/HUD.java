@@ -45,7 +45,19 @@ public class HUD {
         this.smallFont.getData().setScale(0.8f);
     }
 
-    public void renderShapes(ShapeRenderer renderer, GameState state) {
+    public void renderShapes(ShapeRenderer renderer, GameState state, TowerPlacer placer) {// added TowerPlacer to check
+                                                                                           // selected tower type for
+                                                                                           // shop card borders
+                                                                                           // GameState tracks game
+                                                                                           // data, it shouldn't know
+                                                                                           // about UI selection state.
+                                                                                           // TowerPlacer already owns
+                                                                                           // selectedTowerType and
+                                                                                           // isDragging. Clean
+                                                                                           // separation — GameState =
+                                                                                           // data, TowerPlacer =
+                                                                                           // interaction.
+
         // : Draw top info bar (dark background)
         renderer.setColor(0.1f, 0.1f, 0.1f, 0.9f);
         renderer.rect(0, screenH - BAR_HEIGHT, screenW, BAR_HEIGHT);
@@ -81,6 +93,11 @@ public class HUD {
             }
 
             renderer.rect(cx, startY, CARD_W, CARD_H);
+            // TODO @ChayHan: Draw yellow border on selected tower card
+            // Check if this tower matches towerPlacer's selected type
+            // If so, switch to ShapeType.Line, draw yellow rect border (cx-3, startY-3,
+            // CARD_W+6, CARD_H+6)
+            // Then switch back to ShapeType.Filled
         }
 
         // : Draw prep phase indicator box if in prep phase
@@ -176,8 +193,31 @@ public class HUD {
         }
     }
 
+    // TODO @ChayHan: Render contextual instruction text during gameplay
+    // Prep phase + no tower selected: "[1]-[4] select tower | Click/drag to place |
+    // SPACE to start"
+    // Prep phase + tower selected: "Selected: [type] | Click to place | Right-click
+    // to sell"
+    // Wave phase: "Wave in progress! Match towers to threats!"
+    // Use smallFont, draw near top of game area (below top HUD bar)
+    public void renderInstructions(SpriteBatch batch, GameState state, TowerPlacer placer) {
+        // TODO @ChayHan
+    }
+
+    // TODO @HuiYang: Game over overlay text (big red "GAME OVER" + press ENTER
+    // hint)
+    public void renderGameOver(SpriteBatch batch) {
+        // TODO @HuiYang
+    }
+
+    // TODO @HuiYang: Win overlay text (big green "YOU WIN!" + press ENTER hint)
+    public void renderGameWon(SpriteBatch batch) {
+        // TODO @HuiYang
+    }
+
     public void dispose() {
         // : Dispose fonts
+
         font.dispose();
         smallFont.dispose();
     }

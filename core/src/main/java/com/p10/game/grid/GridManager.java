@@ -21,7 +21,7 @@ import com.p10.game.grid.Tile.TileType;
 public class GridManager {
 	private Tile[][] tiles;
 	private int tileSize;
-	private int gridWidth;  // columns
+	private int gridWidth; // columns
 	private int gridHeight; // rows
 	private int[][] layout;
 
@@ -30,7 +30,8 @@ public class GridManager {
 	private float offsetY;
 
 	/**
-	 * @param layout   2D int array defining the grid (0=buildable, 1=path, 2=blocked)
+	 * @param layout   2D int array defining the grid (0=buildable, 1=path,
+	 *                 2=blocked)
 	 * @param tileSize Pixel size of each tile (e.g. 48)
 	 */
 	public GridManager(int[][] layout, int tileSize) {
@@ -103,8 +104,7 @@ public class GridManager {
 
 		// Find starting path tile (scan left-to-right, top-to-bottom in layout)
 		int startRow = -1, startCol = -1;
-		outer:
-		for (int c = 0; c < gridWidth; c++) {
+		outer: for (int c = 0; c < gridWidth; c++) {
 			for (int r = 0; r < gridHeight; r++) {
 				if (layout[r][c] == 1) {
 					startRow = r;
@@ -113,7 +113,8 @@ public class GridManager {
 				}
 			}
 		}
-		if (startRow == -1) return path; // no path tiles
+		if (startRow == -1)
+			return path; // no path tiles
 
 		// Follow connected path tiles using neighbor-walk
 		int cr = startRow, cc = startCol;
@@ -125,7 +126,7 @@ public class GridManager {
 			path.addWaypoint(wp.x + tileSize / 2f, wp.y + tileSize / 2f);
 
 			// Check 4 neighbors: right, down, left, up
-			int[][] dirs = {{0,1}, {1,0}, {0,-1}, {-1,0}};
+			int[][] dirs = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
 			boolean moved = false;
 			for (int[] d : dirs) {
 				int nr = cr + d[0], nc = cc + d[1];
@@ -137,7 +138,8 @@ public class GridManager {
 					break;
 				}
 			}
-			if (!moved) break;
+			if (!moved)
+				break;
 		}
 		return path;
 	}
@@ -181,10 +183,27 @@ public class GridManager {
 	}
 
 	// --- Getters ---
-	public int getTileSize() { return tileSize; }
-	public int getGridWidth() { return gridWidth; }
-	public int getGridHeight() { return gridHeight; }
-	public float getOffsetX() { return offsetX; }
-	public float getOffsetY() { return offsetY; }
-	public Tile getTile(int row, int col) { return tiles[row][col]; }
+	public int getTileSize() {
+		return tileSize;
+	}
+
+	public int getGridWidth() {
+		return gridWidth;
+	}
+
+	public int getGridHeight() {
+		return gridHeight;
+	}
+
+	public float getOffsetX() {
+		return offsetX;
+	}
+
+	public float getOffsetY() {
+		return offsetY;
+	}
+
+	public Tile getTile(int row, int col) {
+		return tiles[row][col];
+	}
 }

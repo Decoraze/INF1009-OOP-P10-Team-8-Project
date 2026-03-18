@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.entities.CollidableEntity;
-import com.p10.game.entities.Tower;
 
 /**
  * Enemy represents a network threat (VIRUS, WORM, TROJAN, DDOS, PHISHING)
@@ -24,7 +23,10 @@ public class Enemy extends CollidableEntity {
     private Texture texture;
 
     // Static texture cache — load once, reuse for all enemies
-    private static Texture texVirus, texWorm, texTrojan, texDdos, texPhishing; // added texDdos for completeness
+    private static Texture texVirus, texWorm, texTrojan, texPhishing, texDDos; // added texDDOS for DDOS texture later
+                                                                               // (remember to Gemini the sprite)
+    private String displayName;
+    private static com.badlogic.gdx.graphics.g2d.BitmapFont nameFont;
     private static boolean texturesLoaded = false;
 
     private static void loadTextures() {
@@ -33,32 +35,40 @@ public class Enemy extends CollidableEntity {
         // Set texturesLoaded = true after loading
         if (texturesLoaded)
             return;
-
+        // HERE .setFilter is added to prevent blurry textures when scaled up, since our
+        // sprites are pixel art and look best with nearest neighbor filtering.
+        // You can adjust this as needed based on your art style and preferences.
         try {
             texVirus = new Texture("sprites/virus.png");
+            texVirus.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         } catch (Exception e) {
             System.out.println("Virus texture missing");
         }
 
         try {
             texWorm = new Texture("sprites/worm.png");
+            texWorm.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         } catch (Exception e) {
             System.out.println("Worm texture missing");
         }
 
         try {
             texTrojan = new Texture("sprites/trojan.png");
+            texTrojan.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         } catch (Exception e) {
             System.out.println("Trojan texture missing");
         }
 
         try {
             texPhishing = new Texture("sprites/phishing.png");
+            texPhishing.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         } catch (Exception e) {
             System.out.println("Phishing texture missing");
         }
-        try {// added texDdos for completeness
-            texDdos = new Texture("sprites/ddos.png");
+        try {
+            texDDos = new Texture("sprites/ddos.png");
+            texDDos.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
         } catch (Exception e) {
             System.out.println("DDOS texture missing");
         }
@@ -107,11 +117,18 @@ public class Enemy extends CollidableEntity {
                 texture = texPhishing;
                 break;
             case "DDOS":// added case for DDOS
-                texture = texVirus;// reuse texture for now since we don't have a specific one, but ideally should
-                                   // have its own texture
+                texture = texDDos; // add this texture assignment for DDOS case
                 break;
             default:
                 texture = null;
+        }
+        // added displayName assignment for showing the attack type above the enemy
+        // (optional, can be used in renderShapes if you want to display the name)
+        this.displayName = attackType;
+        // added nameFont initialization for rendering the displayName (if needed)
+        if (nameFont == null) {
+            nameFont = new com.badlogic.gdx.graphics.g2d.BitmapFont();
+            nameFont.getData().setScale(0.5f);
         }
     }
 
@@ -172,7 +189,8 @@ public class Enemy extends CollidableEntity {
     @Override
     public boolean checkCollision(CollidableEntity other) {
         // : Return true if this entity's hitbox overlaps with other's hitbox
-        // Enemies only physically collide with Server — towers use range-based targeting
+        // Enemies only physically collide with Server — towers use range-based
+        // targeting
         if (other == null || other.getHitbox() == null)
             return false;
         // Skip collision with towers — enemies walk past them, not into them
@@ -256,5 +274,16 @@ public class Enemy extends CollidableEntity {
                     hitbox.getWidth(),
                     hitbox.getHeight());
         }
+        // Optionally, render the displayName above the enemy (for debugging or style)
+        renderNameLabel(batch);
+    }
+
+    // TODO @Rumaana: Draw enemy type name above sprite (above HP bar)
+    // Use displayName, nameFont, position.x, position.y, hitbox width/height
+    public void renderNameLabel(SpriteBatch batch) {
+        // TODO @Rumaana
+        // TODO @Rumaana: Create 5 enemy sprite PNGs (64x64, transparent bg) in
+        // assets/sprites/
+        // virus.png, worm.png, trojan.png, ddos.png, phishing.png
     }
 }

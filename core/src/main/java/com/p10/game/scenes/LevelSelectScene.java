@@ -69,6 +69,13 @@ public class LevelSelectScene extends Scene {
         } else if (input.isKeyJustPressed(Keys.ESCAPE)) {
             sceneCtrl.switchScene("MainMenu");
         }
+        // TODO @HuiYang: Add level 5 + 6 selection
+        // NUM_5 → GameplayScene.setSelectedLevel(LevelConfig.level5_FullSpectrum());
+        // sceneCtrl.switchScene("GameplayScene");
+        // NUM_6 → GameplayScene.setSelectedLevel(LevelConfig.level6_Survival());
+        // sceneCtrl.switchScene("GameplayScene");
+        // NOTE: level5_FullSpectrum() and level6_Survival() need to be created in
+        // LevelConfig.java first
     }
 
     @Override
@@ -78,7 +85,13 @@ public class LevelSelectScene extends Scene {
 
         renderer.rect(0, 0, screenW, screenH);
 
-        // : Draw 4 colored level selection boxes
+        // TODO @HuiYang: Color-code boxes per threat type instead of all grey
+        // Level 1 DDoS: orange (0.8f, 0.5f, 0.1f, 1)
+        // Level 2 Virus: red (0.8f, 0.2f, 0.2f, 1)
+        // Level 3 Phishing: purple (0.6f, 0.2f, 0.8f, 1)
+        // Level 4 Mixed: teal (0.2f, 0.7f, 0.7f, 1)
+        // If adding level 5/6: gold (0.9f, 0.8f, 0.1f) and grey (0.5f, 0.5f, 0.5f)
+        // May need to rearrange to 2x3 grid layout to fit 6 boxes
         renderer.setColor(0.3f, 0.3f, 0.3f, 1);
 
         renderer.rect(100, 100, 200, 100);

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.entities.CollidableEntity;
+
 /**
  * Tower represents a network defense tool (FIREWALL, ANTIVIRUS, ENCRYPTION,
  * IDS)
@@ -226,8 +227,8 @@ public class Tower extends CollidableEntity {
 
             renderer.setColor(getTowerColor());
             renderer.rect(position.x, position.y,
-                getHitbox().getWidth(),
-                getHitbox().getHeight());
+                    getHitbox().getWidth(),
+                    getHitbox().getHeight());
         }
     }
 
@@ -237,13 +238,21 @@ public class Tower extends CollidableEntity {
         if (texture != null) {
 
             batch.draw(texture,
-                position.x,
-                position.y,
-                getHitbox().getWidth(),
-                getHitbox().getHeight());
+                    position.x,
+                    position.y,
+                    getHitbox().getWidth(),
+                    getHitbox().getHeight());
         }
     }
 
+    // TODO @JunMing: Render range circle around placed tower
+    // 1. Get tower center: position.x + hitbox.width/2, position.y +
+    // hitbox.height/2
+    // 2. Use GL_BLEND for transparency
+    // 3. Draw ShapeType.Line circle at center with radius = this.range
+    // 4. Use getTowerColor() with 0.3f alpha
+    // 5. Remember to disable GL_BLEND after
+    public void renderRange(ShapeRenderer renderer) {
+        // TODO @JunMing
+    }
 }
-
-

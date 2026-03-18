@@ -57,6 +57,10 @@ public class GameplayScene extends Scene {
     private Server server;
     private float screenW, screenH;
     private boolean musicMuted = false; // M key toggles this
+    // TODO @ChayHan: Pause state
+    private boolean isPaused = false;
+    // TODO @HuiYang: Win auto-transition timer
+    private float winTimer = 0f;
 
     // Static field so LevelSelectScene can set which level to play
     private static LevelConfig selectedLevel = null;
@@ -78,7 +82,8 @@ public class GameplayScene extends Scene {
         // : Get levelConfig from selectedLevel (default to level1_DDoS if null)
         this.levelConfig = selectedLevel != null ? selectedLevel : LevelConfig.level1_DDoS();
         // : Initialize GridManager with levelConfig's grid layout
-        this.gridManager = new GridManager(levelConfig.getGridLayout(), 48); // 48px tiles: 10x48=480w, 8x48=384h — fits 800x480 window
+        this.gridManager = new GridManager(levelConfig.getGridLayout(), 48); // 48px tiles: 10x48=480w, 8x48=384h — fits
+                                                                             // 800x480 window
         // : Build path from gridManager
         this.path = gridManager.buildPath();
         // : Initialize EnemyAI, TowerAI, TowerPlacer, GameCollisionHandler
@@ -100,10 +105,13 @@ public class GameplayScene extends Scene {
         Vector2 endPt = waypoints.get(waypoints.size() - 1);
         // Place server centered on last path tile — waypoints are at tile centers
         int ts = gridManager.getTileSize();
-        this.server = new Server("server-0", endPt.x - ts/2f, endPt.y - ts/2f, ts, ts, 10f);
+        this.server = new Server("server-0", endPt.x - ts / 2f, endPt.y - ts / 2f, ts, ts, 10f);
         entityOps.addEntity(server);
         // Start background music if available
-        try { audio.playMusic("bgm"); } catch (Exception e) { /* no audio file */ }
+        try {
+            audio.playMusic("bgm");
+        } catch (Exception e) {
+            /* no audio file */ }
     }
 
     @Override
@@ -115,13 +123,19 @@ public class GameplayScene extends Scene {
         // : Dispose HUD and EduPopup
         hud.dispose();
         eduPopup.dispose();
-        try { audio.stopMusic(); } catch (Exception e) { /* ignore */ }
+        try {
+            audio.stopMusic();
+        } catch (Exception e) {
+            /* ignore */ }
     }
 
     @Override
     public void update(float dt) {
         // : Clean up inactive entities every frame
         cleanupEntities();
+        // TODO @ChayHan: Pause toggle — P key
+        // If P pressed (and not in popup/gameover/win): toggle isPaused
+        // If isPaused: return immediately (skip all game logic)
         // : If edu popup visible, handle its input and return
         if (eduPopup.isVisible()) {
             eduPopup.handleInput(input);
@@ -134,6 +148,10 @@ public class GameplayScene extends Scene {
             }
             return;
         }
+        // TODO @HuiYang: When game is won, also clear all enemy/projectile entities
+        // TODO @HuiYang: Add winTimer logic — if gameWon, count up winTimer += dt
+        // Auto-transition to MainMenu after 3 seconds OR on ENTER press
+
         // : If all waves done, set game won
         if (waveManager.isAllWavesDone() && !gameState.isGameWon()) {
             gameState.setGameWon(true);
@@ -143,12 +161,22 @@ public class GameplayScene extends Scene {
         // : Handle tower placement
         if (gameState.isInPrepPhase()) {
             towerPlacer.handleInput(input, gridManager, gameState, entityOps, screenH);
+            // TODO @ChayHan: Call towerPlacer.handleDrag() here for drag-and-drop
+            // Get mouse pos: Gdx.input.getX(), screenH - Gdx.input.getY()
+            // Pass mouseDown: Gdx.input.isTouched()
+
+            // TODO @JunMing: Right-click sell — check Gdx.input.isButtonJustPressed(1)
+            // If right-clicked, call towerPlacer.handleSell(mouseX, mouseY, gridManager,
+            // gameState, entityOps)
         }
         // : PREP PHASE: wait for SPACE to start wave
         if (gameState.isInPrepPhase() && input.isKeyJustPressed(Keys.SPACE)) {
             gameState.setInPrepPhase(false);
             // Play wave start sound
-            try { audio.playSound("wave_start"); } catch (Exception e) { /* no audio file */ }
+            try {
+                audio.playSound("wave_start");
+            } catch (Exception e) {
+                /* no audio file */ }
         }
         // : WAVE PHASE:
         // - Update WaveManager (spawn enemies)
@@ -186,8 +214,17 @@ public class GameplayScene extends Scene {
         // M key toggles music mute/unmute
         if (input.isKeyJustPressed(Keys.M)) {
             musicMuted = !musicMuted;
-            if (musicMuted) { try { audio.stopMusic(); } catch (Exception e) {} }
-            else { try { audio.playMusic("bgm"); } catch (Exception e) {} }
+            if (musicMuted) {
+                try {
+                    audio.stopMusic();
+                } catch (Exception e) {
+                }
+            } else {
+                try {
+                    audio.playMusic("bgm");
+                } catch (Exception e) {
+                }
+            }
         }
         // : ESC to return to MainMenu
         if (input.isKeyJustPressed(Keys.ESCAPE)) {
@@ -214,8 +251,20 @@ public class GameplayScene extends Scene {
         renderer.rect(0, 0, screenW, screenH);
         // : Render grid on top
         gridManager.renderGrid(renderer);
+        // TODO @JunMing: Render tower range circles on all placed towers
+        // Loop entityOps.getAllEntities(), if Tower → call tower.renderRange(renderer)
+
+        // TODO @JunMing: Render hover range preview when placing tower
+        // Get mouse pos (with Y inversion), call towerPlacer.renderHoverRange(renderer,
+        // gridManager, mx, my)
+
+        // TODO @ChayHan: Render drag ghost
+        // Call towerPlacer.renderDragGhost(renderer)
+
+        // TODO @ChayHan: If isPaused, draw dark overlay (GL_BLEND, black rect 0.6f
+        // alpha)
         // : Render HUD shapes
-        hud.renderShapes(renderer, gameState);
+        hud.renderShapes(renderer, gameState, towerPlacer);// edited to reflect the new tower placer input handling
         // : Render game over / win overlay shapes
         if (gameState.isGameOver() || gameState.isGameWon()) {
             // Render semi-transparent overlay
@@ -232,6 +281,10 @@ public class GameplayScene extends Scene {
     public void renderTextures(SpriteBatch batch) {
         // : Render HUD text
         hud.renderText(batch, gameState, getNextWaveEnemyType());
+        // TODO @ChayHan: Render instructions
+        // Call hud.renderInstructions(batch, gameState, towerPlacer)
+
+        // TODO @ChayHan: If isPaused, draw "PAUSED" text + "Press P to resume"
         // : Render edu popup text if visible
         if (eduPopup.isVisible()) {
             eduPopup.renderText(batch);

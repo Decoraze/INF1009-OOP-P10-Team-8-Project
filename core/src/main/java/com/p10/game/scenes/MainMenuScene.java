@@ -61,7 +61,11 @@ public class MainMenuScene extends Scene {
     @Override
     public void renderShapes(ShapeRenderer renderer) {
         // : Draw dark background
-
+        // TODO @HuiYang: UI polish — upgrade to darker navy background + accent lines
+        // Current: flat dark grey. Upgrade to:
+        // - Dark navy bg: (0.03f, 0.03f, 0.1f, 1f)
+        // - Blue accent lines at 60% and 35% screen height
+        // - Subtle glow bar at bottom: (0.1f, 0.2f, 0.4f, 0.3f) rect 0-60px height
         renderer.setColor(0.1f, 0.1f, 0.1f, 1);
         renderer.rect(0, 0, screenW, screenH);
         // : Draw decorative bar under title
@@ -73,7 +77,9 @@ public class MainMenuScene extends Scene {
     @Override
     public void renderTextures(SpriteBatch batch) {
         // : Draw "NETDEFENDER" title in cyan
-
+        // TODO @HuiYang: UI polish — add subtitle under title
+        // "Network Security Tower Defense" in light grey (0.6f, 0.6f, 0.7f)
+        // Draw at screenH - 100, centered under main title
         titleFont.setColor(0.2f, 0.6f, 1f, 1);
         titleFont.draw(batch, "NETDEFENDER", screenW / 2 - 150, screenH - 50);
         // : Draw menu options
