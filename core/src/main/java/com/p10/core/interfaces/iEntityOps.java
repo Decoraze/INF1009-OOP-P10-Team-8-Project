@@ -27,7 +27,17 @@ public interface iEntityOps {
      * @param id The unique identifier of the entity to remove
      */
     void removeEntity(String id);
-
+    
+    /**
+     * Remove all Entities from the list
+     * 
+     *
+     */
+    void removeAllEntities();
+    
+ 
+    
+    
     /**
      * Get all entities currently in the game
      * 
