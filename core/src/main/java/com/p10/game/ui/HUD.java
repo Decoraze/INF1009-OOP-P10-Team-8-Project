@@ -98,6 +98,13 @@ public class HUD {
             // If so, switch to ShapeType.Line, draw yellow rect border (cx-3, startY-3,
             // CARD_W+6, CARD_H+6)
             // Then switch back to ShapeType.Filled
+
+            if (placer.getSelectedTowerType() != null && placer.getSelectedTowerType().equalsIgnoreCase(towers[i])) {
+                renderer.set(ShapeRenderer.ShapeType.Line);
+                renderer.setColor(Color.YELLOW);
+                renderer.rect(cx - 3, startY - 3, CARD_W + 6, CARD_H + 6);
+                renderer.set(ShapeRenderer.ShapeType.Filled); // Switch back to filled for the next cards
+            }
         }
 
         // : Draw prep phase indicator box if in prep phase
@@ -201,7 +208,19 @@ public class HUD {
     // Wave phase: "Wave in progress! Match towers to threats!"
     // Use smallFont, draw near top of game area (below top HUD bar)
     public void renderInstructions(SpriteBatch batch, GameState state, TowerPlacer placer) {
-        // TODO @ChayHan
+        smallFont.setColor(Color.WHITE);
+        float yPos = screenH - BAR_HEIGHT - 30; // Positioned below the top bar
+
+        if (state.isPrepPhase()) {
+            if (placer.getSelectedTowerType() == null && !placer.isDragging()) {
+                smallFont.draw(batch, "[1]-[4] select tower | Click/drag to place | SPACE to start", screenW / 2 - 220, yPos);
+            } else {
+                String type = placer.isDragging() ? "DRAGGING" : placer.getSelectedTowerType();
+                smallFont.draw(batch, "Selected: " + type + " | Click/drop to place | Right-click to sell", screenW / 2 - 220, yPos);
+            }
+        } else {
+            smallFont.draw(batch, "Wave in progress! Match towers to threats!", screenW / 2 - 150, yPos);
+        }
     }
 
     // TODO @HuiYang: Game over overlay text (big red "GAME OVER" + press ENTER
