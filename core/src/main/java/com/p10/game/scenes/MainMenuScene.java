@@ -2,6 +2,7 @@ package com.p10.game.scenes;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.interfaces.iAudio;
@@ -18,6 +19,8 @@ import com.p10.core.scene.Scene;
  *
  */
 public class MainMenuScene extends Scene {
+    private static final String SUBTITLE = "NETDEFENDER";
+
     private BitmapFont titleFont;
     private BitmapFont menuFont;
     private float screenW, screenH;
@@ -61,13 +64,13 @@ public class MainMenuScene extends Scene {
     @Override
     public void renderShapes(ShapeRenderer renderer) {
         // : Draw dark background
-        // TODO @HuiYang: UI polish — upgrade to darker navy background + accent lines
-        // Current: flat dark grey. Upgrade to:
-        // - Dark navy bg: (0.03f, 0.03f, 0.1f, 1f)
-        // - Blue accent lines at 60% and 35% screen height
-        // - Subtle glow bar at bottom: (0.1f, 0.2f, 0.4f, 0.3f) rect 0-60px height
-        renderer.setColor(0.1f, 0.1f, 0.1f, 1);
+        renderer.setColor(0.03f, 0.03f, 0.1f, 1f);
         renderer.rect(0, 0, screenW, screenH);
+        renderer.setColor(0.2f, 0.6f, 1f, 1f);
+        renderer.rect(0, screenH * 0.6f, screenW, 3f);
+        renderer.rect(0, screenH * 0.35f, screenW, 2f);
+        renderer.setColor(0.1f, 0.2f, 0.4f, 0.3f);
+        renderer.rect(0, 0, screenW, 60f);
         // : Draw decorative bar under title
         renderer.setColor(0.2f, 0.6f, 1f, 1);
         renderer.rect(screenW / 2 - 150, screenH - 120, 300, 5);
@@ -77,11 +80,11 @@ public class MainMenuScene extends Scene {
     @Override
     public void renderTextures(SpriteBatch batch) {
         // : Draw "NETDEFENDER" title in cyan
-        // TODO @HuiYang: UI polish — add subtitle under title
-        // "Network Security Tower Defense" in light grey (0.6f, 0.6f, 0.7f)
-        // Draw at screenH - 100, centered under main title
         titleFont.setColor(0.2f, 0.6f, 1f, 1);
         titleFont.draw(batch, "NETDEFENDER", screenW / 2 - 150, screenH - 50);
+        GlyphLayout subtitleLayout = new GlyphLayout(menuFont, SUBTITLE);
+        menuFont.setColor(0.6f, 0.6f, 0.7f, 1f);
+        menuFont.draw(batch, SUBTITLE, (screenW - subtitleLayout.width) / 2f, screenH - 100);
         // : Draw menu options
         menuFont.setColor(1, 1, 1, 1);
         menuFont.draw(batch, "1: Start Game", screenW / 2 - 100, screenH - 200);

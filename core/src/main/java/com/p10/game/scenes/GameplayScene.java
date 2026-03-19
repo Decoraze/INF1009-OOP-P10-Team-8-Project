@@ -20,6 +20,7 @@ import com.p10.game.ai.EnemyAI;
 import com.p10.game.ai.PathDefinition;
 import com.p10.game.ai.TowerAI;
 import com.p10.game.entities.Enemy;
+import com.p10.game.entities.Projectile;
 import com.p10.game.entities.Server;
 import com.p10.game.entities.Tower;
 import com.p10.game.grid.GameCollisionHandler;
@@ -149,13 +150,23 @@ public class GameplayScene extends Scene {
             }
             return;
         }
-        // TODO @HuiYang: When game is won, also clear all enemy/projectile entities
-        // TODO @HuiYang: Add winTimer logic — if gameWon, count up winTimer += dt
-        // Auto-transition to MainMenu after 3 seconds OR on ENTER press
+        if (gameState.isGameWon()) {
+            winTimer += dt;
+            if (winTimer >= 3f || input.isKeyJustPressed(Keys.ENTER)) {
+                sceneCtrl.switchScene("MainMenu");
+            }
+            return;
+        }
 
         // : If all waves done, set game won
         if (waveManager.isAllWavesDone() && !gameState.isGameWon()) {
             gameState.setGameWon(true);
+            winTimer = 0f;
+            for (Entity e : new ArrayList<>(entityOps.getAllEntities())) {
+                if (e instanceof Enemy || e instanceof Projectile) {
+                    entityOps.removeEntity(e.getId());
+                }
+            }
         }
         // : Handle HUD input (tower selection)
         hud.handleInput(input, gameState, towerPlacer);

@@ -66,16 +66,15 @@ public class LevelSelectScene extends Scene {
         } else if (input.isKeyJustPressed(Keys.NUM_4)) {
             GameplayScene.setSelectedLevel(LevelConfig.level4_Mixed());
             sceneCtrl.switchScene("GameplayScene");
+        } else if (input.isKeyJustPressed(Keys.NUM_5)) {
+            GameplayScene.setSelectedLevel(LevelConfig.level5_FullSpectrum());
+            sceneCtrl.switchScene("GameplayScene");
+        } else if (input.isKeyJustPressed(Keys.NUM_6)) {
+            GameplayScene.setSelectedLevel(LevelConfig.level6_Survival());
+            sceneCtrl.switchScene("GameplayScene");
         } else if (input.isKeyJustPressed(Keys.ESCAPE)) {
             sceneCtrl.switchScene("MainMenu");
         }
-        // TODO @HuiYang: Add level 5 + 6 selection
-        // NUM_5 → GameplayScene.setSelectedLevel(LevelConfig.level5_FullSpectrum());
-        // sceneCtrl.switchScene("GameplayScene");
-        // NUM_6 → GameplayScene.setSelectedLevel(LevelConfig.level6_Survival());
-        // sceneCtrl.switchScene("GameplayScene");
-        // NOTE: level5_FullSpectrum() and level6_Survival() need to be created in
-        // LevelConfig.java first
     }
 
     @Override
