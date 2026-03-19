@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Align;
 import com.p10.core.entities.CollidableEntity;
 
 /**
@@ -285,5 +286,9 @@ public class Enemy extends CollidableEntity {
         // TODO @Rumaana: Create 5 enemy sprite PNGs (64x64, transparent bg) in
         // assets/sprites/
         // virus.png, worm.png, trojan.png, ddos.png, phishing.png
+        com.badlogic.gdx.graphics.g2d.GlyphLayout layout = new com.badlogic.gdx.graphics.g2d.GlyphLayout(nameFont, displayName);
+        float labelX = position.x + (hitbox.getWidth() / 2) - (layout.width / 2);
+        float labelY = position.y + hitbox.getHeight() + 14;
+        nameFont.draw(batch, layout, labelX, labelY);
     }
 }
