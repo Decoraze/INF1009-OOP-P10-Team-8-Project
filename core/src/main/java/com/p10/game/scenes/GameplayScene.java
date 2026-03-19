@@ -139,6 +139,15 @@ public class GameplayScene extends Scene {
         // If P pressed (and not in popup/gameover/win): toggle isPaused
         // If isPaused: return immediately (skip all game logic)
         // : If edu popup visible, handle its input and return
+
+        if (input.isKeyJustPressed(Keys.P) && !eduPopup.isVisible() && !gameState.isGameOver() && !gameState.isGameWon()) {
+            isPaused = !isPaused;
+        }
+
+        if (isPaused) {
+            return; // Skip all game logic if paused
+        }
+
         if (eduPopup.isVisible()) {
             eduPopup.handleInput(input);
             return;
@@ -176,6 +185,10 @@ public class GameplayScene extends Scene {
             // TODO @ChayHan: Call towerPlacer.handleDrag() here for drag-and-drop
             // Get mouse pos: Gdx.input.getX(), screenH - Gdx.input.getY()
             // Pass mouseDown: Gdx.input.isTouched()
+            float mouseX = Gdx.input.getX();
+            float mouseY = screenH - Gdx.input.getY(); // Invert Y
+            boolean mouseDown = Gdx.input.isTouched();
+            towerPlacer.handleDrag(mouseX, mouseY, mouseDown, gridManager, gameState, entityOps);
 
             // TODO @JunMing: Right-click sell — check Gdx.input.isButtonJustPressed(1)
             // If right-clicked, call towerPlacer.handleSell(mouseX, mouseY, gridManager,
@@ -286,11 +299,20 @@ public class GameplayScene extends Scene {
         float mouseY = Gdx.graphics.getHeight() - input.getMousePosition().y;
         towerPlacer.renderHoverRange(renderer, gridManager, mouseX, mouseY);
         // TODO @ChayHan: Render drag ghost
-        // Call towerPlacer.renderDragGhost(renderer)
+        towerPlacer.renderDragGhost(renderer);
 
         // TODO @ChayHan: If isPaused, draw dark overlay (GL_BLEND, black rect 0.6f
         // alpha)
         // : Render HUD shapes
+
+        if (isPaused) {
+            Gdx.gl.glEnable(Gdx.gl.GL_BLEND);
+            Gdx.gl.glBlendFunc(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
+            renderer.setColor(0, 0, 0, 0.6f);
+            renderer.rect(0, 0, screenW, screenH);
+            Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
+        }
+
         hud.renderShapes(renderer, gameState, towerPlacer);// edited to reflect the new tower placer input handling
         // : Render game over / win overlay shapes
         if (gameState.isGameOver() || gameState.isGameWon()) {
@@ -309,10 +331,15 @@ public class GameplayScene extends Scene {
         // : Render HUD text
         hud.renderText(batch, gameState, getNextWaveEnemyType());
         // TODO @ChayHan: Render instructions
-        // Call hud.renderInstructions(batch, gameState, towerPlacer)
+        hud.renderInstructions(batch, gameState, towerPlacer);
 
         // TODO @ChayHan: If isPaused, draw "PAUSED" text + "Press P to resume"
         // : Render edu popup text if visible
+        if (isPaused) {
+            hud.getFont().draw(batch, "PAUSED", screenW / 2 - 50, screenH / 2 + 20);
+            hud.getFont().draw(batch, "Press P to resume", screenW / 2 - 90, screenH / 2 - 20);
+        }
+
         if (eduPopup.isVisible()) {
             eduPopup.renderText(batch);
         }
