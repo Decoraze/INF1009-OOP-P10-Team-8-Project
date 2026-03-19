@@ -148,9 +148,9 @@ public class LevelConfig {
         cfg.handSize = 5;
         cfg.startCurrency = 100;
         cfg.startLives = 12;
-        cfg.waves.add(WaveData.phishingWave(1, 10, 1.5f, 0.8f));
-        cfg.waves.add(WaveData.phishingWave(2, 15, 1.7f, 0.7f));
-        cfg.waves.add(WaveData.phishingWave(3, 20, 2.0f, 0.6f));
+        cfg.waves.add(WaveData.phishingWave(1, 8, 1.5f, 0.5f));		// Changed to 8 
+        cfg.waves.add(WaveData.phishingWave(2, 10, 1.7f, 0.9f));
+        cfg.waves.add(WaveData.phishingWave(3, 12, 2.0f, 1.1f));
         cfg.gridLayout = new int[][] {
                 { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                 { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 },
