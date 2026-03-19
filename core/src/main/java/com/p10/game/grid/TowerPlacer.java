@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.p10.core.interfaces.iEntityOps;
 import com.p10.core.interfaces.iInput;
 import com.p10.game.entities.Tower;
+import com.p10.game.grid.Tile.TileType;
 import com.p10.game.wave.GameState;
 
 /* 
@@ -103,6 +104,23 @@ public class TowerPlacer {
     public void renderHoverRange(ShapeRenderer renderer, GridManager grid,
             float mouseX, float mouseY) {
         // TODO @JunMing
+    	int[] gPos = grid.pixelToGrid(mouseX, mouseY);
+    	if (dragTowerType == null && !isDragging)
+    	{
+    		return;
+    	}
+    	
+    	if(!grid.isBuildable(gPos[0], gPos[1]))
+    	{
+    		return;
+    	}
+    	
+    	Vector2 pPos = grid.gridToPixel(gPos[0], gPos[1]);
+    	float centerX = pPos.x + (grid.getTileSize() / 2);
+    	float centerY = pPos.y + (grid.getTileSize() / 2);
+    	// Create temp tower instance to show range before placement and creation of actual tower instance
+    	Tower tmp = new Tower("tmp", centerX, centerY, grid.getTileSize(), grid.getTileSize(), getSelectedTowerType());
+    	tmp.showTowerRange(renderer, centerX, centerY, tmp.getTowerColor());
     }
 
     // TODO @ChayHan: Drag-and-drop tower placement
@@ -138,6 +156,18 @@ public class TowerPlacer {
     public boolean handleSell(float mouseX, float mouseY, GridManager grid,
             GameState state, iEntityOps entityOps) {
         // TODO @JunMing
+    	int[] gPos = grid.pixelToGrid(mouseX, mouseY);
+    	Tile target = grid.getTile(gPos[0], gPos[1]);
+    	// Check if tower on tile
+    	if (target.getType() == TileType.OCCUPIED)
+    	{
+    		// Refund 1/2 currency, Remove entity, set Tile back to buildable, clear towerRef on tile
+    		state.addCurrency(GameState.getPrice(target.getTowerRef().getTowerType()) / 2);
+    		entityOps.removeEntity(target.getTowerRef().getId());
+    		target.setType(TileType.BUILDABLE);
+    		target.setTowerRef(null);
+    		return true;
+    	}
         return false;
     }
 
