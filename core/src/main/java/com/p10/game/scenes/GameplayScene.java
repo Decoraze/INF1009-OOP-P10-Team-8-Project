@@ -3,6 +3,7 @@ package com.p10.game.scenes;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -168,6 +169,10 @@ public class GameplayScene extends Scene {
             // TODO @JunMing: Right-click sell — check Gdx.input.isButtonJustPressed(1)
             // If right-clicked, call towerPlacer.handleSell(mouseX, mouseY, gridManager,
             // gameState, entityOps)
+            if (Gdx.input.isButtonJustPressed(1))
+            {
+            	towerPlacer.handleSell(input.getMousePosition().x, input.getMousePosition().y, gridManager, gameState, entityOps);
+            }
         }
         // : PREP PHASE: wait for SPACE to start wave
         if (gameState.isInPrepPhase() && input.isKeyJustPressed(Keys.SPACE)) {
@@ -253,11 +258,22 @@ public class GameplayScene extends Scene {
         gridManager.renderGrid(renderer);
         // TODO @JunMing: Render tower range circles on all placed towers
         // Loop entityOps.getAllEntities(), if Tower → call tower.renderRange(renderer)
-
+        List<Entity> allEntities = entityOps.getAllEntities();
+        Tower tower;
+        for (int i = 0; i < allEntities.size(); i++)
+        {
+        	if (allEntities.get(i) instanceof Tower)
+        	{
+        		tower = (Tower) allEntities.get(i);
+        		tower.renderRange(renderer);
+        	}
+        }
         // TODO @JunMing: Render hover range preview when placing tower
         // Get mouse pos (with Y inversion), call towerPlacer.renderHoverRange(renderer,
         // gridManager, mx, my)
-
+        float mouseX = input.getMousePosition().x;
+        float mouseY = Gdx.graphics.getHeight() - input.getMousePosition().y;
+        towerPlacer.renderHoverRange(renderer, gridManager, mouseX, mouseY);
         // TODO @ChayHan: Render drag ghost
         // Call towerPlacer.renderDragGhost(renderer)
 

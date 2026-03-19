@@ -1,9 +1,12 @@
 package com.p10.game.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.p10.core.entities.CollidableEntity;
 
 /**
@@ -253,6 +256,52 @@ public class Tower extends CollidableEntity {
     // 4. Use getTowerColor() with 0.3f alpha
     // 5. Remember to disable GL_BLEND after
     public void renderRange(ShapeRenderer renderer) {
-        // TODO @JunMing
+		// TODO @JunMing
+    	// Get centering of tower on grid
+    	float centerX = getPosition().x + (getHitbox().width / 2);
+    	float centerY = getPosition().y + (getHitbox().height / 2);
+
+    	showTowerRange(renderer, centerX, centerY, getTowerColor());
+    }
+    
+    // Helper function
+    // Shows range tower can cover, visually should look like LoL tower outline i think
+    public void showTowerRange(ShapeRenderer renderer, float centerX, float centerY, Color color) {
+    	// Check if renderer already drawing something (In main game)
+//    	boolean wasDrawing = renderer.isDrawing();
+//    	ShapeType previousType = ShapeType.Filled; // Filled is the default draw
+    	
+    	// If renderer was already drawing something
+    	// If already drawing, get the type being drawn
+    	// Pause renderer to start new render in this function
+//    	if (wasDrawing)
+//    	{
+//    		previousType = renderer.getCurrentType();
+//    		renderer.end();
+//    	}
+    	
+    	Gdx.gl.glEnable(GL20.GL_BLEND);
+    	Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+    	
+    	// Edge is a solid line
+//    	renderer.begin(ShapeRenderer.ShapeType.Line);
+    	renderer.setColor(color.r, color.g, color.b, 1.0f);
+    	renderer.circle(centerX, centerY, this.range);		// Range is taken from Tower class itself
+//    	renderer.end();
+    	
+    	// Radius is translucent
+//    	renderer.begin(ShapeRenderer.ShapeType.Filled);
+    	renderer.setColor(color.r, color.g, color.b, 0.3f);
+    	renderer.circle(centerX, centerY, this.range);		// Range is taken form Tower class itself
+//    	renderer.end();
+
+    	Gdx.gl.glDisable(GL20.GL_BLEND);
+
+    	// If previously drawing, resume renderer and
+    	// begin with the previousType saved
+//    	if (wasDrawing) 
+//    	{
+//    		renderer.begin(previousType);
+//    	}
     }
 }
