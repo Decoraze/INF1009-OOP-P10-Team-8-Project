@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Align;
 import com.p10.core.interfaces.iInput;
 
 /**
@@ -25,10 +26,9 @@ public class EduPopup {
         this.screenW = screenW;
         this.screenH = screenH;
         this.visible = false;
-        // : Initialize fonts (titleFont scale 1.5)
-        this.font = new BitmapFont();
-        this.titleFont = new BitmapFont();
-        this.titleFont.getData().setScale(1.5f);
+        // : Initialize fonts
+        this.font = FontManager.getBody();
+        this.titleFont = FontManager.getTitle();
     }
 
     public void show(String title, String text) {
@@ -40,17 +40,19 @@ public class EduPopup {
 
     public void handleInput(iInput input) {
         // : If ENTER, SPACE, or mouse click pressed → hide popup
-        if (!visible) return;
+        if (!visible)
+            return;
         if (input.isKeyJustPressed(Input.Keys.ENTER) ||
-            input.isKeyJustPressed(Input.Keys.SPACE) ||
-            input.isMouseButtonPressed(Input.Buttons.LEFT)) {
+                input.isKeyJustPressed(Input.Keys.SPACE) ||
+                input.isMouseButtonPressed(Input.Buttons.LEFT)) {
             this.visible = false;
         }
     }
 
     public void renderShapes(ShapeRenderer renderer) {
         // : If not visible, return
-        if (!visible) return;
+        if (!visible)
+            return;
 
         // : Draw centered popup box (dark background with cyan borders)
         float w = 600;
@@ -70,7 +72,8 @@ public class EduPopup {
 
     public void renderText(SpriteBatch batch) {
         // : If not visible, return
-        if (!visible) return;
+        if (!visible)
+            return;
 
         float w = 600;
         float h = 400;
@@ -83,7 +86,7 @@ public class EduPopup {
 
         // : Draw text lines in white (split by \n)
         font.setColor(Color.WHITE);
-        font.draw(batch, text, x + 50, y + h - 100);
+        font.draw(batch, text, x + 30, y + h - 100, w - 60, Align.left, true);
 
         // : Draw "Press ENTER or click to continue..." hint at bottom
         font.setColor(Color.LIGHT_GRAY);
@@ -96,7 +99,7 @@ public class EduPopup {
 
     public void dispose() {
         // : Dispose fonts
-        font.dispose();
-        titleFont.dispose();
+        // font.dispose();
+        // titleFont.dispose();
     }
 }

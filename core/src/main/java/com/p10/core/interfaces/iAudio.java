@@ -7,4 +7,8 @@ public interface iAudio {
     void playMusic(String musicName);
 
     void stopMusic();
+
+    // NEW void setMusicVolume(float volume);
+    void setMusicVolume(float volume);
+
 }

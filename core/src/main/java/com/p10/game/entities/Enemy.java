@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Align;
 import com.p10.core.entities.CollidableEntity;
 
 /**
@@ -28,6 +27,8 @@ public class Enemy extends CollidableEntity {
                                                                                // (remember to Gemini the sprite)
     private String displayName;
     private static com.badlogic.gdx.graphics.g2d.BitmapFont nameFont;
+    private com.badlogic.gdx.graphics.g2d.GlyphLayout cachedLayout;// for caching the layout of the displayName to
+                                                                   // optimize rendering
     private static boolean texturesLoaded = false;
 
     private static void loadTextures() {
@@ -216,7 +217,7 @@ public class Enemy extends CollidableEntity {
         float healthRatio = maxHealth == 0 ? 0 : health / maxHealth;
 
         float barX = position.x;
-        float barY = position.y + hitbox.getHeight() + 4;
+        float barY = position.y + hitbox.getHeight() + 18; // position above the enemy sprite (adjust as needed)
 
         // health bar background
         renderer.setColor(Color.DARK_GRAY);
@@ -286,9 +287,11 @@ public class Enemy extends CollidableEntity {
         // TODO @Rumaana: Create 5 enemy sprite PNGs (64x64, transparent bg) in
         // assets/sprites/
         // virus.png, worm.png, trojan.png, ddos.png, phishing.png
-        com.badlogic.gdx.graphics.g2d.GlyphLayout layout = new com.badlogic.gdx.graphics.g2d.GlyphLayout(nameFont, displayName);
-        float labelX = position.x + (hitbox.getWidth() / 2) - (layout.width / 2);
+        if (cachedLayout == null) {
+            cachedLayout = new com.badlogic.gdx.graphics.g2d.GlyphLayout(nameFont, displayName);
+        }
+        float labelX = position.x + (hitbox.getWidth() / 2) - (cachedLayout.width / 2);
         float labelY = position.y + hitbox.getHeight() + 14;
-        nameFont.draw(batch, layout, labelX, labelY);
+        nameFont.draw(batch, cachedLayout, labelX, labelY);
     }
 }

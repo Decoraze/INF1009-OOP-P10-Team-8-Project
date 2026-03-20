@@ -12,6 +12,7 @@ import com.p10.core.interfaces.iInput;
 import com.p10.core.interfaces.iMovement;
 import com.p10.core.interfaces.iSceneControl;
 import com.p10.core.scene.Scene;
+import com.p10.game.ui.FontManager;
 
 /**
  * GameHelpScene — explains game mechanics, tower matchups, and controls.
@@ -36,19 +37,16 @@ public class GameHelpScene extends Scene {
 
     @Override
     protected void onLoad() {
-        titleFont = new BitmapFont();
-        titleFont.getData().setScale(2f);
-        font = new BitmapFont();
-        font.getData().setScale(1.0f);
-        smallFont = new BitmapFont();
-        smallFont.getData().setScale(0.85f);
+        titleFont = FontManager.getTitle();
+        font = FontManager.getBody();
+        smallFont = FontManager.getSmall();
     }
 
     @Override
     protected void onUnload() {
-        titleFont.dispose();
-        font.dispose();
-        smallFont.dispose();
+        // titleFont.dispose();
+        // font.dispose();
+        // smallFont.dispose();
     }
 
     @Override
@@ -102,9 +100,12 @@ public class GameHelpScene extends Scene {
 
         // Game concept
         font.setColor(Color.WHITE);
-        font.draw(batch, "Defend your server from cyber threats by placing the RIGHT security towers!", 30, screenH - 70);
-        font.draw(batch, "Each tower type is effective against specific attacks. Wrong towers deal ZERO damage.", 30, screenH - 95);
-        font.draw(batch, "Place towers on GREEN tiles during PREP PHASE, then press SPACE to start each wave.", 30, screenH - 120);
+        font.draw(batch, "Defend your server from cyber threats by placing the RIGHT security towers!", 30,
+                screenH - 70);
+        font.draw(batch, "Each tower type is effective against specific attacks. Wrong towers deal ZERO damage.", 30,
+                screenH - 95);
+        font.draw(batch, "Place towers on GREEN tiles during PREP PHASE, then press SPACE to start each wave.", 30,
+                screenH - 120);
 
         // Tower matchups header
         font.setColor(Color.CYAN);
@@ -146,18 +147,27 @@ public class GameHelpScene extends Scene {
 
         // Gameplay tips
         smallFont.setColor(Color.YELLOW);
-        smallFont.draw(batch, "STRATEGY: Place towers NEXT to the path. Enemies walk along tan/brown tiles toward your server.", 30, 250);
-        smallFont.draw(batch, "You earn $50 bonus currency after each wave. Killing enemies also gives currency and score.", 30, 230);
+        smallFont.draw(batch,
+                "STRATEGY: Place towers NEXT to the path. Enemies walk along tan/brown tiles toward your server.", 30,
+                250);
+        smallFont.draw(batch,
+                "You earn $50 bonus currency after each wave. Killing enemies also gives currency and score.", 30, 230);
         smallFont.draw(batch, "If enemies reach your server, you lose lives. Game over when lives hit 0!", 30, 210);
-        smallFont.draw(batch, "Level 4 (Mixed Assault) requires Defense in Depth — use ALL tower types to counter mixed threats.", 30, 190);
+        smallFont.draw(batch,
+                "Level 4 (Mixed Assault) requires Defense in Depth — use ALL tower types to counter mixed threats.", 30,
+                190);
         smallFont.draw(batch, "This teaches the real-world cybersecurity concept of layered security.", 30, 170);
 
         // Controls section
         font.setColor(Color.CYAN);
         font.draw(batch, "CONTROLS:", 30, 130);
         smallFont.setColor(Color.WHITE);
-        smallFont.draw(batch, "[1][2][3][4] — Select tower type       [CLICK] — Place tower on grid       [SPACE] — Start wave", 30, 108);
-        smallFont.draw(batch, "[M] — Toggle music on/off              [ESC] — Return to main menu          [ENTER] — Dismiss popups", 30, 88);
+        smallFont.draw(batch,
+                "[1][2][3][4] — Select tower type       [CLICK] — Place tower on grid       [SPACE] — Start wave", 30,
+                108);
+        smallFont.draw(batch,
+                "[M] — Toggle music on/off              [ESC] — Return to main menu          [ENTER] — Dismiss popups",
+                30, 88);
 
         // Footer
         font.setColor(Color.LIGHT_GRAY);

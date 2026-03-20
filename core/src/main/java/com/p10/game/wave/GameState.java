@@ -182,12 +182,4 @@ public class GameState {
             lives = 0;
     }
 
-
-    public boolean isInPrepPhase() { // consolidated — uses same field as isPrepPhase()
-        return prepPhase;
-    }
-
-    public void setInPrepPhase(boolean prep) {
-        this.prepPhase = prep; // synced with isPrepPhase()
-    }
 }

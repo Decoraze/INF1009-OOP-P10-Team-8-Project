@@ -89,7 +89,7 @@ public class WaveManager {
                 currentWaveIndex++;
                 enemiesSpawned = 0;
                 spawnTimer = 0;
-                state.setInPrepPhase(true);
+                state.setPrepPhase(true);
                 // Give currency bonus for completing wave
                 state.addCurrency(50);
             }

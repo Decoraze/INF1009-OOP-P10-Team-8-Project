@@ -1,6 +1,7 @@
 package com.p10.game.scenes;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -11,6 +12,7 @@ import com.p10.core.interfaces.iInput;
 import com.p10.core.interfaces.iMovement;
 import com.p10.core.interfaces.iSceneControl;
 import com.p10.core.scene.Scene;
+import com.p10.game.ui.FontManager;
 import com.p10.game.wave.LevelConfig;
 
 /**
@@ -33,18 +35,16 @@ public class LevelSelectScene extends Scene {
 
     @Override
     protected void onLoad() {
-        // : Initialize fonts (titleFont scale 2, font scale 1.2)
-        titleFont = new BitmapFont();
-        titleFont.getData().setScale(2);
-        font = new BitmapFont();
-        font.getData().setScale(1.2f);
+        // : Initialize fonts
+        titleFont = FontManager.getTitle();
+        font = FontManager.getBody();
     }
 
     @Override
     protected void onUnload() {
         // : Dispose fonts
-        titleFont.dispose();
-        font.dispose();
+        // titleFont.dispose();
+        // font.dispose();
     }
 
     @Override
@@ -91,13 +91,27 @@ public class LevelSelectScene extends Scene {
         // Level 4 Mixed: teal (0.2f, 0.7f, 0.7f, 1)
         // If adding level 5/6: gold (0.9f, 0.8f, 0.1f) and grey (0.5f, 0.5f, 0.5f)
         // May need to rearrange to 2x3 grid layout to fit 6 boxes
-        renderer.setColor(0.3f, 0.3f, 0.3f, 1);
-
-        renderer.rect(100, 100, 200, 100);
-        renderer.rect(350, 100, 200, 100);
-        renderer.rect(100, 250, 200, 100);
-        renderer.rect(350, 250, 200, 100);
-
+        // 2x3 grid layout, color-coded per threat type
+        Color[] boxColors = {
+                new Color(0.8f, 0.5f, 0.1f, 1), // DDoS — orange
+                new Color(0.8f, 0.2f, 0.2f, 1), // Virus — red
+                new Color(0.6f, 0.2f, 0.8f, 1), // Phishing — purple
+                new Color(0.2f, 0.7f, 0.7f, 1), // Mixed — teal
+                new Color(0.9f, 0.8f, 0.1f, 1), // Full Spectrum — gold
+                new Color(0.5f, 0.5f, 0.5f, 1), // Survival — grey
+        };
+        float boxW = 200, boxH = 80, gapX = 50, gapY = 20;// box dimensions and spacing
+        float startX = (screenW - (2 * boxW + gapX)) / 2f;// center grid horizontally
+        float startY = 60;// start from bottom with some padding
+        // Draw 2x3 grid of boxes
+        for (int i = 0; i < 6; i++) {
+            int col = i % 2;
+            int row = i / 2;
+            float bx = startX + col * (boxW + gapX);
+            float by = startY + (2 - row) * (boxH + gapY);
+            renderer.setColor(boxColors[i]);// set color per level
+            renderer.rect(bx, by, boxW, boxH);// box background
+        }
     }
 
     @Override
@@ -105,15 +119,25 @@ public class LevelSelectScene extends Scene {
         // : Draw title "SELECT LEVEL"
 
         titleFont.setColor(1, 1, 1, 1);
-        titleFont.draw(batch, "SELECT LEVEL", screenW / 2 - 100, screenH - 50);
-        // : Draw level labels with descriptions and key hints
         font.setColor(1, 1, 1, 1);
-        font.draw(batch, "1: DDoS Attack\n- Many fast weak enemies\n- Use FIREWALL [1]", 110, 180);
-        font.draw(batch, "2: Virus Outbreak\n- Few tanky enemies\n- Use ANTIVIRUS [2]", 360, 180);
-        font.draw(batch, "3: Phishing Campaign\n- Fast fragile enemies\n- Use ENCRYPTION [3]", 110, 330);
-        font.draw(batch, "4: Mixed Assault\n- All threat types\n- Use ALL towers!", 360, 330);
-        // : Draw ESC hint
-        font.draw(batch, "ESC: Back to Main Menu", 10, 20);
-
+        float boxW = 200, boxH = 80, gapX = 50, gapY = 20;// box dimensions and spacing
+        float lx = (screenW - (2 * boxW + gapX)) / 2f;// same startX as shapes for text alignment
+        float ly = 60;// same startY as shapes for text alignment
+        // : Draw 6 level options with brief descriptions (can be multiline)
+        String[] labels = {
+                "1: DDoS Attack\n- FIREWALL",
+                "2: Virus Outbreak\n- ANTIVIRUS",
+                "3: Phishing\nCampaign\n- ENCRYPTION",
+                "4: Mixed Assault\n- All threat types\n- ALL towers!",
+                "5: Full Spectrum\n- 6 hard waves\n- Tight budget!",
+                "6: Survival Mode\n- 10 waves\n- Only 5 lives!",
+        };
+        for (int i = 0; i < 6; i++) {
+            int col = i % 2;
+            int row = i / 2;
+            float bx = lx + col * (boxW + gapX) + 10;
+            float by = ly + (2 - row) * (boxH + gapY) + boxH - 10;
+            font.draw(batch, labels[i], bx, by);
+        }
     }
 }

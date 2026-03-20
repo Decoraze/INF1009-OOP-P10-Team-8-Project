@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.interfaces.iInput;
+import com.p10.game.entities.Tower;
 import com.p10.game.grid.TowerPlacer;
 import com.p10.game.wave.GameState;
 
@@ -23,7 +24,7 @@ public class HUD {
     private BitmapFont smallFont;
     private float screenW, screenH;
     private static final float BAR_HEIGHT = 50f;
-    private static final float CARD_W = 80f;
+    private static final float CARD_W = 100f;
     private static final float CARD_H = 65f;
     private static final float CARD_GAP = 8f;
 
@@ -38,11 +39,9 @@ public class HUD {
     public HUD(float screenW, float screenH) {
         this.screenW = screenW;
         this.screenH = screenH;
-        // : Initialize fonts (font scale 1.2, smallFont scale 0.8)
-        this.font = new BitmapFont();
-        this.font.getData().setScale(1.2f);
-        this.smallFont = new BitmapFont();
-        this.smallFont.getData().setScale(0.8f);
+        // : Initialize fonts
+        this.font = FontManager.getBody();
+        this.smallFont = FontManager.getSmall();
     }
 
     public void renderShapes(ShapeRenderer renderer, GameState state, TowerPlacer placer) {// added TowerPlacer to check
@@ -86,10 +85,10 @@ public class HUD {
             if (!state.isPrepPhase()) {
                 renderer.setColor(0.3f, 0.3f, 0.3f, 1f);
             } else if (!canAfford) {
-                Color tc = getTowerColor(towers[i]);
+                Color tc = Tower.getColorForType(towers[i]);
                 renderer.setColor(tc.r * 0.4f, tc.g * 0.4f, tc.b * 0.4f, 1f);
             } else {
-                renderer.setColor(getTowerColor(towers[i]));
+                renderer.setColor(Tower.getColorForType(towers[i]));
             }
 
             renderer.rect(cx, startY, CARD_W, CARD_H);
@@ -100,10 +99,12 @@ public class HUD {
             // Then switch back to ShapeType.Filled
 
             if (placer.getSelectedTowerType() != null && placer.getSelectedTowerType().equalsIgnoreCase(towers[i])) {
-                renderer.set(ShapeRenderer.ShapeType.Line);
+                renderer.end();
+                renderer.begin(ShapeRenderer.ShapeType.Line);
                 renderer.setColor(Color.YELLOW);
                 renderer.rect(cx - 3, startY - 3, CARD_W + 6, CARD_H + 6);
-                renderer.set(ShapeRenderer.ShapeType.Filled); // Switch back to filled for the next cards
+                renderer.end();
+                renderer.begin(ShapeRenderer.ShapeType.Filled);
             }
         }
 
@@ -184,21 +185,10 @@ public class HUD {
         }
     }
 
-    private Color getTowerColor(String type) {
-        // : Return color per tower type (same as Tower.getTowerColor())
-        switch (type.toUpperCase()) {
-            case "FIREWALL":
-                return Color.ORANGE;
-            case "ANTIVIRUS":
-                return Color.GREEN;
-            case "ENCRYPTION":
-                return Color.CYAN;
-            case "IDS":
-                return Color.PURPLE;
-            default:
-                return Color.WHITE;
-        }
-    }
+    // deleted get colour method as we can just use the Tower.getColorForType method
+    // in
+    // Tower class to get the color for each tower type, no need to duplicate in
+    // HUD.
 
     // TODO @ChayHan: Render contextual instruction text during gameplay
     // Prep phase + no tower selected: "[1]-[4] select tower | Click/drag to place |
@@ -213,10 +203,12 @@ public class HUD {
 
         if (state.isPrepPhase()) {
             if (placer.getSelectedTowerType() == null && !placer.isDragging()) {
-                smallFont.draw(batch, "[1]-[4] select tower | Click/drag to place | SPACE to start", screenW / 2 - 220, yPos);
+                smallFont.draw(batch, "[1]-[4] select tower | Click/drag to place | SPACE to start", screenW / 2 - 220,
+                        yPos);
             } else {
                 String type = placer.isDragging() ? "DRAGGING" : placer.getSelectedTowerType();
-                smallFont.draw(batch, "Selected: " + type + " | Click/drop to place | Right-click to sell", screenW / 2 - 220, yPos);
+                smallFont.draw(batch, "Selected: " + type + " | Click/drop to place | Right-click to sell",
+                        screenW / 2 - 220, yPos);
             }
         } else {
             smallFont.draw(batch, "Wave in progress! Match towers to threats!", screenW / 2 - 150, yPos);
@@ -237,8 +229,8 @@ public class HUD {
     public void dispose() {
         // : Dispose fonts
 
-        font.dispose();
-        smallFont.dispose();
+        // font.dispose();
+        // smallFont.dispose();
     }
 
     public BitmapFont getFont() {

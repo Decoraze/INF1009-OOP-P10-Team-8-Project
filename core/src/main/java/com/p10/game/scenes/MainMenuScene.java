@@ -12,6 +12,7 @@ import com.p10.core.interfaces.iInput;
 import com.p10.core.interfaces.iMovement;
 import com.p10.core.interfaces.iSceneControl;
 import com.p10.core.scene.Scene;
+import com.p10.game.ui.FontManager;
 
 /**
  * MainMenuScene displays the game title and menu options.
@@ -35,18 +36,16 @@ public class MainMenuScene extends Scene {
 
     @Override
     protected void onLoad() {
-        // : Initialize fonts (titleFont scale 3, menuFont scale 1.5)
-        titleFont = new BitmapFont();
-        titleFont.getData().setScale(3);
-        menuFont = new BitmapFont();
-        menuFont.getData().setScale(1.5f);
+        // : Initialize fonts
+        titleFont = FontManager.getTitle();
+        menuFont = FontManager.getBody();
     }
 
     @Override
     protected void onUnload() {
         // : Dispose fonts
-        titleFont.dispose();
-        menuFont.dispose();
+        // titleFont.dispose();
+        // menuFont.dispose();
     }
 
     @Override

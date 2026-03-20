@@ -56,7 +56,7 @@ configure(subprojects) {
 
 subprojects {
   version = "$projectVersion"
-  ext.appName = 'INF1009 P10'
+  ext.appName = 'INF1009-P10'
   repositories {
     mavenCentral()
     // You may want to remove the following line if you have errors downloading dependencies.

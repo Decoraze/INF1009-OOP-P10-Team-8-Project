@@ -1,5 +1,6 @@
 package com.p10.game.grid;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -42,9 +43,9 @@ public class GridManager {
 		this.tiles = new Tile[gridHeight][gridWidth];
 
 		// Center grid horizontally, offset vertically above shop bar (90px from bottom)
-		this.offsetX = (800 - gridWidth * tileSize) / 2f;
+		// allso replaced hard coded value with dynamic calcs
+		this.offsetX = (Gdx.graphics.getWidth() - gridWidth * tileSize) / 2f;
 		this.offsetY = 90;
-
 		for (int row = 0; row < gridHeight; row++) {
 			for (int col = 0; col < gridWidth; col++) {
 				TileType type = layout[row][col] == 1 ? TileType.PATH
@@ -169,9 +170,12 @@ public class GridManager {
 				renderer.rect(px, py, tileSize, tileSize);
 			}
 		}
+	}
 
-		// Grid lines for clarity
-		renderer.setColor(0.15f, 0.15f, 0.15f, 1f);
+	// rendering grid lines for on hover
+	public void renderGridLines(ShapeRenderer renderer) {
+		// basically copied old code from abovew to here instead.
+		renderer.setColor(0.15f, 0.15f, 0.15f, 0.4f);
 		for (int col = 0; col <= gridWidth; col++) {
 			float x = offsetX + col * tileSize;
 			renderer.rectLine(x, offsetY, x, offsetY + gridHeight * tileSize, 1);

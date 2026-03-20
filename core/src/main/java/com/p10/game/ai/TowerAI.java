@@ -87,13 +87,4 @@ public class TowerAI {
 		}
 
 	}
-
-	private float dst(float x1, float y1, float x2, float y2) {
-		// : Euclidean distance
-
-		float diffx = x2 - x1;
-		float diffy = y2 - y1;
-
-		return (float) Math.sqrt(diffx * diffx + diffy * diffy);
-	}
 }

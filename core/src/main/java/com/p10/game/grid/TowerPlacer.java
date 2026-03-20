@@ -1,5 +1,8 @@
 package com.p10.game.grid;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.p10.core.interfaces.iEntityOps;
@@ -8,11 +11,6 @@ import com.p10.game.entities.Tower;
 import com.p10.game.grid.Tile.TileType;
 import com.p10.game.wave.GameState;
 
-/*
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer; uncomment this once implemeted otherwise it will disappear zz*/
 /**
  * TowerPlacer handles mouse-click tower placement during prep phase.
  * Converts screen click to grid position, validates placement, creates Tower
@@ -101,26 +99,55 @@ public class TowerPlacer {
     // IDS=160)
     // 6. Use GL_BLEND to draw translucent filled circle + line border
     // 7. Also draw yellow rect outline on hovered tile
+    /*
+     * public void renderHoverRange(ShapeRenderer renderer, GridManager grid,
+     * float mouseX, float mouseY) {
+     * // TODO @JunMing
+     * int[] gPos = grid.pixelToGrid(mouseX, mouseY);
+     * if (dragTowerType == null && !isDragging)
+     * {
+     * return;
+     * }
+     * 
+     * if(!grid.isBuildable(gPos[0], gPos[1]))
+     * {
+     * return;
+     * }
+     * 
+     * Vector2 pPos = grid.gridToPixel(gPos[0], gPos[1]);
+     * float centerX = pPos.x + (grid.getTileSize() / 2);
+     * float centerY = pPos.y + (grid.getTileSize() / 2);
+     * // Create temp tower instance to show range before placement and creation of
+     * actual tower instance
+     * Tower tmp = new Tower("tmp", centerX, centerY, grid.getTileSize(),
+     * grid.getTileSize(), getSelectedTowerType());
+     * tmp.showTowerRange(renderer, centerX, centerY, tmp.getTowerColor());
+     * }
+     */
+    // using the new dragTowerType to show range when dragging, and
+    // selectedTowerType when just hovering without dragging in tower.java
     public void renderHoverRange(ShapeRenderer renderer, GridManager grid,
             float mouseX, float mouseY) {
-        // TODO @JunMing
-    	int[] gPos = grid.pixelToGrid(mouseX, mouseY);
-    	if (dragTowerType == null && !isDragging)
-    	{
-    		return;
-    	}
+        String activeType = dragTowerType != null ? dragTowerType : selectedTowerType;
+        if (activeType == null && !isDragging) {
+            return;
+        }
 
-    	if(!grid.isBuildable(gPos[0], gPos[1]))
-    	{
-    		return;
-    	}
+        int[] gPos = grid.pixelToGrid(mouseX, mouseY);// this is put here rather than above activeType check because we
+                                                      // want to return early if the tile is not buildable, even if the
+                                                      // player is dragging a tower
+        if (!grid.isBuildable(gPos[0], gPos[1])) {
+            return;
+        }
 
-    	Vector2 pPos = grid.gridToPixel(gPos[0], gPos[1]);
-    	float centerX = pPos.x + (grid.getTileSize() / 2);
-    	float centerY = pPos.y + (grid.getTileSize() / 2);
-    	// Create temp tower instance to show range before placement and creation of actual tower instance
-    	Tower tmp = new Tower("tmp", centerX, centerY, grid.getTileSize(), grid.getTileSize(), getSelectedTowerType());
-    	tmp.showTowerRange(renderer, centerX, centerY, tmp.getTowerColor());
+        Vector2 pPos = grid.gridToPixel(gPos[0], gPos[1]);
+        float centerX = pPos.x + (grid.getTileSize() / 2f);
+        float centerY = pPos.y + (grid.getTileSize() / 2f);
+        // used new getters in Tower.java to get range and color based on activeType
+        // (dragTowerType if dragging, otherwise selectedTowerType)
+        float range = Tower.getRangeForType(activeType);
+        Color color = Tower.getColorForType(activeType);
+        Tower.drawRangeCircle(renderer, centerX, centerY, range, color);
     }
 
     // TODO @ChayHan: Drag-and-drop tower placement
@@ -136,21 +163,20 @@ public class TowerPlacer {
     public void handleDrag(float mouseX, float mouseY, boolean mouseDown,
             GridManager grid, GameState state, iEntityOps entityOps) {
         if (mouseDown && !isDragging) {
-            // Check if click is on a tower card in bottom HUD
-            String[] towers = {"FIREWALL", "ANTIVIRUS", "ENCRYPTION", "IDS"};
+            // Check if click is on a tower card in bottom HUD (updated to reflect all tower
+            // types rather than the 4 hardcoded ones that used a tower array)
             float startX = 20f;
             float startY = 10f;
-            float cardW = 80f;
+            float cardW = 100f;
             float cardH = 65f;
             float gap = 8f;
 
-            for (int i = 0; i < towers.length; i++) {
+            for (int i = 0; i < GameState.ALL_TOWER_TYPES.length; i++) {
                 float cx = startX + i * (cardW + gap);
-                // Check if mouse is within card boundaries
                 if (mouseX >= cx && mouseX <= cx + cardW && mouseY >= startY && mouseY <= startY + cardH) {
-                    if (state.canAfford(towers[i])) {
+                    if (state.canAfford(GameState.ALL_TOWER_TYPES[i])) {
                         isDragging = true;
-                        dragTowerType = towers[i];
+                        dragTowerType = GameState.ALL_TOWER_TYPES[i];
                         dragX = mouseX;
                         dragY = mouseY;
                     }
@@ -170,7 +196,7 @@ public class TowerPlacer {
                     Vector2 towerPos = grid.gridToPixel(gridPos[0], gridPos[1]);
 
                     Tower newTower = new Tower("Tower" + towerCount++, towerPos.x, towerPos.y,
-                        grid.getTileSize(), grid.getTileSize(), dragTowerType);
+                            grid.getTileSize(), grid.getTileSize(), dragTowerType);
                     entityOps.addEntity(newTower);
                     grid.placeTower(gridPos[0], gridPos[1], newTower);
                 }
@@ -186,30 +212,16 @@ public class TowerPlacer {
     // If not dragging, return. Otherwise draw rect at dragX/dragY with 0.4f alpha
     // using GL_BLEND
     public void renderDragGhost(ShapeRenderer renderer) {
-        if (!isDragging || dragTowerType == null) return;
+        if (!isDragging || dragTowerType == null)
+            return;
 
-        // Enable blending for transparency
+        Color c = Tower.getColorForType(dragTowerType);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-        // Map type to color
-        Color c = Color.WHITE;
-        switch(dragTowerType.toUpperCase()) {
-            case "FIREWALL": c = Color.ORANGE; break;
-            case "ANTIVIRUS": c = Color.GREEN; break;
-            case "ENCRYPTION": c = Color.CYAN; break;
-            case "IDS": c = Color.PURPLE; break;
-        }
-
-        renderer.setColor(c.r, c.g, c.b, 0.4f); // 0.4f alpha
-        // Draw centered on mouse (Assuming 48x48 tile size from grid initialization)
+        renderer.setColor(c.r, c.g, c.b, 0.4f);
         renderer.rect(dragX - 24f, dragY - 24f, 48f, 48f);
-
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
-
-
-
 
     // TODO @JunMing: Sell tower on right-click
     // 1. Convert mouseX/mouseY to grid pos
@@ -222,18 +234,18 @@ public class TowerPlacer {
     public boolean handleSell(float mouseX, float mouseY, GridManager grid,
             GameState state, iEntityOps entityOps) {
         // TODO @JunMing
-    	int[] gPos = grid.pixelToGrid(mouseX, mouseY);
-    	Tile target = grid.getTile(gPos[0], gPos[1]);
-    	// Check if tower on tile
-    	if (target.getType() == TileType.OCCUPIED)
-    	{
-    		// Refund 1/2 currency, Remove entity, set Tile back to buildable, clear towerRef on tile
-    		state.addCurrency(GameState.getPrice(target.getTowerRef().getTowerType()) / 2);
-    		entityOps.removeEntity(target.getTowerRef().getId());
-    		target.setType(TileType.BUILDABLE);
-    		target.setTowerRef(null);
-    		return true;
-    	}
+        int[] gPos = grid.pixelToGrid(mouseX, mouseY);
+        Tile target = grid.getTile(gPos[0], gPos[1]);
+        // Check if tower on tile
+        if (target.getType() == TileType.OCCUPIED) {
+            // Refund 1/2 currency, Remove entity, set Tile back to buildable, clear
+            // towerRef on tile
+            state.addCurrency(GameState.getPrice(target.getTowerRef().getTowerType()) / 2);
+            entityOps.removeEntity(target.getTowerRef().getId());
+            target.setType(TileType.BUILDABLE);
+            target.setTowerRef(null);
+            return true;
+        }
         return false;
     }
 

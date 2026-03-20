@@ -2,12 +2,10 @@ package com.p10.game.grid;
 
 import java.util.List;
 
-import com.p10.core.interfaces.iEntityOps;
 import com.p10.core.entities.Entity;
 import com.p10.game.entities.Enemy;
 import com.p10.game.entities.Projectile;
 import com.p10.game.entities.Server;
-import com.p10.game.entities.Tower;
 import com.p10.game.wave.GameState;
 
 /**
@@ -75,7 +73,17 @@ public class GameCollisionHandler {
 						}
 					}
 				}
-
+				// reset your variables before next check this is because the Projectile vs
+				// Enemy check runs, sets Enemy. That enemy variable is never resetted before
+				// Enemy vs Server check below
+				// so if pair, Enemy vs Projectile runs first and sets enemy variable, then when
+				// Enemy vs Server check runs, enemy variable is not null even if there is no
+				// Enemy in that pair, which causes a bug where if any projectile hits an enemy,
+				// the next Enemy vs Server check will always run as if there is an enemy, even
+				// if there isn't one in that pair
+				enemy = null;
+				p = null;
+				server = null;
 				// Enemy VS Server
 				if (e1 instanceof Enemy && e2 instanceof Server) // Case as child class
 				{
@@ -110,10 +118,9 @@ public class GameCollisionHandler {
 			}
 		}
 	}
-	
+
 	public void deactivateAllEntities(List<Entity> allEntities) {
-		for (int i = 0; i < allEntities.size(); i++)
-		{
+		for (int i = 0; i < allEntities.size(); i++) {
 			allEntities.get(i).setActive(false);
 		}
 	}

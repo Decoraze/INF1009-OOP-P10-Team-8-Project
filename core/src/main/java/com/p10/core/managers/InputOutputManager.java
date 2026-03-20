@@ -19,9 +19,9 @@ public class InputOutputManager implements iInput, iAudio {// now got iAudio so 
         this.audioOutput = new AudioOutput();
         System.out.println("[InputOutputManager] Initialized");
     }
-    
+
     public void loadAudio() {
-    	audioOutput.audioFiles();
+        audioOutput.audioFiles();
     }
 
     public void handleInput() {
@@ -62,6 +62,11 @@ public class InputOutputManager implements iInput, iAudio {// now got iAudio so 
     @Override
     public void stopMusic() {
         audioOutput.stopMusic();
+    }
+
+    @Override
+    public void setMusicVolume(float volume) {
+        audioOutput.setMusicVolume(volume);
     }
 
     public void dispose() {

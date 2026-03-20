@@ -80,7 +80,7 @@ public class LevelConfig {
         cfg.towerPool = new String[] { "Firewall" };
         cfg.handSize = 5;
         cfg.startCurrency = 100;
-        cfg.startLives = 20;
+        cfg.startLives = 10;
         // : Add 3 waves of DDOS enemies with increasing difficulty
         cfg.waves.add(WaveData.ddosWave(1, 10, 1.0f, 1.0f));
         cfg.waves.add(WaveData.ddosWave(2, 15, 1.2f, 1.2f));
@@ -148,7 +148,7 @@ public class LevelConfig {
         cfg.handSize = 5;
         cfg.startCurrency = 100;
         cfg.startLives = 12;
-        cfg.waves.add(WaveData.phishingWave(1, 8, 1.5f, 0.5f));		// Changed to 8 
+        cfg.waves.add(WaveData.phishingWave(1, 8, 1.5f, 0.5f)); // Changed to 8
         cfg.waves.add(WaveData.phishingWave(2, 10, 1.7f, 0.9f));
         cfg.waves.add(WaveData.phishingWave(3, 12, 2.0f, 1.1f));
         cfg.gridLayout = new int[][] {
@@ -188,13 +188,73 @@ public class LevelConfig {
         cfg.waves.add(WaveData.trojanWave(4, 5, 0.8f, 1.5f));
         cfg.waves.add(WaveData.wormWave(5, 8, 1.2f, 1.0f));
         cfg.gridLayout = new int[][] {
-                { 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
-                { 0, 1, 1, 1, 1, 1, 1, 0, 1, 0 },
-                { 0, 1, 0, 0, 0, 0, 1, 0, 1, 0 },
-                { 0, 1, 0, 0, 0, 0, 1, 0, 1, 0 },
-                { 0, 1, 1, 1, 1, 1, 1, 0, 1, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 1, 1, 1, 1, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
+                { 0, 1, 1, 1, 1, 1, 0, 1, 0, 0 },
+                { 0, 1, 0, 0, 0, 1, 1, 1, 0, 0 },
+                { 0, 1, 1, 1, 1, 1, 0, 0, 0, 0 },
+        };
+        return cfg;
+    }
+
+    public static LevelConfig level5_FullSpectrum() {
+        LevelConfig cfg = new LevelConfig();
+        cfg.levelName = "Full Spectrum";
+        cfg.attackTheme = "All Threats";
+        cfg.educationalText = "LEVEL 5: FULL SPECTRUM ASSAULT\n\nAdvanced persistent threats use EVERY attack vector.\nYou must build a complete security stack.\n\nAll towers available — budget is tight.\nPrioritize counters for each wave's threat type.\n\nDefense in Depth is your only option!";
+        cfg.towerPool = new String[] { "FIREWALL", "ANTIVIRUS", "ENCRYPTION", "IDS" };
+        cfg.handSize = 6;
+        cfg.startCurrency = 120;
+        cfg.startLives = 8;
+        cfg.waves.add(WaveData.ddosWave(1, 12, 1.2f, 1.2f));
+        cfg.waves.add(WaveData.virusWave(2, 8, 1.4f, 1.0f));
+        cfg.waves.add(WaveData.wormWave(3, 10, 1.3f, 1.3f));
+        cfg.waves.add(WaveData.phishingWave(4, 15, 1.5f, 1.2f));
+        cfg.waves.add(WaveData.trojanWave(5, 6, 2.0f, 0.8f));
+        cfg.waves.add(WaveData.ddosWave(6, 20, 1.6f, 1.5f));
+        cfg.gridLayout = new int[][] {
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 1, 0, 0, 1, 1, 1, 1, 0, 0 },
+                { 0, 1, 1, 1, 1, 0, 0, 1, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
+                { 0, 0, 1, 1, 1, 1, 1, 1, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1 },
+        };
+        return cfg;
+    }
+
+    public static LevelConfig level6_Survival() {
+        LevelConfig cfg = new LevelConfig();
+        cfg.levelName = "Survival Mode";
+        cfg.attackTheme = "Endless";
+        cfg.educationalText = "LEVEL 6: SURVIVAL MODE\n\nWave after wave of escalating threats.\nNo end in sight — how long can you last?\n\nEvery wave gets harder.\nManage your economy carefully.\n\nThis is the ultimate test of your cybersecurity knowledge!";
+        cfg.towerPool = new String[] { "FIREWALL", "ANTIVIRUS", "ENCRYPTION", "IDS" };
+        cfg.handSize = 6;
+        cfg.startCurrency = 200;
+        cfg.startLives = 5;
+        cfg.waves.add(WaveData.ddosWave(1, 8, 1.0f, 1.0f));
+        cfg.waves.add(WaveData.virusWave(2, 6, 1.2f, 1.0f));
+        cfg.waves.add(WaveData.phishingWave(3, 12, 1.0f, 1.3f));
+        cfg.waves.add(WaveData.trojanWave(4, 5, 1.5f, 1.0f));
+        cfg.waves.add(WaveData.wormWave(5, 10, 1.3f, 1.2f));
+        cfg.waves.add(WaveData.ddosWave(6, 15, 1.5f, 1.4f));
+        cfg.waves.add(WaveData.virusWave(7, 10, 1.8f, 1.2f));
+        cfg.waves.add(WaveData.phishingWave(8, 20, 1.5f, 1.5f));
+        cfg.waves.add(WaveData.trojanWave(9, 8, 2.5f, 1.0f));
+        cfg.waves.add(WaveData.wormWave(10, 15, 2.0f, 1.8f));
+        cfg.gridLayout = new int[][] {
+                { 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 1, 1, 1, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 1, 1, 1, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 1, 1, 0 },
                 { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
         };
         return cfg;

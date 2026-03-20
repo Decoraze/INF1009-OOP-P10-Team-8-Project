@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -27,6 +28,7 @@ import com.p10.game.grid.GameCollisionHandler;
 import com.p10.game.grid.GridManager;
 import com.p10.game.grid.TowerPlacer;
 import com.p10.game.ui.EduPopup;
+import com.p10.game.ui.FontManager;
 import com.p10.game.ui.HUD;
 import com.p10.game.wave.GameState;
 import com.p10.game.wave.LevelConfig;
@@ -62,8 +64,11 @@ public class GameplayScene extends Scene {
     // TODO @ChayHan: Pause state
     private boolean isPaused = false;
     // TODO @HuiYang: Win auto-transition timer
-    private float winTimer = 0f;
-
+    // private float winTimer = 0f;
+    // init music slider, pause button dimensions
+    private float musicVolume = 1.0f;
+    private static final float PAUSE_BTN_W = 180f;
+    private static final float PAUSE_BTN_H = 40f;
     // Static field so LevelSelectScene can set which level to play
     private static LevelConfig selectedLevel = null;
 
@@ -140,12 +145,14 @@ public class GameplayScene extends Scene {
         // If isPaused: return immediately (skip all game logic)
         // : If edu popup visible, handle its input and return
 
-        if (input.isKeyJustPressed(Keys.P) && !eduPopup.isVisible() && !gameState.isGameOver() && !gameState.isGameWon()) {
+        if (input.isKeyJustPressed(Keys.P) && !eduPopup.isVisible() && !gameState.isGameOver()
+                && !gameState.isGameWon()) {
             isPaused = !isPaused;
         }
 
         if (isPaused) {
-            return; // Skip all game logic if paused
+            handlePauseInput();
+            return;
         }
 
         if (eduPopup.isVisible()) {
@@ -160,9 +167,8 @@ public class GameplayScene extends Scene {
             return;
         }
         if (gameState.isGameWon()) {
-            winTimer += dt;
-            if (winTimer >= 3f || input.isKeyJustPressed(Keys.ENTER)) {
-                sceneCtrl.switchScene("MainMenu");
+            if (input.isKeyJustPressed(Keys.ENTER)) {
+                sceneCtrl.switchScene("LevelSelect");
             }
             return;
         }
@@ -170,7 +176,7 @@ public class GameplayScene extends Scene {
         // : If all waves done, set game won
         if (waveManager.isAllWavesDone() && !gameState.isGameWon()) {
             gameState.setGameWon(true);
-            winTimer = 0f;
+            // winTimer = 0f;
             for (Entity e : new ArrayList<>(entityOps.getAllEntities())) {
                 if (e instanceof Enemy || e instanceof Projectile) {
                     entityOps.removeEntity(e.getId());
@@ -180,7 +186,7 @@ public class GameplayScene extends Scene {
         // : Handle HUD input (tower selection)
         hud.handleInput(input, gameState, towerPlacer);
         // : Handle tower placement
-        if (gameState.isInPrepPhase()) {
+        if (gameState.isPrepPhase()) {
             towerPlacer.handleInput(input, gridManager, gameState, entityOps, screenH);
             // TODO @ChayHan: Call towerPlacer.handleDrag() here for drag-and-drop
             // Get mouse pos: Gdx.input.getX(), screenH - Gdx.input.getY()
@@ -193,14 +199,15 @@ public class GameplayScene extends Scene {
             // TODO @JunMing: Right-click sell — check Gdx.input.isButtonJustPressed(1)
             // If right-clicked, call towerPlacer.handleSell(mouseX, mouseY, gridManager,
             // gameState, entityOps)
-            if (Gdx.input.isButtonJustPressed(1))
-            {
-            	towerPlacer.handleSell(input.getMousePosition().x, input.getMousePosition().y, gridManager, gameState, entityOps);
+            // edited as mouseX and Y were already declared with y inversion above for the
+            // drag-and-drop handling, so just reuse those variables here
+            if (Gdx.input.isButtonJustPressed(1)) {
+                towerPlacer.handleSell(mouseX, mouseY, gridManager, gameState, entityOps);
             }
         }
         // : PREP PHASE: wait for SPACE to start wave
-        if (gameState.isInPrepPhase() && input.isKeyJustPressed(Keys.SPACE)) {
-            gameState.setInPrepPhase(false);
+        if (gameState.isPrepPhase() && input.isKeyJustPressed(Keys.SPACE)) {
+            gameState.setPrepPhase(false);
             // Play wave start sound
             try {
                 audio.playSound("wave_start");
@@ -209,7 +216,7 @@ public class GameplayScene extends Scene {
         }
         // : WAVE PHASE:
         // - Update WaveManager (spawn enemies)
-        if (!gameState.isInPrepPhase()) {
+        if (!gameState.isPrepPhase()) {
             waveManager.update(dt, entityOps, path, gameState);
         }
         // - Gather enemies and towers from entity list
@@ -255,9 +262,9 @@ public class GameplayScene extends Scene {
                 }
             }
         }
-        // : ESC to return to MainMenu
+        // : ESC: pause btn
         if (input.isKeyJustPressed(Keys.ESCAPE)) {
-            sceneCtrl.switchScene("MainMenu");
+            isPaused = true;
         }
     }
 
@@ -273,44 +280,110 @@ public class GameplayScene extends Scene {
         }
     }
 
+    // paude input handling method. handles button clicks, volume slider and
+    // unpausing the game
+    private void handlePauseInput() {
+        float cx = screenW / 2f;
+        float midY = screenH / 2f;
+
+        // Button positions (must match renderPauseMenu)
+        float continueY = midY + 30;
+        float restartY = midY - 20;
+        float exitY = midY - 70;
+        float volSliderX = cx - 80;
+        float volSliderY = midY - 120;
+        float sliderW = 160f;
+        // clean esc from the pause UI
+        if (input.isKeyJustPressed(Keys.ESCAPE) || input.isKeyJustPressed(Keys.P)) {
+            isPaused = false;
+            return;
+        }
+        if (Gdx.input.justTouched()) {
+            float mx = Gdx.input.getX();
+            float my = screenH - Gdx.input.getY();
+
+            // Continue button
+            if (mx >= cx - PAUSE_BTN_W / 2 && mx <= cx + PAUSE_BTN_W / 2
+                    && my >= continueY && my <= continueY + PAUSE_BTN_H) {
+                isPaused = false;
+            }
+            // Restart button
+            if (mx >= cx - PAUSE_BTN_W / 2 && mx <= cx + PAUSE_BTN_W / 2
+                    && my >= restartY && my <= restartY + PAUSE_BTN_H) {
+                isPaused = false;
+                sceneCtrl.switchScene("GameplayScene");
+            }
+            // Exit button
+            if (mx >= cx - PAUSE_BTN_W / 2 && mx <= cx + PAUSE_BTN_W / 2
+                    && my >= exitY && my <= exitY + PAUSE_BTN_H) {
+                isPaused = false;
+                sceneCtrl.switchScene("MainMenu");
+            }
+            // Volume slider
+            if (mx >= volSliderX && mx <= volSliderX + sliderW
+                    && my >= volSliderY - 5 && my <= volSliderY + 15) {
+                musicVolume = (mx - volSliderX) / sliderW;
+                musicVolume = Math.max(0f, Math.min(1f, musicVolume));
+                try {
+                    audio.setMusicVolume(musicVolume);
+                } catch (Exception e) {
+                    /* no audio */ }
+            }
+        }
+    }
+
     @Override
     public void renderShapes(ShapeRenderer renderer) {
         // Fill entire screen with dark background first
         renderer.setColor(0.08f, 0.08f, 0.15f, 1f);
         renderer.rect(0, 0, screenW, screenH);
-        // : Render grid on top
+        // : Render grid on top only when placing towers (towerPlacer has a boolean for
+        // this)
         gridManager.renderGrid(renderer);
-        // TODO @JunMing: Render tower range circles on all placed towers
-        // Loop entityOps.getAllEntities(), if Tower → call tower.renderRange(renderer)
-        List<Entity> allEntities = entityOps.getAllEntities();
-        Tower tower;
-        for (int i = 0; i < allEntities.size(); i++)
-        {
-        	if (allEntities.get(i) instanceof Tower)
-        	{
-        		tower = (Tower) allEntities.get(i);
-        		tower.renderRange(renderer);
-        	}
+        if (towerPlacer.getSelectedTowerType() != null || towerPlacer.isDragging()) {
+            gridManager.renderGridLines(renderer);
         }
-        // TODO @JunMing: Render hover range preview when placing tower
-        // Get mouse pos (with Y inversion), call towerPlacer.renderHoverRange(renderer,
-        // gridManager, mx, my)
+
+        // Loop entityOps.getAllEntities(), if Tower → call tower.renderRange(renderer)
+        // End filled batch for line-based range rendering
+        renderer.end();
+        renderer.begin(ShapeRenderer.ShapeType.Line);
+        // Only show range on the tower the mouse is hovering over
+        List<Entity> allEntities = entityOps.getAllEntities();
         float mouseX = input.getMousePosition().x;
         float mouseY = Gdx.graphics.getHeight() - input.getMousePosition().y;
+        for (int i = 0; i < allEntities.size(); i++) {
+            if (allEntities.get(i) instanceof Tower) {
+                Tower tower = (Tower) allEntities.get(i);
+                // Get mouse pos (with Y inversion), call towerPlacer.renderHoverRange(renderer,
+                // gridManager, mx, my)
+                float cx = tower.getPosition().x + tower.getHitbox().width / 2;
+                float cy = tower.getPosition().y + tower.getHitbox().height / 2;
+                float dx = mouseX - cx;
+                float dy = mouseY - cy;
+                float dist = (float) Math.sqrt(dx * dx + dy * dy);
+                if (dist <= tower.getHitbox().width) {
+                    tower.renderRange(renderer);
+                }
+            }
+        }
         towerPlacer.renderHoverRange(renderer, gridManager, mouseX, mouseY);
         // TODO @ChayHan: Render drag ghost
         towerPlacer.renderDragGhost(renderer);
-
+        renderer.end();
+        // : Render entities (towers, enemies, projectiles) on top
+        renderer.begin(ShapeRenderer.ShapeType.Filled); // Switch to filled for entity rendering
         // TODO @ChayHan: If isPaused, draw dark overlay (GL_BLEND, black rect 0.6f
         // alpha)
         // : Render HUD shapes
 
         if (isPaused) {
-            Gdx.gl.glEnable(Gdx.gl.GL_BLEND);
-            Gdx.gl.glBlendFunc(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
-            renderer.setColor(0, 0, 0, 0.6f);
-            renderer.rect(0, 0, screenW, screenH);
-            Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
+            // Gdx.gl.glEnable(Gdx.gl.GL_BLEND);
+            // Gdx.gl.glBlendFunc(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
+            // renderer.setColor(0, 0, 0, 0.6f);
+            // renderer.rect(0, 0, screenW, screenH);
+            // Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
+            renderPauseShapes(renderer);
         }
 
         hud.renderShapes(renderer, gameState, towerPlacer);// edited to reflect the new tower placer input handling
@@ -326,18 +399,91 @@ public class GameplayScene extends Scene {
         }
     }
 
+    // pause shapes handler method to make sure that the correct shapes are rendered
+    // when the game is paused. called from renderShapes when isPaused is true
+    private void renderPauseShapes(ShapeRenderer renderer) {
+        float cx = screenW / 2f;
+        float midY = screenH / 2f;
+
+        // Dark overlay
+        Gdx.gl.glEnable(Gdx.gl.GL_BLEND);
+        Gdx.gl.glBlendFunc(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
+        renderer.setColor(0, 0, 0, 0.7f);
+        renderer.rect(0, 0, screenW, screenH);
+
+        // Panel background
+        renderer.setColor(0.12f, 0.12f, 0.2f, 0.95f);
+        renderer.rect(cx - 120, midY - 140, 240, 230);
+
+        // Continue button (green)
+        renderer.setColor(0.2f, 0.7f, 0.2f, 1f);
+        renderer.rect(cx - PAUSE_BTN_W / 2, midY + 30, PAUSE_BTN_W, PAUSE_BTN_H);
+
+        // Restart button (yellow)
+        renderer.setColor(0.8f, 0.7f, 0.1f, 1f);
+        renderer.rect(cx - PAUSE_BTN_W / 2, midY - 20, PAUSE_BTN_W, PAUSE_BTN_H);
+
+        // Exit button (red)
+        renderer.setColor(0.8f, 0.2f, 0.2f, 1f);
+        renderer.rect(cx - PAUSE_BTN_W / 2, midY - 70, PAUSE_BTN_W, PAUSE_BTN_H);
+
+        // Volume slider track
+        float volSliderX = cx - 80;
+        float volSliderY = midY - 120;
+        renderer.setColor(0.3f, 0.3f, 0.3f, 1f);
+        renderer.rect(volSliderX, volSliderY, 160, 10);
+
+        // Volume slider fill
+        renderer.setColor(0.2f, 0.6f, 1f, 1f);
+        renderer.rect(volSliderX, volSliderY, 160 * musicVolume, 10);
+
+        // Volume slider knob
+        renderer.setColor(1f, 1f, 1f, 1f);
+        renderer.circle(volSliderX + 160 * musicVolume, volSliderY + 5, 8);
+
+        Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
+    }
+
+    // pause text rendering method to draw the "PAUSED" title and button labels on
+    // top of the pause menu shapes. called from renderTextures when isPaused is
+    // true
+    private void renderPauseText(SpriteBatch batch) {
+        BitmapFont title = FontManager.getTitle();
+        BitmapFont body = FontManager.getBody();
+        BitmapFont small = FontManager.getSmall();
+        float cx = screenW / 2f;
+        float midY = screenH / 2f;
+
+        // Title
+        title.setColor(1f, 1f, 1f, 1f);
+        title.draw(batch, "PAUSED", cx - 40, midY + 100);
+
+        // Button labels (centered on buttons)
+        body.setColor(1f, 1f, 1f, 1f);
+        body.draw(batch, "Continue", cx - 30, midY + 55);
+        body.draw(batch, "Restart", cx - 28, midY + 5);
+        body.draw(batch, "Exit to Menu", cx - 42, midY - 45);
+
+        // Volume label
+        small.setColor(0.8f, 0.8f, 0.8f, 1f);
+        small.draw(batch, "Volume: " + (int) (musicVolume * 100) + "%", cx - 35, midY - 100);
+    }
+
     @Override
     public void renderTextures(SpriteBatch batch) {
         // : Render HUD text
-        hud.renderText(batch, gameState, getNextWaveEnemyType());
-        // TODO @ChayHan: Render instructions
-        hud.renderInstructions(batch, gameState, towerPlacer);
+        if (!eduPopup.isVisible()) {
+            hud.renderText(batch, gameState, getNextWaveEnemyType());
+            hud.renderInstructions(batch, gameState, towerPlacer);
+        }
 
         // TODO @ChayHan: If isPaused, draw "PAUSED" text + "Press P to resume"
         // : Render edu popup text if visible
         if (isPaused) {
-            hud.getFont().draw(batch, "PAUSED", screenW / 2 - 50, screenH / 2 + 20);
-            hud.getFont().draw(batch, "Press P to resume", screenW / 2 - 90, screenH / 2 - 20);
+            // hud.getFont().draw(batch, "PAUSED", screenW / 2 - 50, screenH / 2 + 20);
+            // hud.getFont().draw(batch, "Press P to resume", screenW / 2 - 90, screenH / 2
+            // - 20);
+            renderPauseText(batch);
         }
 
         if (eduPopup.isVisible()) {

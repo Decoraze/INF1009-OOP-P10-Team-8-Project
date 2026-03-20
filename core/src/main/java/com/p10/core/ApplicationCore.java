@@ -49,9 +49,9 @@ public class ApplicationCore extends ApplicationAdapter {
     // Game Config (adjust here if needed for window size)
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 480;
-    private boolean showDebugInfo = true;  // F3 toggles FPS/entity/mouse/keyboard overlay
-    private boolean showHitboxes = true;  // F1 toggles hitbox wireframes
-    
+    private boolean showDebugInfo = true; // F3 toggles FPS/entity/mouse/keyboard overlay
+    private boolean showHitboxes = true; // F1 toggles hitbox wireframes
+
     public ApplicationCore() { // initialize managers
         System.out.println("[ApplicationCore] Initializing managers...");
 
@@ -68,16 +68,16 @@ public class ApplicationCore extends ApplicationAdapter {
         System.out.println("[ApplicationCore] ✓ SceneManager initialized");
         System.out.println("[ApplicationCore] ✓ InputOutputManager initialized");
     }
-    
+
     @Override
     public void create() {
         System.out.println("[ApplicationCore] Initializing A-Engine");
-        // Initialize rendering components 
+        // Initialize rendering components
         initializeRendering();
 
         // Set up initial scene
         initializeScene();
-        
+
         inputOutputManager.loadAudio();
 
         System.out.println("[ApplicationCore] Complete Initial");
@@ -201,22 +201,22 @@ public class ApplicationCore extends ApplicationAdapter {
     /*
      * Initialize all 5 required managers
      */
-//    private void initializeManagers() {
-//        System.out.println("[ApplicationCore] Initializing managers...");
-//
-//        // Create all managers
-//        entityManager = new EntityManager();
-//        movementManager = new MovementManager();
-//        collisionManager = new CollisionManager(getMovement());
-//        sceneManager = new SceneManager();
-//        inputOutputManager = new InputOutputManager();
-//
-//        System.out.println("[ApplicationCore] ✓ EntityManager initialized");
-//        System.out.println("[ApplicationCore] ✓ CollisionManager initialized");
-//        System.out.println("[ApplicationCore] ✓ MovementManager initialized");
-//        System.out.println("[ApplicationCore] ✓ SceneManager initialized");
-//        System.out.println("[ApplicationCore] ✓ InputOutputManager initialized");
-//    }
+    // private void initializeManagers() {
+    // System.out.println("[ApplicationCore] Initializing managers...");
+    //
+    // // Create all managers
+    // entityManager = new EntityManager();
+    // movementManager = new MovementManager();
+    // collisionManager = new CollisionManager(getMovement());
+    // sceneManager = new SceneManager();
+    // inputOutputManager = new InputOutputManager();
+    //
+    // System.out.println("[ApplicationCore] ✓ EntityManager initialized");
+    // System.out.println("[ApplicationCore] ✓ CollisionManager initialized");
+    // System.out.println("[ApplicationCore] ✓ MovementManager initialized");
+    // System.out.println("[ApplicationCore] ✓ SceneManager initialized");
+    // System.out.println("[ApplicationCore] ✓ InputOutputManager initialized");
+    // }
 
     // Set up the initial scene
     private void initializeScene() {
