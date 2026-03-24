@@ -66,7 +66,6 @@ public class TowerPlacer {
             {
                 state.purchaseTower(selectedTowerType);
                 Vector2 towerPos = grid.gridToPixel(gridPos[0], gridPos[1]); // Get position of middle of selected grid
-                // @Aurelius idk how the naming is but i just concatenate Tower and count
                 // Create tower at tile corner position, size = one tile
                 Tower newTower = new Tower("Tower" + towerCount++, towerPos.x, towerPos.y,
                         grid.getTileSize(), grid.getTileSize(), selectedTowerType);
