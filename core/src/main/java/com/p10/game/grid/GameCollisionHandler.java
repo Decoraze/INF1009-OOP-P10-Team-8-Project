@@ -1,5 +1,6 @@
 package com.p10.game.grid;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.p10.core.entities.Entity;
@@ -25,6 +26,64 @@ public class GameCollisionHandler {
 	 * @param allEntities All active entities from EntityManager
 	 * @param state       GameState to update (currency, score, lives)
 	 */
+	public Server sortEntities(List<Entity> all, List<Projectile> projs, List<Enemy> enys) {
+		Server foundServer = null;
+		for (Entity e : all)	// Loops through all Entities to check individual instances
+		{
+			if (e instanceof Projectile) projs.add((Projectile) e);		 // Downcast and separate to respective lists accordingly
+			else if (e instanceof Enemy) enys.add((Enemy) e);
+			else if (e instanceof Server) foundServer = (Server) e;		// If a server is one of the instances set variable to return
+		}
+		return foundServer;		// Later used in main function to set Server instance
+	}
+	
+	public void EnemyVsProjectile(List<Enemy> enys, List<Projectile> projs, GameState state) {
+		for (Enemy e : enys)
+		{
+			if (!e.isActive()) continue;	// If Enemy is not active
+			
+			for (Projectile p : projs)		// Nested loop to check each Enemy against each Projectile
+			{
+				if (!p.isActive()) continue;	// If Projectile is not active
+				
+				if (p.getHitbox().overlaps(e.getHitbox()))		// When Projectile hits Enemy
+				{
+					e.takeDamage(p.getDamage());	// Enemy takes damage according to Projectile damage
+					p.setActive(false);		// Projectile is destroyed on first contact of an Enemy
+					if (e.isDead())		// If Enemy is dead 
+					{
+						e.setActive(false);		// Remove Enemy from screen
+						state.addCurrency(e.getReward());		// Reward player accordingly
+						state.addScore(1);		// Update player score accordingly
+					}
+					break;		// Projectile only hits one enemy
+				}
+			}
+		}
+	}
+	
+	public void EnemyVsServer(List<Entity> all, List<Enemy> enys, Server server, GameState state) {
+		if (server == null || !server.isActive()) return;	// If server is destroyed / is not active
+		for (Enemy e : enys)
+		{
+			if (!e.isActive()) continue;	// If enemy not active check next in list
+			
+			if (e.getHitbox().overlaps(server.getHitbox()))		// When Enemy hits Server
+			{
+				server.takeDamage(1);	// Server takes damage
+				state.loseLife();		// Server lose life accordingly
+				e.setActive(false);		// Enemy gets destroyed
+				
+				if (server.isDestroyed())		// When health <= 0 deactivate server and end game
+				{
+					deactivateAllEntities(all);		// Clear all relevant entities
+					state.setLives(0);		// Game Over Scene
+					break;
+				}
+			}
+		}
+	}
+	
 	public void processCollisions(List<Entity> allEntities, GameState state) {
 		// : Separate allEntities into lists of Projectiles, Enemies, and find the
 		// Server
@@ -36,87 +95,15 @@ public class GameCollisionHandler {
 		// - If overlap: server takes 1 damage, lose 1 life, deactivate enemy
 
 		// Loops through pairs of entities
-		for (int i = 0; i < allEntities.size(); i++) {
-			for (int j = i + 1; j < allEntities.size(); j++) {
-				Entity e1 = allEntities.get(i);
-				Entity e2 = allEntities.get(j);
-				Enemy enemy = null;
-				Projectile p = null;
-				Server server = null;
-
-				// Enemy VS Projectile
-				if (e1 instanceof Enemy && e2 instanceof Projectile) // Cast as child class
-				{
-					enemy = (Enemy) e1;
-					p = (Projectile) e2;
-				} else if (e2 instanceof Enemy && e1 instanceof Projectile) // 2 way check
-				{
-					enemy = (Enemy) e2;
-					p = (Projectile) e1;
-				}
-
-				if (enemy != null && p != null) // If enemy and projectile has been assigned
-				{
-					if (!enemy.isActive() || !p.isActive()) // If enemy/projectile not active no interaction
-						continue; // just skip
-
-					if (p.getHitbox().overlaps(enemy.getHitbox())) // Projectile hit enemy
-					{
-						enemy.takeDamage(p.getDamage());
-						p.setActive(false);
-
-						if (enemy.isDead()) // When health <= 0 deactivate enemy and grant rewards
-						{
-							enemy.setActive(false);
-							state.addCurrency(enemy.getReward());
-							state.addScore(1);
-						}
-					}
-				}
-				// reset your variables before next check this is because the Projectile vs
-				// Enemy check runs, sets Enemy. That enemy variable is never resetted before
-				// Enemy vs Server check below
-				// so if pair, Enemy vs Projectile runs first and sets enemy variable, then when
-				// Enemy vs Server check runs, enemy variable is not null even if there is no
-				// Enemy in that pair, which causes a bug where if any projectile hits an enemy,
-				// the next Enemy vs Server check will always run as if there is an enemy, even
-				// if there isn't one in that pair
-				enemy = null;
-				p = null;
-				server = null;
-				// Enemy VS Server
-				if (e1 instanceof Enemy && e2 instanceof Server) // Case as child class
-				{
-					enemy = (Enemy) e1;
-					server = (Server) e2;
-				} else if (e2 instanceof Enemy && e1 instanceof Server) // 2 way check
-				{
-					enemy = (Enemy) e2;
-					server = (Server) e1;
-				}
-
-				if (enemy != null && server != null) // If enemy and server has been assigned
-				{
-					if (!enemy.isActive()) // Same as above but no server check
-						continue; // go next iteration
-
-					if (enemy.getHitbox().overlaps(server.getHitbox())) {
-						server.takeDamage(1);
-						state.loseLife(); // ADD: lose 1 life per enemy reaching server
-						enemy.setActive(false);
-
-						if (server.isDestroyed()) // When health <= 0 deactivate server and end game
-						{
-							deactivateAllEntities(allEntities);
-							state.setLives(0); // Game over scene
-							break;
-						}
-					}
-					// continue;deleted because unessary as loop will end after this iteration
-					// anyway and we want to check all pairs of entities
-				}
-			}
-		}
+		List<Projectile> projectiles = new ArrayList<>();	// Individual lists for each sub Entity type
+		List<Enemy> enemies = new ArrayList<>();
+		
+		// sortEntities returns Server after sorting all entities list
+		Server server = sortEntities(allEntities, projectiles, enemies);
+		
+		// Handle respective entities collision
+		EnemyVsProjectile(enemies, projectiles, state);
+		EnemyVsServer(allEntities, enemies, server, state);
 	}
 
 	public void deactivateAllEntities(List<Entity> allEntities) {

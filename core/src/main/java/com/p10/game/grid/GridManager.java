@@ -43,7 +43,7 @@ public class GridManager {
 		this.tiles = new Tile[gridHeight][gridWidth];
 
 		// Center grid horizontally, offset vertically above shop bar (90px from bottom)
-		// allso replaced hard coded value with dynamic calcs
+		// also replaced hard coded value with dynamic calcs
 		this.offsetX = (Gdx.graphics.getWidth() - gridWidth * tileSize) / 2f;
 		this.offsetY = 90;
 		for (int row = 0; row < gridHeight; row++) {
@@ -174,7 +174,7 @@ public class GridManager {
 
 	// rendering grid lines for on hover
 	public void renderGridLines(ShapeRenderer renderer) {
-		// basically copied old code from abovew to here instead.
+		// basically copied old code from above to here instead.
 		renderer.setColor(0.15f, 0.15f, 0.15f, 0.4f);
 		for (int col = 0; col <= gridWidth; col++) {
 			float x = offsetX + col * tileSize;
