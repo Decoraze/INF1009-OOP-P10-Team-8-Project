@@ -37,7 +37,7 @@ public class RectangleEntity extends Shape { // i have to name the file as recta
     @Override
     public void renderShapes(ShapeRenderer renderer) {
         renderer.setColor(color);
-        // Uses the unique width and height fields from UML
+
         renderer.rect(position.x, position.y, width, height);
     }
 

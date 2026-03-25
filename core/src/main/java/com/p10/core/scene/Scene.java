@@ -88,24 +88,4 @@ public abstract class Scene {
     public void dispose() {
         // default no-op
     }
-    /*
-     * // methods for UML compliance
-     * public void addEntity(Entity e) {// add entity to the scene
-     * entities.add(e);
-     * }
-     * 
-     * public void removeEntity(String id) { // remove any entities (same logic as
-     * entitymanage)
-     * for (Entity obj : entities) {
-     * if (obj.getId().equals(id)) {
-     * entities.remove(obj);
-     * break;
-     * }
-     * }
-     * }
-     * 
-     * public List<Entity> getEntities() { // getting entity list that needs
-     * return new ArrayList<>(entities);
-     * }
-     */
 }

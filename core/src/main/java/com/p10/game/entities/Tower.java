@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.entities.CollidableEntity;
 
-/**
+/*
  * Tower represents a network defense tool (FIREWALL, ANTIVIRUS, ENCRYPTION,
  * IDS)
  * placed on the grid to shoot at enemies.
@@ -28,10 +28,9 @@ public class Tower extends CollidableEntity {
     private float cooldownTimer;
     private com.p10.game.ai.TargetStrategy strategy;
     private Texture texture;
-    // NEW FIELDS FOR TOWERS
-    private static final Map<String, float[]> TOWER_STATS = new HashMap<>();// range, fireRate, damage OCP compliant
-                                                                            // because just add/modify entries instead
-                                                                            // of changing code logic
+
+    // tower stat lookup by type: [range, fireRate, damage]
+    private static final Map<String, float[]> TOWER_STATS = new HashMap<>();
     static {
         TOWER_STATS.put("FIREWALL", new float[] { 140f, 0.7f, 5f });
         TOWER_STATS.put("ANTIVIRUS", new float[] { 120f, 0.9f, 8f });
@@ -39,9 +38,8 @@ public class Tower extends CollidableEntity {
         TOWER_STATS.put("IDS", new float[] { 160f, 0.5f, 4f });
     }
 
-    private static final Map<String, Color> TOWER_COLORS = new HashMap<>();// OCP compliant color mapping for towers,
-                                                                           // can add new tower types without changing
-                                                                           // code logic
+    // color per tower type
+    private static final Map<String, Color> TOWER_COLORS = new HashMap<>();
     static {
         TOWER_COLORS.put("FIREWALL", Color.ORANGE);
         TOWER_COLORS.put("ANTIVIRUS", Color.GREEN);
@@ -49,10 +47,37 @@ public class Tower extends CollidableEntity {
         TOWER_COLORS.put("IDS", Color.PURPLE);
     }
 
-    private static final Map<String, Texture> TEXTURE_CACHE = new HashMap<>();// Cache to store loaded textures and
-                                                                              // avoid redundant loading
-    private static boolean texturesLoaded = false;// Flag to ensure textures are loaded only once
-    // Static block to load textures when the class is first accessed
+    // damage multiplier matrix: tower → (attackType → multiplier)
+    // strong match = 1.5x, partial = 0.2x, mismatch = 0.05x (default)
+    private static final Map<String, Map<String, Float>> DAMAGE_MULTIPLIERS = new HashMap<>();
+    static {
+        Map<String, Float> fw = new HashMap<>();
+        fw.put("DDOS", 1.5f);
+        fw.put("WORM", 1.5f);
+        fw.put("VIRUS", 0.2f);
+        DAMAGE_MULTIPLIERS.put("FIREWALL", fw);
+
+        Map<String, Float> av = new HashMap<>();
+        av.put("VIRUS", 1.5f);
+        av.put("TROJAN", 1.5f);
+        av.put("WORM", 0.2f);
+        DAMAGE_MULTIPLIERS.put("ANTIVIRUS", av);
+
+        Map<String, Float> enc = new HashMap<>();
+        enc.put("PHISHING", 1.5f);
+        enc.put("MITM", 1.5f);
+        enc.put("TROJAN", 0.2f);
+        DAMAGE_MULTIPLIERS.put("ENCRYPTION", enc);
+
+        Map<String, Float> ids = new HashMap<>();
+        ids.put("WORM", 1.5f);
+        ids.put("TROJAN", 1.5f);
+        ids.put("DDOS", 0.2f);
+        DAMAGE_MULTIPLIERS.put("IDS", ids);
+    }
+
+    private static final Map<String, Texture> TEXTURE_CACHE = new HashMap<>();
+    private static boolean texturesLoaded = false;
 
     private static void loadTextures() {
         if (texturesLoaded)
@@ -69,22 +94,18 @@ public class Tower extends CollidableEntity {
         texturesLoaded = true;
     }
 
-    // get range and color for tower type, used in LevelSelectScene to show range
-    // circles on hover and color-code tower options
+    // get range for a tower type (used by TowerPlacer for hover preview)
     public static float getRangeForType(String type) {
         float[] stats = TOWER_STATS.get(type);
         return stats != null ? stats[0] : 120f;
     }
 
-    // OCP compliant color getter for tower types, used in LevelSelectScene and
-    // Tower rendering
     public static Color getColorForType(String type) {
         Color c = TOWER_COLORS.get(type);
         return c != null ? c : Color.WHITE;
     }
 
-    // Helper function to draw range circle, can be used in both Tower and
-    // LevelSelectScene (OCP)
+    // shared range circle drawer, used by both Tower and TowerPlacer
     public static void drawRangeCircle(ShapeRenderer renderer, float cx, float cy, float range, Color color) {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -110,15 +131,7 @@ public class Tower extends CollidableEntity {
         setKinematic(true);
         this.strategy = com.p10.game.ai.TargetStrategy.NEAREST;
 
-        // : Based on towerType, assign range, fireRate, damage values:
-        // FIREWALL: range=140, fireRate=0.7, damage=5
-        // ANTIVIRUS: range=120, fireRate=0.9, damage=8
-        // ENCRYPTION: range=130, fireRate=0.8, damage=6
-        // IDS: range=160, fireRate=0.5, damage=4
-        // : Load the correct texture from sprites/ folder
-
-        // Assign tower stats (changed from switch-case to map lookup for OCP compliance
-        // and easier maintenance)
+        // pull stats from map
         float[] stats = TOWER_STATS.getOrDefault(towerType, new float[] { 120f, 0.8f, 5f });
         this.range = stats[0];
         this.fireRate = stats[1];
@@ -128,29 +141,23 @@ public class Tower extends CollidableEntity {
         this.texture = TEXTURE_CACHE.get(towerType);
     }
 
-    // we moved loadTex to static block to ensure textures are loaded only once and
-    // cached for all tower instances, improving performance and memory usage
     @Override
     public void update(float dt) {
-        // : Sync hitbox position with entity position
         hitbox.setPosition(position.x, position.y);
-        // : Tick down cooldownTimer by dt
         if (cooldownTimer > 0) {
             cooldownTimer -= dt;
         }
     }
 
     public boolean canFire() {
-        // : Return true if cooldownTimer <= 0
         return cooldownTimer <= 0;
     }
 
     public void resetCooldown() {
-        // : Set cooldownTimer = 1/fireRate
         cooldownTimer = 1f / fireRate;
     }
 
-    /**
+    /*
      * Returns the damage multiplier when this tower attacks a specific enemy.
      * Correct tower vs threat = 1.5x, partially effective = 0.2x, wrong tower =
      * 0.05x
@@ -162,48 +169,15 @@ public class Tower extends CollidableEntity {
      * IDS → strong vs WORM, TROJAN | weak vs DDOS
      */
     public float getDamageMultiplier(Enemy enemy) {
-        // : Implement the damage multiplier matrix above
-
         String attack = enemy.getAttackType();
-
-        switch (towerType) {
-
-            case "FIREWALL":
-                if (attack.equals("DDOS") || attack.equals("WORM"))
-                    return 1.5f;
-                if (attack.equals("VIRUS"))
-                    return 0.2f;
-                break;
-
-            case "ANTIVIRUS":
-                if (attack.equals("VIRUS") || attack.equals("TROJAN"))
-                    return 1.5f;
-                if (attack.equals("WORM"))
-                    return 0.2f;
-                break;
-
-            case "ENCRYPTION":
-                if (attack.equals("PHISHING") || attack.equals("MITM"))
-                    return 1.5f;
-                if (attack.equals("TROJAN"))
-                    return 0.2f;
-                break;
-
-            case "IDS":
-                if (attack.equals("WORM") || attack.equals("TROJAN"))
-                    return 1.5f;
-                if (attack.equals("DDOS"))
-                    return 0.2f;
-                break;
-        }
-        return 0.05f;
+        Map<String, Float> matchups = DAMAGE_MULTIPLIERS.get(towerType);
+        if (matchups == null)
+            return 0.05f;
+        return matchups.getOrDefault(attack, 0.05f);
     }
 
     public Color getTowerColor() {
-        // : Return unique color per towerType
-        // FIREWALL=ORANGE, ANTIVIRUS=GREEN, ENCRYPTION=CYAN, IDS=PURPLE
-        return getColorForType(towerType);// instead of switch-case, use OCP compliant color getter that looks up in
-                                          // map, returns white if type not found
+        return getColorForType(towerType);
     }
 
     // --- Getters/Setters ---
@@ -233,24 +207,20 @@ public class Tower extends CollidableEntity {
 
     @Override
     public boolean checkCollision(CollidableEntity other) {
-        // : Return true if hitboxes overlap
         if (other == null || other.getHitbox() == null)
             return false;
-
         return this.hitbox.overlaps(other.getHitbox());
     }
 
     @Override
     public void onCollisionEnter(CollidableEntity other) {
-        // : Handle collision response (if any needed for towers)
-
+        // towers don't react to collisions
     }
 
     @Override
     public void renderShapes(ShapeRenderer renderer) {
-        // : If no texture, draw a colored rectangle as fallback
+        // fallback if no texture loaded
         if (texture == null) {
-
             renderer.setColor(getTowerColor());
             renderer.rect(position.x, position.y,
                     getHitbox().getWidth(),
@@ -260,9 +230,7 @@ public class Tower extends CollidableEntity {
 
     @Override
     public void renderTextures(SpriteBatch batch) {
-        // : If texture exists, draw it centered on position
         if (texture != null) {
-
             batch.draw(texture,
                     position.x,
                     position.y,
@@ -272,70 +240,10 @@ public class Tower extends CollidableEntity {
     }
 
     // TODO @JunMing: Render range circle around placed tower
-    // 1. Get tower center: position.x + hitbox.width/2, position.y +
-    // hitbox.height/2
-    // 2. Use GL_BLEND for transparency
-    // 3. Draw ShapeType.Line circle at center with radius = this.range
-    // 4. Use getTowerColor() with 0.3f alpha
-    // 5. Remember to disable GL_BLEND after
     public void renderRange(ShapeRenderer renderer) {
         // TODO @JunMing
-        // Get centering of tower on grid
         float centerX = getPosition().x + (getHitbox().width / 2);
         float centerY = getPosition().y + (getHitbox().height / 2);
-
-        // draw range circle using helper function that can be reused in
-        // LevelSelectScene for showing range on hover
         drawRangeCircle(renderer, centerX, centerY, this.range, getTowerColor());
-
     }
-    // helper function deleted and moved to static block for better performance and
-    // OCP compliance, can be reused in LevelSelectScene for showing range circles
-    // on hover and in Tower rendering
-    /*
-     * // Helper function
-     * // Shows range tower can cover, visually should look like LoL tower outline i
-     * // think
-     * public void showTowerRange(ShapeRenderer renderer, float centerX, float
-     * centerY, Color color) {
-     * // Check if renderer already drawing something (In main game)
-     * // boolean wasDrawing = renderer.isDrawing();
-     * // ShapeType previousType = ShapeType.Filled; // Filled is the default draw
-     * 
-     * // If renderer was already drawing something
-     * // If already drawing, get the type being drawn
-     * // Pause renderer to start new render in this function
-     * // if (wasDrawing)
-     * // {
-     * // previousType = renderer.getCurrentType();
-     * // renderer.end();
-     * // }
-     * 
-     * Gdx.gl.glEnable(GL20.GL_BLEND);
-     * Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-     * 
-     * // Edge is a solid line
-     * // renderer.begin(ShapeRenderer.ShapeType.Line);
-     * renderer.setColor(color.r, color.g, color.b, 1.0f);
-     * renderer.circle(centerX, centerY, this.range); // Range is taken from Tower
-     * class itself
-     * // renderer.end();
-     * 
-     * // Radius is translucent
-     * // renderer.begin(ShapeRenderer.ShapeType.Filled);
-     * renderer.setColor(color.r, color.g, color.b, 0.3f);
-     * renderer.circle(centerX, centerY, this.range); // Range is taken form Tower
-     * class itself
-     * // renderer.end();
-     * 
-     * Gdx.gl.glDisable(GL20.GL_BLEND);
-     * 
-     * // If previously drawing, resume renderer and
-     * // begin with the previousType saved
-     * // if (wasDrawing)
-     * // {
-     * // renderer.begin(previousType);
-     * // }
-     */
-
 }

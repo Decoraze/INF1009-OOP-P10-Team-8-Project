@@ -206,7 +206,6 @@ public class GameplayScene extends Scene {
             }
             // NORMAL GAME OVER: no special mechanics left, wait for ENTER
             if (input.isKeyJustPressed(Keys.ENTER)) {
-                System.out.println("=== ENTER PRESSED, SWITCHING TO MAINMENU ===");
                 sceneCtrl.switchScene("MainMenu");
             }
             return;
@@ -240,7 +239,6 @@ public class GameplayScene extends Scene {
 
             if (phishingPopup.hasFailed()) {
                 if (input.isKeyJustPressed(Keys.ENTER)) {
-                    System.out.println("=== PHISHING FAILED, HIDING POPUP ===");
                     phishingPopup.hide();
                     gameState.phishingFailed();
                     sceneCtrl.switchScene("MainMenu"); // go straight to menu, skip game over screen

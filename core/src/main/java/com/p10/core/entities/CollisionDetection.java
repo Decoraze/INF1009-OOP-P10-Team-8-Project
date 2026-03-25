@@ -12,7 +12,7 @@ public class CollisionDetection {
 	public List<CollidableEntity[]> detectCollisions(List<CollidableEntity> collidables) {// get collidable lists from
 																							// collision managaer
 																							// detection just does the
-																							// math SRP
+
 		List<CollidableEntity[]> pairs = new ArrayList<>();
 		for (int i = 0; i < collidables.size(); i++) {
 			for (int j = i + 1; j < collidables.size(); j++) {

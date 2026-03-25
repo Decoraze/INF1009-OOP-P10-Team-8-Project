@@ -150,7 +150,7 @@ public class PhishingPopup {
         }
 
         Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
-        // DEBUG: draw zone outlines so we can see hitboxes
+        // DEBUG:
         /*
          * renderer.end();
          * renderer.begin(ShapeRenderer.ShapeType.Line);
