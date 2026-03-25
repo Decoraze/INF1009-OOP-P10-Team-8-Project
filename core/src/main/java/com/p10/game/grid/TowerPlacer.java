@@ -46,7 +46,7 @@ public class TowerPlacer {
             float screenHeight) {
         if (selectedTowerType == null)
             return false;
-        // : Return false if not in prep phase or no tower type selected or mouse
+        // TODO @ChayHan : Return false if not in prep phase or no tower type selected or mouse
         // not clicked
         // : Get mouse position, invert Y (worldY = screenHeight - mouseY)
         // : Convert pixel to grid position
@@ -89,17 +89,6 @@ public class TowerPlacer {
         return selectedTowerType;
     }
 
-    // Render range circle at mouse hover when placing tower
-    // 1. If no tower selected (and not dragging), return
-    // 2. Convert mouseX/mouseY to grid pos via grid.pixelToGrid()
-    // 3. Check isBuildable — if not, return
-    // 4. Get tile center via grid.gridToPixel() + tileSize/2
-    // 5. Get range for tower type (FIREWALL=140, ANTIVIRUS=120, ENCRYPTION=130,
-    // IDS=160)
-    // 6. Use GL_BLEND to draw translucent filled circle + line border
-    // 7. Also draw yellow rect outline on hovered tile
-    // using the new dragTowerType to show range when dragging, and
-    // selectedTowerType when just hovering without dragging in tower.java
     public void renderHoverRange(ShapeRenderer renderer, GridManager grid,
             float mouseX, float mouseY) {
         // If dragTowerType is not null activeType is dragTowerType
