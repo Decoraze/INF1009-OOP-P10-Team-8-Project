@@ -72,6 +72,9 @@ public class LevelSelectScene extends Scene {
         } else if (input.isKeyJustPressed(Keys.NUM_6)) {
             GameplayScene.setSelectedLevel(LevelConfig.level6_Survival());
             sceneCtrl.switchScene("GameplayScene");
+        } else if (input.isKeyJustPressed(Keys.NUM_7)) {
+            GameplayScene.setSelectedLevel(LevelConfig.level7_Worm());
+            sceneCtrl.switchScene("GameplayScene");
         } else if (input.isKeyJustPressed(Keys.ESCAPE)) {
             sceneCtrl.switchScene("MainMenu");
         }
@@ -99,12 +102,13 @@ public class LevelSelectScene extends Scene {
                 new Color(0.2f, 0.7f, 0.7f, 1), // Mixed — teal
                 new Color(0.9f, 0.8f, 0.1f, 1), // Full Spectrum — gold
                 new Color(0.5f, 0.5f, 0.5f, 1), // Survival — grey
+                new Color(0.2f, 0.8f, 0.3f, 1), // Worm — green
         };
         float boxW = 200, boxH = 80, gapX = 50, gapY = 20;// box dimensions and spacing
         float startX = (screenW - (2 * boxW + gapX)) / 2f;// center grid horizontally
-        float startY = 60;// start from bottom with some padding
+        float startY = 140;// start from bottom with some padding
         // Draw 2x3 grid of boxes
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
             int col = i % 2;
             int row = i / 2;
             float bx = startX + col * (boxW + gapX);
@@ -117,12 +121,13 @@ public class LevelSelectScene extends Scene {
     @Override
     public void renderTextures(SpriteBatch batch) {
         // : Draw title "SELECT LEVEL"
-
+        titleFont.setColor(1, 1, 1, 1);
+        titleFont.draw(batch, "SELECT LEVEL", screenW / 2 - 80, screenH - 20);
         titleFont.setColor(1, 1, 1, 1);
         font.setColor(1, 1, 1, 1);
         float boxW = 200, boxH = 80, gapX = 50, gapY = 20;// box dimensions and spacing
         float lx = (screenW - (2 * boxW + gapX)) / 2f;// same startX as shapes for text alignment
-        float ly = 60;// same startY as shapes for text alignment
+        float ly = 140;// same startY as shapes for text alignment
         // : Draw 6 level options with brief descriptions (can be multiline)
         String[] labels = {
                 "1: DDoS Attack\n- FIREWALL",
@@ -131,8 +136,9 @@ public class LevelSelectScene extends Scene {
                 "4: Mixed Assault\n- All threat types\n- ALL towers!",
                 "5: Full Spectrum\n- 6 hard waves\n- Tight budget!",
                 "6: Survival Mode\n- 10 waves\n- Only 5 lives!",
+                "7: Wormsssss\n- 3 computers\n- Worm spreads!",
         };
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
             int col = i % 2;
             int row = i / 2;
             float bx = lx + col * (boxW + gapX) + 10;

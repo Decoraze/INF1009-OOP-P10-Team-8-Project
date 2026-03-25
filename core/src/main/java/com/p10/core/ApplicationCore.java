@@ -303,16 +303,18 @@ public class ApplicationCore extends ApplicationAdapter {
         // Towers and enemies need exact grid coordinates, clamping breaks them
     }
 
-    // game rendering
     private void renderGame() {
         // Render shapes
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         sceneManager.renderShapes(shapeRenderer);
-        entityManager.renderShapes(shapeRenderer);
+        // only render entity shapes if scene allows it
+        if (sceneManager.shouldRenderEntities()) {
+            entityManager.renderShapes(shapeRenderer);
+        }
         shapeRenderer.end();
 
         // Hitbox wireframes — toggle with F1
-        if (showHitboxes) {
+        if (showHitboxes && sceneManager.shouldRenderEntities()) {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             entityManager.renderHitboxes(shapeRenderer);
             shapeRenderer.end();
@@ -321,7 +323,10 @@ public class ApplicationCore extends ApplicationAdapter {
         // Render textures
         batch.begin();
         sceneManager.renderTextures(batch);
-        entityManager.renderTextures(batch);
+        // only render entity textures if scene allows it
+        if (sceneManager.shouldRenderEntities()) {
+            entityManager.renderTextures(batch);
+        }
         batch.end();
     }
 

@@ -1,7 +1,7 @@
 package com.p10.game.entities;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.p10.core.entities.CollidableEntity;
@@ -83,10 +83,10 @@ public class Server extends CollidableEntity {
             renderer.setColor(Color.BLUE);
 
             renderer.rect(
-                position.x,
-                position.y,
-                hitbox.getWidth(),
-                hitbox.getHeight());
+                    position.x,
+                    position.y,
+                    hitbox.getWidth(),
+                    hitbox.getHeight());
         }
 
         // Draw hearts above server — each heart = 1 HP
@@ -94,7 +94,7 @@ public class Server extends CollidableEntity {
         float heartGap = 3f;
         float totalWidth = maxHealth * (heartSize + heartGap) - heartGap;
         float startX = position.x + (getHitbox().getWidth() - totalWidth) / 2f;
-        float heartY = position.y + getHitbox().getHeight() + 8;
+        float heartY = position.y - heartSize - 3;
 
         for (int i = 0; i < (int) maxHealth; i++) {
             float hx = startX + i * (heartSize + heartGap);
@@ -114,11 +114,11 @@ public class Server extends CollidableEntity {
         if (texture != null) {
 
             batch.draw(
-                texture,
-                position.x,
-                position.y,
-                getHitbox().getWidth(),
-                getHitbox().getHeight());
+                    texture,
+                    position.x,
+                    position.y,
+                    getHitbox().getWidth(),
+                    getHitbox().getHeight());
         }
     }
 }

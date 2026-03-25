@@ -22,155 +22,135 @@ import com.p10.game.ui.FontManager;
  * @author Aurelius (integration)
  */
 public class GameHelpScene extends Scene {
-    private BitmapFont titleFont;
-    private BitmapFont font;
-    private BitmapFont smallFont;
-    private float screenW, screenH;
+        private BitmapFont titleFont;
+        private BitmapFont font;
+        private BitmapFont smallFont;
+        private float screenW, screenH;
 
-    public GameHelpScene(iCollision collision, iEntityOps entityOps, iSceneControl sceneCtrl,
-            iInput input, iAudio audio, iMovement movement,
-            float screenW, float screenH) {
-        super("GameHelp", collision, entityOps, sceneCtrl, input, movement, audio);
-        this.screenW = screenW;
-        this.screenH = screenH;
-    }
-
-    @Override
-    protected void onLoad() {
-        titleFont = FontManager.getTitle();
-        font = FontManager.getBody();
-        smallFont = FontManager.getSmall();
-    }
-
-    @Override
-    protected void onUnload() {
-        // titleFont.dispose();
-        // font.dispose();
-        // smallFont.dispose();
-    }
-
-    @Override
-    public void update(float dt) {
-        // ESC or ENTER returns to main menu
-        if (input.isKeyJustPressed(Keys.ESCAPE) || input.isKeyJustPressed(Keys.ENTER)) {
-            sceneCtrl.switchScene("MainMenu");
+        public GameHelpScene(iCollision collision, iEntityOps entityOps, iSceneControl sceneCtrl,
+                        iInput input, iAudio audio, iMovement movement,
+                        float screenW, float screenH) {
+                super("GameHelp", collision, entityOps, sceneCtrl, input, movement, audio);
+                this.screenW = screenW;
+                this.screenH = screenH;
         }
-    }
 
-    @Override
-    public void renderShapes(ShapeRenderer renderer) {
-        // Dark background
-        renderer.setColor(0.08f, 0.08f, 0.15f, 1f);
-        renderer.rect(0, 0, screenW, screenH);
+        @Override
+        protected void onLoad() {
+                titleFont = FontManager.getTitle();
+                font = FontManager.getBody();
+                smallFont = FontManager.getSmall();
+        }
 
-        // Title bar
-        renderer.setColor(0.2f, 0.6f, 1f, 0.8f);
-        renderer.rect(0, screenH - 55, screenW, 55);
+        @Override
+        protected void onUnload() {
+                // titleFont.dispose();
+                // font.dispose();
+                // smallFont.dispose();
+        }
 
-        // Tower matchup section background
-        renderer.setColor(0.12f, 0.12f, 0.2f, 1f);
-        renderer.rect(20, 160, screenW - 40, 200);
+        @Override
+        public void update(float dt) {
+                // ESC or ENTER returns to main menu
+                if (input.isKeyJustPressed(Keys.ESCAPE) || input.isKeyJustPressed(Keys.ENTER)) {
+                        sceneCtrl.switchScene("MainMenu");
+                }
+        }
 
-        // Controls section background
-        renderer.setColor(0.12f, 0.12f, 0.2f, 1f);
-        renderer.rect(20, 20, screenW - 40, 120);
+        @Override
+        public void renderShapes(ShapeRenderer renderer) {
+                // Dark background
+                renderer.setColor(0.08f, 0.08f, 0.15f, 1f);
+                renderer.rect(0, 0, screenW, screenH);
 
-        // Tower color indicators
-        float cardY = 310;
-        float cardW = 170;
-        // Firewall — orange
-        renderer.setColor(Color.ORANGE);
-        renderer.rect(30, cardY, 12, 12);
-        // Antivirus — green
-        renderer.setColor(Color.GREEN);
-        renderer.rect(30 + cardW, cardY, 12, 12);
-        // Encryption — cyan
-        renderer.setColor(Color.CYAN);
-        renderer.rect(30 + cardW * 2, cardY, 12, 12);
-        // IDS — purple
-        renderer.setColor(Color.PURPLE);
-        renderer.rect(30 + cardW * 3, cardY, 12, 12);
-    }
+                // Title bar
+                renderer.setColor(0.2f, 0.6f, 1f, 0.8f);
+                renderer.rect(0, screenH - 50, screenW, 50);
 
-    @Override
-    public void renderTextures(SpriteBatch batch) {
-        // Title
-        titleFont.setColor(Color.WHITE);
-        titleFont.draw(batch, "HOW TO PLAY — NETDEFENDER", 20, screenH - 12);
+                // Tower cards — 4 colored boxes
+                float cardW = 170;
+                float cardH = 70;
+                float cardY = 280;
+                float startX = (screenW - 4 * cardW - 3 * 10) / 2f; // centered with 10px gaps
 
-        // Game concept
-        font.setColor(Color.WHITE);
-        font.draw(batch, "Defend your server from cyber threats by placing the RIGHT security towers!", 30,
-                screenH - 70);
-        font.draw(batch, "Each tower type is effective against specific attacks. Wrong towers deal ZERO damage.", 30,
-                screenH - 95);
-        font.draw(batch, "Place towers on GREEN tiles during PREP PHASE, then press SPACE to start each wave.", 30,
-                screenH - 120);
+                Color[] colors = { Color.ORANGE, Color.GREEN, Color.CYAN, Color.PURPLE };
+                for (int i = 0; i < 4; i++) {
+                        float cx = startX + i * (cardW + 10);
+                        // card background
+                        renderer.setColor(0.15f, 0.15f, 0.25f, 1f);
+                        renderer.rect(cx, cardY, cardW, cardH);
+                        // color strip on left
+                        renderer.setColor(colors[i]);
+                        renderer.rect(cx, cardY, 6, cardH);
+                }
 
-        // Tower matchups header
-        font.setColor(Color.CYAN);
-        font.draw(batch, "TOWER MATCHUPS — Match the right defense to each threat:", 30, 355);
+                // Controls section background
+                renderer.setColor(0.12f, 0.12f, 0.2f, 1f);
+                renderer.rect(20, 15, screenW - 40, 80);
+        }
 
-        // Tower details
-        float cardW = 170;
-        smallFont.setColor(Color.WHITE);
-        // Firewall
-        smallFont.draw(batch, "  FIREWALL [1] $30", 30, 325);
-        smallFont.setColor(Color.GREEN);
-        smallFont.draw(batch, "  Strong: DDoS, Worm", 30, 305);
-        smallFont.setColor(Color.RED);
-        smallFont.draw(batch, "  Weak: Virus", 30, 285);
+        @Override
+        public void renderTextures(SpriteBatch batch) {
+                // Title
+                titleFont.setColor(Color.WHITE);
+                titleFont.draw(batch, "HOW TO PLAY  NETDEFENDER", 20, screenH - 10);
 
-        // Antivirus
-        smallFont.setColor(Color.WHITE);
-        smallFont.draw(batch, "  ANTIVIRUS [2] $80", 30 + cardW, 325);
-        smallFont.setColor(Color.GREEN);
-        smallFont.draw(batch, "  Strong: Virus, Trojan", 30 + cardW, 305);
-        smallFont.setColor(Color.RED);
-        smallFont.draw(batch, "  Weak: Worm", 30 + cardW, 285);
+                // Brief intro — 2 lines max
+                font.setColor(Color.WHITE);
+                font.draw(batch, "Defend your server from cyber threats by placing the RIGHT security towers!", 30,
+                                screenH - 65);
+                smallFont.setColor(Color.LIGHT_GRAY);
+                smallFont.draw(batch,
+                                "Each tower type is effective against specific attacks. Wrong towers deal ZERO damage.",
+                                30, screenH - 85);
 
-        // Encryption
-        smallFont.setColor(Color.WHITE);
-        smallFont.draw(batch, "  ENCRYPTION [3] $55", 30 + cardW * 2, 325);
-        smallFont.setColor(Color.GREEN);
-        smallFont.draw(batch, "  Strong: Phishing, MITM", 30 + cardW * 2, 305);
-        smallFont.setColor(Color.RED);
-        smallFont.draw(batch, "  Weak: Trojan", 30 + cardW * 2, 285);
+                // Section header
+                font.setColor(Color.CYAN);
+                font.draw(batch, "TOWER MATCHUPS", 30, screenH - 110);
 
-        // IDS
-        smallFont.setColor(Color.WHITE);
-        smallFont.draw(batch, "  IDS [4] $45", 30 + cardW * 3, 325);
-        smallFont.setColor(Color.GREEN);
-        smallFont.draw(batch, "  Strong: Worm, Trojan", 30 + cardW * 3, 305);
-        smallFont.setColor(Color.RED);
-        smallFont.draw(batch, "  Weak: DDoS", 30 + cardW * 3, 285);
+                // Tower cards text
+                float cardW = 170;
+                float startX = (screenW - 4 * cardW - 3 * 10) / 2f;
+                String[][] towerInfo = {
+                                { "FIREWALL [1] $30", "Beats: DDoS, Worm", "Weak: Virus" },
+                                { "ANTIVIRUS [2] $80", "Beats: Virus, Trojan", "Weak: Worm" },
+                                { "ENCRYPTION [3] $55", "Beats: Phishing, MITM", "Weak: Trojan" },
+                                { "IDS [4] $45", "Beats: Worm, Trojan", "Weak: DDoS" },
+                };
 
-        // Gameplay tips
-        smallFont.setColor(Color.YELLOW);
-        smallFont.draw(batch,
-                "STRATEGY: Place towers NEXT to the path. Enemies walk along tan/brown tiles toward your server.", 30,
-                250);
-        smallFont.draw(batch,
-                "You earn $50 bonus currency after each wave. Killing enemies also gives currency and score.", 30, 230);
-        smallFont.draw(batch, "If enemies reach your server, you lose lives. Game over when lives hit 0!", 30, 210);
-        smallFont.draw(batch,
-                "Level 4 (Mixed Assault) requires Defense in Depth — use ALL tower types to counter mixed threats.", 30,
-                190);
-        smallFont.draw(batch, "This teaches the real-world cybersecurity concept of layered security.", 30, 170);
+                for (int i = 0; i < 4; i++) {
+                        float cx = startX + i * (cardW + 10) + 14;
+                        smallFont.setColor(Color.WHITE);
+                        smallFont.draw(batch, towerInfo[i][0], cx, 345);
+                        smallFont.setColor(0.4f, 1f, 0.4f, 1f);
+                        smallFont.draw(batch, towerInfo[i][1], cx, 325);
+                        smallFont.setColor(1f, 0.4f, 0.4f, 1f);
+                        smallFont.draw(batch, towerInfo[i][2], cx, 305);
+                }
 
-        // Controls section
-        font.setColor(Color.CYAN);
-        font.draw(batch, "CONTROLS:", 30, 130);
-        smallFont.setColor(Color.WHITE);
-        smallFont.draw(batch,
-                "[1][2][3][4] — Select tower type       [CLICK] — Place tower on grid       [SPACE] — Start wave", 30,
-                108);
-        smallFont.draw(batch,
-                "[M] — Toggle music on/off              [ESC] — Return to main menu          [ENTER] — Dismiss popups",
-                30, 88);
+                // Tips — short and clean
+                smallFont.setColor(Color.YELLOW);
+                smallFont.draw(batch,
+                                "Place towers NEXT to the path. Enemies walk along brown tiles toward your server.", 30,
+                                260);
+                smallFont.draw(batch, "$50 bonus after each wave. Killing enemies earns currency + score.", 30, 240);
+                smallFont.draw(batch,
+                                "Lives hit 0 = Game Over!  Use layered defense (all tower types) for mixed threat levels.",
+                                30, 220);
 
-        // Footer
-        font.setColor(Color.LIGHT_GRAY);
-        font.draw(batch, "Press ESC or ENTER to return to Main Menu", 250, 30);
-    }
+                // Controls
+                font.setColor(Color.CYAN);
+                font.draw(batch, "CONTROLS:", 30, 85);
+                smallFont.setColor(Color.WHITE);
+                smallFont.draw(batch,
+                                "[1][2][3][4]  Select tower type     [CLICK]  Place tower on grid     [SPACE]  Start wave",
+                                30, 65);
+                smallFont.draw(batch,
+                                "[M]  Toggle music on/off            [ESC]  Return to main menu       [ENTER]  Dismiss popups",
+                                30, 45);
+
+                // Footer
+                font.setColor(Color.LIGHT_GRAY);
+                font.draw(batch, "Press ESC or ENTER to return to Main Menu", screenW / 2 - 160, 15);
+        }
 }

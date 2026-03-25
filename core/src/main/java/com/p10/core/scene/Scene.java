@@ -64,6 +64,11 @@ public abstract class Scene {
         loaded = false;
     }
 
+    // override in subclasses to suppress entity rendering during overlays
+    public boolean shouldRenderEntities() {
+        return true;
+    }
+
     /** Put “spawn entities / init scene state” here. */
     protected abstract void onLoad();
 

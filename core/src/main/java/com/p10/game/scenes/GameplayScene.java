@@ -21,7 +21,6 @@ import com.p10.game.ai.EnemyAI;
 import com.p10.game.ai.PathDefinition;
 import com.p10.game.ai.TowerAI;
 import com.p10.game.entities.Enemy;
-import com.p10.game.entities.Projectile;
 import com.p10.game.entities.Server;
 import com.p10.game.entities.Tower;
 import com.p10.game.grid.GameCollisionHandler;
@@ -30,6 +29,7 @@ import com.p10.game.grid.TowerPlacer;
 import com.p10.game.ui.EduPopup;
 import com.p10.game.ui.FontManager;
 import com.p10.game.ui.HUD;
+import com.p10.game.ui.PhishingPopup;
 import com.p10.game.wave.GameState;
 import com.p10.game.wave.LevelConfig;
 import com.p10.game.wave.WaveManager;
@@ -71,6 +71,10 @@ public class GameplayScene extends Scene {
     private static final float PAUSE_BTN_H = 40f;
     // Static field so LevelSelectScene can set which level to play
     private static LevelConfig selectedLevel = null;
+    // phishing email popup — shows when player dies on phishing level
+    private PhishingPopup phishingPopup;
+    private ShapeRenderer overlayRenderer;
+    private float waveTextTimer = 0f;
 
     public static void setSelectedLevel(LevelConfig cfg) {
         selectedLevel = cfg;
@@ -85,12 +89,20 @@ public class GameplayScene extends Scene {
     }
 
     @Override
+    public boolean shouldRenderEntities() {
+        // null check for when scene hasn't loaded yet
+        if (gameState == null || phishingPopup == null)
+            return true;
+        return !isPaused && !gameState.isGameOver() && !gameState.isGameWon() && !phishingPopup.isVisible();
+    }
+
+    @Override
     protected void onLoad() {
         // : Get levelConfig from selectedLevel (default to level1_DDoS if null)
         this.levelConfig = selectedLevel != null ? selectedLevel : LevelConfig.level1_DDoS();
         // : Initialize GridManager with levelConfig's grid layout
         this.gridManager = new GridManager(levelConfig.getGridLayout(), 48); // 48px tiles: 10x48=480w, 8x48=384h — fits
-                                                                             // 800x480 window
+        this.overlayRenderer = new ShapeRenderer(); // 800x480 window
         // : Build path from gridManager
         this.path = gridManager.buildPath();
         // : Initialize EnemyAI, TowerAI, TowerPlacer, GameCollisionHandler
@@ -100,6 +112,10 @@ public class GameplayScene extends Scene {
         this.collisionHandler = new GameCollisionHandler();
         // : Initialize GameState with starting currency and lives
         this.gameState = new GameState(levelConfig.getStartCurrency(), levelConfig.getStartLives());
+        // set worm flag if this level has worm mechanic
+        if (levelConfig.hasWorm()) {
+            gameState.setHasWorm(true);
+        }
         // : Initialize WaveManager with levelConfig's waves
         this.waveManager = new WaveManager(levelConfig.getWaves());
         // : Initialize HUD and EduPopup
@@ -107,12 +123,16 @@ public class GameplayScene extends Scene {
         this.eduPopup = new EduPopup(screenW, screenH);
         // : Show edu popup with level name and educational text
         this.eduPopup.show(levelConfig.getLevelName(), levelConfig.getEducationalText());
+        // create phishing popup for phishing level mechanic
+        this.phishingPopup = new PhishingPopup(screenW, screenH);
         // : Place Server entity at end of path
         List<Vector2> waypoints = path.getWaypoints();
         Vector2 endPt = waypoints.get(waypoints.size() - 1);
         // Place server centered on last path tile — waypoints are at tile centers
         int ts = gridManager.getTileSize();
-        this.server = new Server("server-0", endPt.x - ts / 2f, endPt.y - ts / 2f, ts, ts, 10f);
+        // server HP matches level lives — worm level = 2HP, others = 10HP
+        float serverHP = levelConfig.hasWorm() ? 2f : 10f;
+        this.server = new Server("server-0", endPt.x - ts / 2f, endPt.y - ts / 2f, ts, ts, serverHP);
         entityOps.addEntity(server);
         // Start background music if available
         try {
@@ -123,10 +143,8 @@ public class GameplayScene extends Scene {
 
     @Override
     protected void onUnload() {
-        // : Remove all game entities via entityOps
-        for (Entity e : new ArrayList<>(entityOps.getAllEntities())) {
-            entityOps.removeEntity(e.getId());
-        }
+        // clear all entities in one call — prevents entity persistence across scenes
+        entityOps.removeAllEntities();
         // : Dispose HUD and EduPopup
         hud.dispose();
         eduPopup.dispose();
@@ -160,12 +178,80 @@ public class GameplayScene extends Scene {
             return;
         }
         // : If game over, wait for ENTER to go back to MainMenu
+        // : If game over, check worm → phishing → normal game over (in priority order)
         if (gameState.isGameOver()) {
+            // WORM MECHANIC: if worm level, advance to next computer instead of game over
+            if (levelConfig.hasWorm() && gameState.advanceComputer()) {
+                int nextComp = gameState.getCurrentComputer();
+                int[][] newLayout = levelConfig.getWormLayout(nextComp);
+                this.gridManager = new GridManager(newLayout, 48);
+                this.path = gridManager.buildPath();
+                this.enemyAI = new EnemyAI(path);
+                entityOps.removeAllEntities();
+                List<Vector2> wp = path.getWaypoints();
+                Vector2 endPt = wp.get(wp.size() - 1);
+                int ts = gridManager.getTileSize();
+                this.server = new Server("server-comp-" + nextComp, endPt.x - ts / 2f, endPt.y - ts / 2f, ts, ts, 2f);
+                entityOps.addEntity(server);
+                gameState.setPrepPhase(true);
+                waveManager.replayCurrentWave();
+                return;
+            }
+            // PHISHING MECHANIC: if phishing level and not used yet, trigger popup
+            if (levelConfig.hasPhishing() && !gameState.isPhishingUsed() && !gameState.isPhishingActive()) {
+                gameState.setGameOver(false);
+                gameState.setPhishingActive(true);
+                phishingPopup.show();
+                return;
+            }
+            // NORMAL GAME OVER: no special mechanics left, wait for ENTER
             if (input.isKeyJustPressed(Keys.ENTER)) {
+                System.out.println("=== ENTER PRESSED, SWITCHING TO MAINMENU ===");
                 sceneCtrl.switchScene("MainMenu");
             }
             return;
         }
+
+        // : Handle phishing popup interaction when active
+        if (gameState.isPhishingActive() && phishingPopup.isVisible()) {
+            float mx = Gdx.input.getX();
+            float my = screenH - Gdx.input.getY();
+
+            if (Gdx.input.justTouched()) {
+                int result = phishingPopup.handleClick(mx, my);
+            }
+
+            if (phishingPopup.allFound()) {
+                if (input.isKeyJustPressed(Keys.ENTER)) {
+                    phishingPopup.hide();
+                    gameState.phishingSuccess();
+                    entityOps.removeAllEntities();
+                    List<Vector2> wp = path.getWaypoints();
+                    Vector2 endPt = wp.get(wp.size() - 1);
+                    int ts = gridManager.getTileSize();
+                    this.server = new Server("server-respawn", endPt.x - ts / 2f, endPt.y - ts / 2f, ts, ts, 10f);
+                    entityOps.addEntity(server);
+                    gridManager.resetOccupied();
+                    waveManager.replayCurrentWave();
+                    gameState.setPrepPhase(true);
+                }
+                return;
+            }
+
+            if (phishingPopup.hasFailed()) {
+                if (input.isKeyJustPressed(Keys.ENTER)) {
+                    System.out.println("=== PHISHING FAILED, HIDING POPUP ===");
+                    phishingPopup.hide();
+                    gameState.phishingFailed();
+                    sceneCtrl.switchScene("MainMenu"); // go straight to menu, skip game over screen
+                }
+                return;
+            }
+
+            return;
+        }
+
+        // : If game won, wait for ENTER
         if (gameState.isGameWon()) {
             if (input.isKeyJustPressed(Keys.ENTER)) {
                 sceneCtrl.switchScene("LevelSelect");
@@ -176,13 +262,9 @@ public class GameplayScene extends Scene {
         // : If all waves done, set game won
         if (waveManager.isAllWavesDone() && !gameState.isGameWon()) {
             gameState.setGameWon(true);
-            // winTimer = 0f;
-            for (Entity e : new ArrayList<>(entityOps.getAllEntities())) {
-                if (e instanceof Enemy || e instanceof Projectile) {
-                    entityOps.removeEntity(e.getId());
-                }
-            }
+            entityOps.removeAllEntities();
         }
+
         // : Handle HUD input (tower selection)
         hud.handleInput(input, gameState, towerPlacer);
         // : Handle tower placement
@@ -208,6 +290,7 @@ public class GameplayScene extends Scene {
         // : PREP PHASE: wait for SPACE to start wave
         if (gameState.isPrepPhase() && input.isKeyJustPressed(Keys.SPACE)) {
             gameState.setPrepPhase(false);
+            waveTextTimer = 0f; // reset timer when wave starts
             // Play wave start sound
             try {
                 audio.playSound("wave_start");
@@ -218,6 +301,7 @@ public class GameplayScene extends Scene {
         // - Update WaveManager (spawn enemies)
         if (!gameState.isPrepPhase()) {
             waveManager.update(dt, entityOps, path, gameState);
+            waveTextTimer += dt; // tick wave text timer
         }
         // - Gather enemies and towers from entity list
         List<Enemy> enemies = new ArrayList<>();
@@ -377,16 +461,11 @@ public class GameplayScene extends Scene {
         // alpha)
         // : Render HUD shapes
 
-        if (isPaused) {
-            // Gdx.gl.glEnable(Gdx.gl.GL_BLEND);
-            // Gdx.gl.glBlendFunc(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
-            // renderer.setColor(0, 0, 0, 0.6f);
-            // renderer.rect(0, 0, screenW, screenH);
-            // Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
-            renderPauseShapes(renderer);
+        // skip HUD when phishing popup is covering the screen
+        if (!phishingPopup.isVisible()) {
+            hud.renderShapes(renderer, gameState, towerPlacer);// edited to reflect the new tower placer input handling
         }
 
-        hud.renderShapes(renderer, gameState, towerPlacer);// edited to reflect the new tower placer input handling
         // : Render game over / win overlay shapes
         if (gameState.isGameOver() || gameState.isGameWon()) {
             // Render semi-transparent overlay
@@ -397,6 +476,17 @@ public class GameplayScene extends Scene {
         if (eduPopup.isVisible()) {
             eduPopup.renderShapes(renderer);
         }
+        // : Render phishing popup shapes if active
+        if (phishingPopup.isVisible()) {
+            phishingPopup.renderShapes(renderer);
+        }
+        // solid black background for clean pause screen — hides all entities
+        if (isPaused) {
+            renderer.setColor(0, 0, 0, 1f);
+            renderer.rect(0, 0, screenW, screenH);
+            renderPauseShapes(renderer);
+            return; // skip all other rendering
+        }
     }
 
     // pause shapes handler method to make sure that the correct shapes are rendered
@@ -404,12 +494,6 @@ public class GameplayScene extends Scene {
     private void renderPauseShapes(ShapeRenderer renderer) {
         float cx = screenW / 2f;
         float midY = screenH / 2f;
-
-        // Dark overlay
-        Gdx.gl.glEnable(Gdx.gl.GL_BLEND);
-        Gdx.gl.glBlendFunc(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
-        renderer.setColor(0, 0, 0, 0.7f);
-        renderer.rect(0, 0, screenW, screenH);
 
         // Panel background
         renderer.setColor(0.12f, 0.12f, 0.2f, 0.95f);
@@ -441,7 +525,6 @@ public class GameplayScene extends Scene {
         renderer.setColor(1f, 1f, 1f, 1f);
         renderer.circle(volSliderX + 160 * musicVolume, volSliderY + 5, 8);
 
-        Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
     }
 
     // pause text rendering method to draw the "PAUSED" title and button labels on
@@ -471,31 +554,44 @@ public class GameplayScene extends Scene {
 
     @Override
     public void renderTextures(SpriteBatch batch) {
-        // : Render HUD text
-        if (!eduPopup.isVisible()) {
-            hud.renderText(batch, gameState, getNextWaveEnemyType());
-            hud.renderInstructions(batch, gameState, towerPlacer);
-        }
-
-        // TODO @ChayHan: If isPaused, draw "PAUSED" text + "Press P to resume"
-        // : Render edu popup text if visible
+        // when paused, only render pause text — nothing else
         if (isPaused) {
-            // hud.getFont().draw(batch, "PAUSED", screenW / 2 - 50, screenH / 2 + 20);
-            // hud.getFont().draw(batch, "Press P to resume", screenW / 2 - 90, screenH / 2
-            // - 20);
             renderPauseText(batch);
+            return;
         }
 
+        // when edu popup is showing, only render edu popup text
         if (eduPopup.isVisible()) {
             eduPopup.renderText(batch);
+            return;
         }
-        // : Render game over / win overlay text
-        if (gameState.isGameOver()) {
-            // Render "Game Over" text
-            hud.getFont().draw(batch, "GAME OVER - Press ENTER", screenW / 2 - 100, screenH / 2);
-        } else if (gameState.isGameWon()) {
-            // Render "You Win!" text
-            hud.getFont().draw(batch, "YOU WIN! - Press ENTER", screenW / 2 - 100, screenH / 2);
+
+        // when phishing popup is showing, only render phishing text
+        if (phishingPopup.isVisible()) {
+            phishingPopup.renderText(batch);
+            return;
+        }
+
+        // same for game over and win
+        if (gameState.isGameOver() || gameState.isGameWon()) {
+            batch.end();
+            overlayRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            overlayRenderer.setColor(0, 0, 0, 0.95f);
+            overlayRenderer.rect(0, 0, screenW, screenH);
+            overlayRenderer.end();
+            batch.begin();
+            if (gameState.isGameOver()) {
+                hud.getFont().draw(batch, "GAME OVER - Press ENTER", screenW / 2 - 100, screenH / 2);
+            } else {
+                hud.getFont().draw(batch, "YOU WIN! - Press ENTER", screenW / 2 - 100, screenH / 2);
+            }
+            return;
+        }
+        // normal gameplay — render HUD text
+        hud.renderText(batch, gameState, getNextWaveEnemyType());
+        // only show instructions if prep phase OR wave text timer under 10s
+        if (gameState.isPrepPhase() || waveTextTimer < 10f) {
+            hud.renderInstructions(batch, gameState, towerPlacer);
         }
     }
 
@@ -512,5 +608,7 @@ public class GameplayScene extends Scene {
         // : Dispose HUD and EduPopup
         hud.dispose();
         eduPopup.dispose();
+        overlayRenderer.dispose();
     }
+    // no dispose needed for phishingPopup — uses FontManager shared fonts
 }

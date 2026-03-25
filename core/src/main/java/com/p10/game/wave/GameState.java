@@ -17,7 +17,16 @@ public class GameState {
     private boolean gameWon;
     private boolean waveInProgress;
     private boolean prepPhase;
-
+    // added phshing fields to track if player used phishing UI curr
+    private boolean phishingUsed;
+    // check if player is currenty using phishing UI
+    private boolean phishingActive;
+    // worm mechanic — tracks which computer we're defending (0, 1, 2)
+    private int currentComputer;
+    // total computers in worm level
+    private int totalComputers;
+    // flag for worm level
+    private boolean hasWorm;
     // Tower shop definitions
     public static final String[] ALL_TOWER_TYPES = { "FIREWALL", "ANTIVIRUS", "ENCRYPTION", "IDS" };
     public static final int[] TOWER_PRICES = { 30, 80, 55, 45 };
@@ -32,10 +41,15 @@ public class GameState {
         this.currentWave = 0;
         this.score = 0;
         this.gameOver = false;
+        this.phishingUsed = false;// init phishing start
+        this.phishingActive = false;// init [phishing UI not active]
         this.gameWon = false;
         this.waveInProgress = false;
         this.prepPhase = true;
         this.selectedTowerType = null;
+        this.currentComputer = 0;
+        this.totalComputers = 3;
+        this.hasWorm = false;
     }
 
     public boolean canAfford(String towerType) {
@@ -49,6 +63,37 @@ public class GameState {
                 return TOWER_PRICES[i];
         }
         return 999;
+    }
+
+    // worm mechanic getters/setters
+    public int getCurrentComputer() {
+        return currentComputer;
+    }
+
+    public int getTotalComputers() {
+        return totalComputers;
+    }
+
+    public boolean hasWorm() {
+        return hasWorm;
+    }
+
+    public void setHasWorm(boolean b) {
+        this.hasWorm = b;
+    }
+
+    // called when a computer dies in worm level — advance to next
+    // returns true if there's a next computer, false if all dead
+    public boolean advanceComputer() {
+        currentComputer++;
+        if (currentComputer >= totalComputers) {
+            gameOver = true;
+            return false; // all computers dead
+        }
+        // reset lives for next computer (2HP each)
+        lives = 2;
+        gameOver = false;
+        return true; // next computer available
     }
 
     /**
@@ -180,6 +225,33 @@ public class GameState {
         lives--;
         if (lives < 0)
             lives = 0;
+    }
+
+    // next 3 methods added for phshing UI tracking
+    public boolean isPhishingActive() {
+        return phishingActive;
+    }
+
+    public void setPhishingActive(boolean b) {
+        this.phishingActive = b;
+    }
+
+    public boolean isPhishingUsed() {
+        return phishingUsed;
+    }
+    // chdck if player succedded or failed phishing UI and update game state.
+
+    public void phishingSuccess() {
+        phishingActive = false;
+        phishingUsed = true;
+        lives = 1;
+        gameOver = false;
+    }
+
+    public void phishingFailed() {
+        phishingActive = false;
+        phishingUsed = true;
+        gameOver = true;
     }
 
 }

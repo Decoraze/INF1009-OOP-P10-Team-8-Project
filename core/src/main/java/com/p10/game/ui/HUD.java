@@ -124,7 +124,7 @@ public class HUD {
         font.draw(batch, "Score: " + state.getScore(), 500, screenH - 15);
         // Controls hint in top right
         smallFont.setColor(Color.LIGHT_GRAY);
-        smallFont.draw(batch, "[M] Music  [F1] Hitbox  [F3] Debug  [ESC] Menu", screenW - 400, screenH - 40);
+        smallFont.draw(batch, "[M] Music  [F1] Hitbox  [F3] Debug  [ESC] Menu", screenW - 350, screenH - 430);
 
         // : Bottom bar — draw tower names, prices, key hints [1]-[4]
         String[] towers = { "FIREWALL", "ANTIVIRUS", "ENCRYPTION", "IDS" };
@@ -147,7 +147,7 @@ public class HUD {
         if (state.isPrepPhase()) {
             font.draw(batch, "PREP PHASE - Next Attack: " + nextEnemyType, screenW / 2 - 180,
                     screenH - BAR_HEIGHT - 12);
-            font.draw(batch, "[SPACE] Start Wave", screenW - 220, screenH - BAR_HEIGHT - 12);
+
         }
     }
 

@@ -85,13 +85,16 @@ public class WaveManager {
             // Check if any enemies are still alive
             boolean anyAlive = entityOps.getAllEntities().stream().anyMatch(e -> e instanceof Enemy && e.isActive());
             if (!anyAlive) {
-                // Advance to next wave
                 currentWaveIndex++;
                 enemiesSpawned = 0;
                 spawnTimer = 0;
-                state.setPrepPhase(true);
-                // Give currency bonus for completing wave
                 state.addCurrency(50);
+                // if no more waves, skip prep and go straight to win
+                if (currentWaveIndex >= waves.size()) {
+                    allWavesDone = true;
+                } else {
+                    state.setPrepPhase(true);
+                }
             }
         }
     }
@@ -106,5 +109,13 @@ public class WaveManager {
 
     public int getTotalWaves() {
         return waves.size();
+    }
+
+    // reset current wave so it can be replayed after phishing success
+    // sets spawn counter back to 0 so all enemies respawn
+    public void replayCurrentWave() {
+        enemiesSpawned = 0;
+        spawnTimer = 0;
+        allWavesDone = false;
     }
 }
