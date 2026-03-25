@@ -278,11 +278,8 @@ public class GameplayScene extends Scene {
             boolean mouseDown = Gdx.input.isTouched();
             towerPlacer.handleDrag(mouseX, mouseY, mouseDown, gridManager, gameState, entityOps);
 
-            // TODO @JunMing: Right-click sell — check Gdx.input.isButtonJustPressed(1)
-            // If right-clicked, call towerPlacer.handleSell(mouseX, mouseY, gridManager,
-            // gameState, entityOps)
+            // If right-clicked sell Tower
             // edited as mouseX and Y were already declared with y inversion above for the
-            // drag-and-drop handling, so just reuse those variables here
             if (Gdx.input.isButtonJustPressed(1)) {
                 towerPlacer.handleSell(mouseX, mouseY, gridManager, gameState, entityOps);
             }

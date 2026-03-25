@@ -89,7 +89,7 @@ public class TowerPlacer {
         return selectedTowerType;
     }
 
-    // TODO @JunMing: Render range circle at mouse hover when placing tower
+    // Render range circle at mouse hover when placing tower
     // 1. If no tower selected (and not dragging), return
     // 2. Convert mouseX/mouseY to grid pos via grid.pixelToGrid()
     // 3. Check isBuildable — if not, return
@@ -98,43 +98,21 @@ public class TowerPlacer {
     // IDS=160)
     // 6. Use GL_BLEND to draw translucent filled circle + line border
     // 7. Also draw yellow rect outline on hovered tile
-    /*
-     * public void renderHoverRange(ShapeRenderer renderer, GridManager grid,
-     * float mouseX, float mouseY) {
-     * // TODO @JunMing
-     * int[] gPos = grid.pixelToGrid(mouseX, mouseY);
-     * if (dragTowerType == null && !isDragging)
-     * {
-     * return;
-     * }
-     * 
-     * if(!grid.isBuildable(gPos[0], gPos[1]))
-     * {
-     * return;
-     * }
-     * 
-     * Vector2 pPos = grid.gridToPixel(gPos[0], gPos[1]);
-     * float centerX = pPos.x + (grid.getTileSize() / 2);
-     * float centerY = pPos.y + (grid.getTileSize() / 2);
-     * // Create temp tower instance to show range before placement and creation of
-     * actual tower instance
-     * Tower tmp = new Tower("tmp", centerX, centerY, grid.getTileSize(),
-     * grid.getTileSize(), getSelectedTowerType());
-     * tmp.showTowerRange(renderer, centerX, centerY, tmp.getTowerColor());
-     * }
-     */
     // using the new dragTowerType to show range when dragging, and
     // selectedTowerType when just hovering without dragging in tower.java
     public void renderHoverRange(ShapeRenderer renderer, GridManager grid,
             float mouseX, float mouseY) {
-        String activeType = dragTowerType != null ? dragTowerType : selectedTowerType;
+        // If dragTowerType is not null activeType is dragTowerType
+    	String activeType = dragTowerType != null ? dragTowerType : selectedTowerType;
+        
+    	// If no Tower selected and not dragging anything
         if (activeType == null && !isDragging) {
             return;
         }
-
-        int[] gPos = grid.pixelToGrid(mouseX, mouseY);// this is put here rather than above activeType check because we
-                                                      // want to return early if the tile is not buildable, even if the
-                                                      // player is dragging a tower
+        // Convert mouse position to grid position
+        int[] gPos = grid.pixelToGrid(mouseX, mouseY);
+        
+        // Return early if tile is not buildable, even if the player is dragging a tower
         if (!grid.isBuildable(gPos[0], gPos[1])) {
             return;
         }
@@ -229,7 +207,7 @@ public class TowerPlacer {
         dragTowerType = null;
     }
     
-    // TODO @ChayHan: Render semi-transparent ghost tower at mouse during drag
+    // Render semi-transparent ghost tower at mouse during drag
     // If not dragging, return. Otherwise draw rect at dragX/dragY with 0.4f alpha
     // using GL_BLEND
     public void renderDragGhost(ShapeRenderer renderer) {
@@ -244,17 +222,9 @@ public class TowerPlacer {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
-    // TODO @JunMing: Sell tower on right-click
-    // 1. Convert mouseX/mouseY to grid pos
-    // 2. Check bounds, check tile is OCCUPIED
-    // 3. Get tower ref from tile
-    // 4. Refund 50% of tower cost via GameState.getPrice() / 2 →
-    // state.addCurrency()
-    // 5. Remove tower entity via entityOps.removeEntity(tower.getEntityId())
-    // 6. Reset tile to BUILDABLE, clear towerRef
     public boolean handleSell(float mouseX, float mouseY, GridManager grid,
             GameState state, iEntityOps entityOps) {
-        // TODO @JunMing
+    	// Get mouse position and which grid it is hovering over
         int[] gPos = grid.pixelToGrid(mouseX, mouseY);
         Tile target = grid.getTile(gPos[0], gPos[1]);
         // Check if tower on tile
