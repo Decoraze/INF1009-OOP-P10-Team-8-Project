@@ -87,7 +87,6 @@ public class LevelSelectScene extends Scene {
 
         renderer.rect(0, 0, screenW, screenH);
 
-        // TODO @HuiYang: Color-code boxes per threat type instead of all grey
         // Level 1 DDoS: orange (0.8f, 0.5f, 0.1f, 1)
         // Level 2 Virus: red (0.8f, 0.2f, 0.2f, 1)
         // Level 3 Phishing: purple (0.6f, 0.2f, 0.8f, 1)

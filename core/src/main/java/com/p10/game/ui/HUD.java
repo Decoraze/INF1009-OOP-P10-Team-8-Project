@@ -92,7 +92,6 @@ public class HUD {
             }
 
             renderer.rect(cx, startY, CARD_W, CARD_H);
-            // TODO @ChayHan: Draw yellow border on selected tower card
             // Check if this tower matches towerPlacer's selected type
             // If so, switch to ShapeType.Line, draw yellow rect border (cx-3, startY-3,
             // CARD_W+6, CARD_H+6)
@@ -190,7 +189,6 @@ public class HUD {
     // Tower class to get the color for each tower type, no need to duplicate in
     // HUD.
 
-    // TODO @ChayHan: Render contextual instruction text during gameplay
     // Prep phase + no tower selected: "[1]-[4] select tower | Click/drag to place |
     // SPACE to start"
     // Prep phase + tower selected: "Selected: [type] | Click to place | Right-click
@@ -215,22 +213,14 @@ public class HUD {
         }
     }
 
-    // TODO @HuiYang: Game over overlay text (big red "GAME OVER" + press ENTER
-    // hint)
     public void renderGameOver(SpriteBatch batch) {
-        // TODO @HuiYang
     }
 
-    // TODO @HuiYang: Win overlay text (big green "YOU WIN!" + press ENTER hint)
     public void renderGameWon(SpriteBatch batch) {
-        // TODO @HuiYang
     }
 
     public void dispose() {
-        // : Dispose fonts
 
-        // font.dispose();
-        // smallFont.dispose();
     }
 
     public BitmapFont getFont() {

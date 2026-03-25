@@ -280,11 +280,10 @@ public class Enemy extends CollidableEntity {
         renderNameLabel(batch);
     }
 
-    // TODO @Rumaana: Draw enemy type name above sprite (above HP bar)
+    // Draw enemy type name above sprite (above HP bar)
     // Use displayName, nameFont, position.x, position.y, hitbox width/height
     public void renderNameLabel(SpriteBatch batch) {
-        // TODO @Rumaana
-        // TODO @Rumaana: Create 5 enemy sprite PNGs (64x64, transparent bg) in
+        // Create 5 enemy sprite PNGs (64x64, transparent bg) in
         // assets/sprites/
         // virus.png, worm.png, trojan.png, ddos.png, phishing.png
         if (cachedLayout == null) {

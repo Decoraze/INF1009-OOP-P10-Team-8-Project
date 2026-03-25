@@ -61,9 +61,9 @@ public class GameplayScene extends Scene {
     private Server server;
     private float screenW, screenH;
     private boolean musicMuted = false; // M key toggles this
-    // TODO @ChayHan: Pause state
+    // Pause state
     private boolean isPaused = false;
-    // TODO @HuiYang: Win auto-transition timer
+    // Win auto-transition timer
     // private float winTimer = 0f;
     // init music slider, pause button dimensions
     private float musicVolume = 1.0f;
@@ -158,7 +158,7 @@ public class GameplayScene extends Scene {
     public void update(float dt) {
         // : Clean up inactive entities every frame
         cleanupEntities();
-        // TODO @ChayHan: Pause toggle — P key
+        // Pause toggle — P key
         // If P pressed (and not in popup/gameover/win): toggle isPaused
         // If isPaused: return immediately (skip all game logic)
         // : If edu popup visible, handle its input and return
@@ -268,7 +268,6 @@ public class GameplayScene extends Scene {
         // : Handle tower placement
         if (gameState.isPrepPhase()) {
             towerPlacer.handleInput(input, gridManager, gameState, entityOps, screenH);
-            // TODO @ChayHan: Call towerPlacer.handleDrag() here for drag-and-drop
             // Get mouse pos: Gdx.input.getX(), screenH - Gdx.input.getY()
             // Pass mouseDown: Gdx.input.isTouched()
             float mouseX = Gdx.input.getX();
@@ -276,7 +275,6 @@ public class GameplayScene extends Scene {
             boolean mouseDown = Gdx.input.isTouched();
             towerPlacer.handleDrag(mouseX, mouseY, mouseDown, gridManager, gameState, entityOps);
 
-            // TODO @JunMing: Right-click sell — check Gdx.input.isButtonJustPressed(1)
             // If right-clicked, call towerPlacer.handleSell(mouseX, mouseY, gridManager,
             // gameState, entityOps)
             // edited as mouseX and Y were already declared with y inversion above for the
@@ -450,13 +448,10 @@ public class GameplayScene extends Scene {
             }
         }
         towerPlacer.renderHoverRange(renderer, gridManager, mouseX, mouseY);
-        // TODO @ChayHan: Render drag ghost
         towerPlacer.renderDragGhost(renderer);
         renderer.end();
         // : Render entities (towers, enemies, projectiles) on top
         renderer.begin(ShapeRenderer.ShapeType.Filled); // Switch to filled for entity rendering
-        // TODO @ChayHan: If isPaused, draw dark overlay (GL_BLEND, black rect 0.6f
-        // alpha)
         // : Render HUD shapes
 
         // skip HUD when phishing popup is covering the screen

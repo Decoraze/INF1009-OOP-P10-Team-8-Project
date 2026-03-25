@@ -212,7 +212,6 @@ public class GridManager {
 	}
 
 	// reset all occupied tiles back to buildable after phishing respawn
-	// reset all occupied tiles back to buildable after phishing respawn
 	public void resetOccupied() {
 		for (int row = 0; row < tiles.length; row++) {
 			for (int col = 0; col < tiles[row].length; col++) {

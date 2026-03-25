@@ -22,7 +22,7 @@ public class TowerPlacer {
     private String selectedTowerType;
     private int towerCount = 0;
     private boolean mouseActuatedLastFrame = false; // Check if mouse is being held down
-    // TODO @ChayHan: Drag-and-drop fields
+    // Drag-and-drop fields
     private boolean isDragging = false;
     private float dragX, dragY;
     private String dragTowerType = null;
@@ -89,7 +89,7 @@ public class TowerPlacer {
         return selectedTowerType;
     }
 
-    // TODO @JunMing: Render range circle at mouse hover when placing tower
+    // Render range circle at mouse hover when placing tower
     // 1. If no tower selected (and not dragging), return
     // 2. Convert mouseX/mouseY to grid pos via grid.pixelToGrid()
     // 3. Check isBuildable — if not, return
@@ -101,7 +101,6 @@ public class TowerPlacer {
     /*
      * public void renderHoverRange(ShapeRenderer renderer, GridManager grid,
      * float mouseX, float mouseY) {
-     * // TODO @JunMing
      * int[] gPos = grid.pixelToGrid(mouseX, mouseY);
      * if (dragTowerType == null && !isDragging)
      * {
@@ -149,7 +148,7 @@ public class TowerPlacer {
         Tower.drawRangeCircle(renderer, centerX, centerY, range, color);
     }
 
-    // TODO @ChayHan: Drag-and-drop tower placement
+    // Drag-and-drop tower placement
     // 1. If mouseDown and not dragging: check if click is on a tower card in bottom
     // HUD
     // Card layout: startX=20, startY=10, cardW=80, cardH=65, gap=8,
@@ -161,14 +160,14 @@ public class TowerPlacer {
     // Then reset isDragging=false, dragTowerType=null
     public void handleDrag(float mouseX, float mouseY, boolean mouseDown,
             GridManager grid, GameState state, iEntityOps entityOps) {
-    	if (mouseDown && !isDragging) {
+        if (mouseDown && !isDragging) {
             selectTowerFromHUD(mouseX, mouseY, state);
-        } 
+        }
         // Scenario B: Player is actively doing something with a tower
         else if (isDragging) {
             if (mouseDown) {
                 // Still holding the mouse, update the ghost image position
-            	dragX = mouseX;
+                dragX = mouseX;
                 dragY = mouseY;
             } else {
                 // Mouse released! Try to place it and clean up.
@@ -177,7 +176,7 @@ public class TowerPlacer {
             }
         }
     }
-    
+
     public void selectTowerFromHUD(float mouseX, float mouseY, GameState state) {
         float startX = 20f;
         float startY = 10f;
@@ -187,10 +186,10 @@ public class TowerPlacer {
 
         for (int i = 0; i < GameState.ALL_TOWER_TYPES.length; i++) {
             float cx = startX + i * (cardW + gap);
-            
+
             // Check if card clickable
             if (mouseX >= cx && mouseX <= cx + cardW && mouseY >= startY && mouseY <= startY + cardH) {
-                
+
                 // Check if enough currency
                 if (state.canAfford(GameState.ALL_TOWER_TYPES[i])) {
                     isDragging = true;
@@ -202,7 +201,7 @@ public class TowerPlacer {
             }
         }
     }
-    
+
     public void placeTower(float mouseX, float mouseY, GridManager grid, GameState state, iEntityOps entityOps) {
         int[] gridPos = grid.pixelToGrid(mouseX, mouseY);
         int row = gridPos[0];
@@ -211,25 +210,24 @@ public class TowerPlacer {
         if (grid.isBuildable(row, col)) {
             // Buy tower
             state.purchaseTower(dragTowerType);
-            
+
             // Find center
             com.badlogic.gdx.math.Vector2 towerPos = grid.gridToPixel(row, col);
 
             // Create and register tower
             Tower newTower = new Tower("Tower" + towerCount++, towerPos.x, towerPos.y,
                     grid.getTileSize(), grid.getTileSize(), dragTowerType);
-            
+
             entityOps.addEntity(newTower);
             grid.placeTower(row, col, newTower);
         }
     }
-    
+
     public void resetDragState() {
         isDragging = false;
         dragTowerType = null;
     }
-    
-    // TODO @ChayHan: Render semi-transparent ghost tower at mouse during drag
+
     // If not dragging, return. Otherwise draw rect at dragX/dragY with 0.4f alpha
     // using GL_BLEND
     public void renderDragGhost(ShapeRenderer renderer) {
@@ -244,7 +242,6 @@ public class TowerPlacer {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
-    // TODO @JunMing: Sell tower on right-click
     // 1. Convert mouseX/mouseY to grid pos
     // 2. Check bounds, check tile is OCCUPIED
     // 3. Get tower ref from tile
@@ -254,7 +251,6 @@ public class TowerPlacer {
     // 6. Reset tile to BUILDABLE, clear towerRef
     public boolean handleSell(float mouseX, float mouseY, GridManager grid,
             GameState state, iEntityOps entityOps) {
-        // TODO @JunMing
         int[] gPos = grid.pixelToGrid(mouseX, mouseY);
         Tile target = grid.getTile(gPos[0], gPos[1]);
         // Check if tower on tile
