@@ -161,52 +161,74 @@ public class TowerPlacer {
     // Then reset isDragging=false, dragTowerType=null
     public void handleDrag(float mouseX, float mouseY, boolean mouseDown,
             GridManager grid, GameState state, iEntityOps entityOps) {
-        if (mouseDown && !isDragging) {
-            // Check if click is on a tower card in bottom HUD (updated to reflect all tower
-            // types rather than the 4 hardcoded ones that used a tower array)
-            float startX = 20f;
-            float startY = 10f;
-            float cardW = 100f;
-            float cardH = 65f;
-            float gap = 8f;
-
-            for (int i = 0; i < GameState.ALL_TOWER_TYPES.length; i++) {
-                float cx = startX + i * (cardW + gap);
-                if (mouseX >= cx && mouseX <= cx + cardW && mouseY >= startY && mouseY <= startY + cardH) {
-                    if (state.canAfford(GameState.ALL_TOWER_TYPES[i])) {
-                        isDragging = true;
-                        dragTowerType = GameState.ALL_TOWER_TYPES[i];
-                        dragX = mouseX;
-                        dragY = mouseY;
-                    }
-                    break;
-                }
-            }
-        } else if (isDragging) {
+    	if (mouseDown && !isDragging) {
+            selectTowerFromHUD(mouseX, mouseY, state);
+        } 
+        // Scenario B: Player is actively doing something with a tower
+        else if (isDragging) {
             if (mouseDown) {
-                // Follow mouse while dragging
-                dragX = mouseX;
+                // Still holding the mouse, update the ghost image position
+            	dragX = mouseX;
                 dragY = mouseY;
             } else {
-                // Mouse released -> Try to place tower
-                int[] gridPos = grid.pixelToGrid(dragX, dragY);
-                if (grid.isBuildable(gridPos[0], gridPos[1])) {
-                    state.purchaseTower(dragTowerType);
-                    Vector2 towerPos = grid.gridToPixel(gridPos[0], gridPos[1]);
-
-                    Tower newTower = new Tower("Tower" + towerCount++, towerPos.x, towerPos.y,
-                            grid.getTileSize(), grid.getTileSize(), dragTowerType);
-                    entityOps.addEntity(newTower);
-                    grid.placeTower(gridPos[0], gridPos[1], newTower);
-                }
-
-                // Reset dragging state
-                isDragging = false;
-                dragTowerType = null;
+                // Mouse released! Try to place it and clean up.
+                placeTower(dragX, dragY, grid, state, entityOps);
+                resetDragState();
             }
         }
     }
+    
+    public void selectTowerFromHUD(float mouseX, float mouseY, GameState state) {
+        float startX = 20f;
+        float startY = 10f;
+        float cardW = 100f;
+        float cardH = 65f;
+        float gap = 8f;
 
+        for (int i = 0; i < GameState.ALL_TOWER_TYPES.length; i++) {
+            float cx = startX + i * (cardW + gap);
+            
+            // Check if card clickable
+            if (mouseX >= cx && mouseX <= cx + cardW && mouseY >= startY && mouseY <= startY + cardH) {
+                
+                // Check if enough currency
+                if (state.canAfford(GameState.ALL_TOWER_TYPES[i])) {
+                    isDragging = true;
+                    dragTowerType = GameState.ALL_TOWER_TYPES[i];
+                    dragX = mouseX;
+                    dragY = mouseY;
+                }
+                return;
+            }
+        }
+    }
+    
+    public void placeTower(float mouseX, float mouseY, GridManager grid, GameState state, iEntityOps entityOps) {
+        int[] gridPos = grid.pixelToGrid(mouseX, mouseY);
+        int row = gridPos[0];
+        int col = gridPos[1];
+
+        if (grid.isBuildable(row, col)) {
+            // Buy tower
+            state.purchaseTower(dragTowerType);
+            
+            // Find center
+            com.badlogic.gdx.math.Vector2 towerPos = grid.gridToPixel(row, col);
+
+            // Create and register tower
+            Tower newTower = new Tower("Tower" + towerCount++, towerPos.x, towerPos.y,
+                    grid.getTileSize(), grid.getTileSize(), dragTowerType);
+            
+            entityOps.addEntity(newTower);
+            grid.placeTower(row, col, newTower);
+        }
+    }
+    
+    public void resetDragState() {
+        isDragging = false;
+        dragTowerType = null;
+    }
+    
     // TODO @ChayHan: Render semi-transparent ghost tower at mouse during drag
     // If not dragging, return. Otherwise draw rect at dragX/dragY with 0.4f alpha
     // using GL_BLEND
