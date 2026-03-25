@@ -239,9 +239,7 @@ public class Tower extends CollidableEntity {
         }
     }
 
-    // TODO @JunMing: Render range circle around placed tower
     public void renderRange(ShapeRenderer renderer) {
-        // TODO @JunMing
         float centerX = getPosition().x + (getHitbox().width / 2);
         float centerY = getPosition().y + (getHitbox().height / 2);
         drawRangeCircle(renderer, centerX, centerY, this.range, getTowerColor());
