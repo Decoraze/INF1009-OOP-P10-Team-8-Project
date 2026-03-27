@@ -150,19 +150,6 @@ public class PhishingPopup {
         }
 
         Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
-        // DEBUG:
-        /*
-         * renderer.end();
-         * renderer.begin(ShapeRenderer.ShapeType.Line);
-         * renderer.setColor(1, 1, 0, 1); // yellow outlines
-         * for (int i = 0; i < currentEmail.getZones().size(); i++) {
-         * PhishingEmail.SuspiciousZone z = currentEmail.getZones().get(i);
-         * renderer.rect(z.getBounds().x, z.getBounds().y,
-         * z.getBounds().width, z.getBounds().height);
-         * }
-         * renderer.end();
-         * renderer.begin(ShapeRenderer.ShapeType.Filled);
-         */
     }
 
     /*

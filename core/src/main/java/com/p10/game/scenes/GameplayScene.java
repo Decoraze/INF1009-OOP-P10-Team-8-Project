@@ -228,7 +228,8 @@ public class GameplayScene extends Scene {
                     List<Vector2> wp = path.getWaypoints();
                     Vector2 endPt = wp.get(wp.size() - 1);
                     int ts = gridManager.getTileSize();
-                    this.server = new Server("server-respawn", endPt.x - ts / 2f, endPt.y - ts / 2f, ts, ts, 10f);
+                    this.server = new Server("server-respawn", endPt.x - ts / 2f, endPt.y - ts / 2f, ts, ts,
+                            gameState.getLives());
                     entityOps.addEntity(server);
                     gridManager.resetOccupied();
                     waveManager.replayCurrentWave();
